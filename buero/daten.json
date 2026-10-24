@@ -133,9 +133,9 @@
       "beiFreigabe": "Der Planer macht Pakete für die freigegebenen Vorschläge. Bei „Ändern“ bitte die Nummern nennen, die du willst.",
       "von": "Senior Owner",
       "datum": "24.10.2026",
-      "status": "offen",
+      "status": "freigegeben",
       "antwort": "",
-      "entschieden": ""
+      "entschieden": "24.10.2026"
     },
     {
       "id": "f-004",
