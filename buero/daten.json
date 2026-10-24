@@ -6,9 +6,13 @@
       "name": "Lukas",
       "kurz": "Owner",
       "rolle": "Hat die Ideen und die letzte Entscheidung: neue Features, Spielgefühl, Technik und jede fertige Version vor dem Debugger-Test.",
-      "status": "wartet",
-      "aufgabe": "Paket 01 am iPhone ansehen und freigeben.",
+      "status": "frei",
+      "aufgabe": "",
       "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Paket 01 am iPhone geprüft (Prüfliste f-006) und freigegeben."
+        },
         {
           "datum": "24.10.2026",
           "text": "f-001 bis f-005 freigegeben: Team und Büro abgenommen."
@@ -42,8 +46,8 @@
       "name": "Leiter",
       "kurz": "Hält das Team zusammen",
       "rolle": "Verteilt Aufgaben, gibt Pakete frei, prüft ob etwas wirklich fertig ist, führt PROJEKT.md und dieses Büro, meldet Lukas den Stand.",
-      "status": "wartet",
-      "aufgabe": "Wartet auf Lukas' Freigabe von Paket 01, dann Debugger.",
+      "status": "arbeitet",
+      "aufgabe": "Paket 01: Debugger-Prüfung begleiten.",
       "ergebnisse": [
         {
           "datum": "24.10.2026",
@@ -92,8 +96,8 @@
       "name": "Debugger",
       "kurz": "Prüft und repariert",
       "rolle": "Prüft jede von Lukas freigegebene Version, behebt Fehler, sagt ehrlich, was geprüft wurde und was nicht.",
-      "status": "frei",
-      "aufgabe": "",
+      "status": "arbeitet",
+      "aufgabe": "Paket 01 prüfen.",
       "ergebnisse": [
         {
           "datum": "24.10.2026",
@@ -189,18 +193,18 @@
       "beiFreigabe": "Der Debugger prüft (auch am iPhone mit deiner kurzen Prüfliste), danach ist Paket 01 fertig.",
       "von": "Leiter",
       "datum": "24.10.2026",
-      "status": "offen",
+      "status": "freigegeben",
       "antwort": "",
-      "entschieden": ""
+      "entschieden": "24.10.2026"
     }
   ],
   "pakete": [
     {
       "id": "01",
       "titel": "Mini-Prototyp: Wasser, Würfel-Floß, Joystick",
-      "stufe": "in-arbeit",
+      "stufe": "debugger",
       "agent": "programmierer",
-      "fertigWenn": "Version wartet auf Lukas (Postfach f-006), danach Debugger."
+      "fertigWenn": "Debugger-Prüfbericht ohne offene Fehler."
     },
     {
       "id": "02",
