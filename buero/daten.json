@@ -6,8 +6,8 @@
       "name": "Lukas",
       "kurz": "Owner",
       "rolle": "Hat die Ideen und die letzte Entscheidung: neue Features, Spielgefühl, Technik und jede fertige Version vor dem Debugger-Test.",
-      "status": "frei",
-      "aufgabe": "",
+      "status": "wartet",
+      "aufgabe": "Paket 01 am iPhone ansehen und freigeben.",
       "ergebnisse": [
         {
           "datum": "24.10.2026",
@@ -42,8 +42,8 @@
       "name": "Leiter",
       "kurz": "Hält das Team zusammen",
       "rolle": "Verteilt Aufgaben, gibt Pakete frei, prüft ob etwas wirklich fertig ist, führt PROJEKT.md und dieses Büro, meldet Lukas den Stand.",
-      "status": "arbeitet",
-      "aufgabe": "Phase 4 vorbereiten: Paket 01 (Mini-Prototyp) planen lassen.",
+      "status": "wartet",
+      "aufgabe": "Wartet auf Lukas' Freigabe von Paket 01, dann Debugger.",
       "ergebnisse": [
         {
           "datum": "24.10.2026",
@@ -61,6 +61,10 @@
       "ergebnisse": [
         {
           "datum": "24.10.2026",
+          "text": "Paket 01 Mini-Prototyp geschrieben (pakete/01-mini-prototyp.md)."
+        },
+        {
+          "datum": "24.10.2026",
           "text": "Testaufgabe bestanden: Raster-Floß in 5 Pakete (02–06) geplant."
         }
       ]
@@ -73,6 +77,10 @@
       "status": "frei",
       "aufgabe": "",
       "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Paket 01 selbstständig gebaut: 31/31 Prüfungen, alle Tests grün (berichte/2026-10-24-paket-01-uebergabe.md)."
+        },
         {
           "datum": "24.10.2026",
           "text": "Testaufgabe bestanden: Wasser, Würfel-Floß, Joystick in 7 Modulen, 8/8 Prüfungen (berichte/2026-10-24-paket-T1-uebergabe.md)."
@@ -172,15 +180,27 @@
       "status": "freigegeben",
       "antwort": "",
       "entschieden": "24.10.2026"
+    },
+    {
+      "id": "f-006",
+      "art": "version",
+      "titel": "Paket 01: Mini-Prototyp ansehen",
+      "text": "Wasser, Würfel-Floß, Joystick links, Kamera von oben. Öffnen: neidelbert.github.io/raft/spiel/ – Joystick nach oben ziehen, Floß fährt weg; loslassen, es hält. Hinweis: Die Wellen sind von oben kaum zu sehen; wenn du mehr willst, schreib es bei „Ändern“.",
+      "beiFreigabe": "Der Debugger prüft (auch am iPhone mit deiner kurzen Prüfliste), danach ist Paket 01 fertig.",
+      "von": "Leiter",
+      "datum": "24.10.2026",
+      "status": "offen",
+      "antwort": "",
+      "entschieden": ""
     }
   ],
   "pakete": [
     {
       "id": "01",
       "titel": "Mini-Prototyp: Wasser, Würfel-Floß, Joystick",
-      "stufe": "geplant",
+      "stufe": "in-arbeit",
       "agent": "programmierer",
-      "fertigWenn": "startet ohne Fehler, Joystick bewegt das Floß, Kamera folgt (Testpaket T1 als Vorlage)."
+      "fertigWenn": "Version wartet auf Lukas (Postfach f-006), danach Debugger."
     },
     {
       "id": "02",

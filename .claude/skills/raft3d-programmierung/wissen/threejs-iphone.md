@@ -28,6 +28,7 @@ Gilt für Three.js 0.170.0 und iPhone ab etwa iPhone 11 (Safari 16.4+). Lies das
 - Viele gleiche Teile (Floßplatten, Treibgut) als `InstancedMesh` mit einem Zeichenaufruf. Unbewegliche Teile mit `mergeGeometries` zusammenfassen.
 - Zu viele Zeichenaufrufe kosten mehr als zu viele Dreiecke. Grenze: 100 pro Bild (`renderer.info.render.calls`).
 - Wasser: Eine große Fläche, die mit der Kamera mitwandert (sieht aus wie ein endloses Meer). Wellen werden auf dem Prozessor bei etwa 2.500 Punkten berechnet, was in Ordnung ist. Bei mehr Punkten im Shader rechnen (`onBeforeCompile`), das ist eine Technik-Frage.
+- Wellenfläche mit `flatShading: true` im Material: Normalen müssen dann nicht pro Bild neu berechnet werden (Paket 01, spart Rechenzeit).
 - Objekte wiederverwenden (Pool): Treibgut, das hinten verschwindet, kommt vorne wieder hinein, statt neu erzeugt zu werden.
 - Entfernen heißt: `szene.remove(obj)`, dann `geometry.dispose()`, `material.dispose()` und `texture.dispose()`. Gemeinsam genutzte Geometrien und Materialien nur einmal entfernen.
 

@@ -7,7 +7,8 @@ Repository: `neidelbert/raft` · Team-Seite: `buero/` (GitHub Pages: `https://ne
 - Phase 0/1: Interview abgeschlossen (etwa 90 %), Spielbeschreibung geschrieben, Programmier-Skill fertig (`.claude/skills/raft3d-programmierung/`).
 - Phase 2 (Agents): **fertig**, von Lukas abgenommen. Sechs Agents in `.claude/agents/`, Abläufe und Übergaben in `TEAM.md`, alle Testaufgaben bestanden (`tests/agenten/TESTS.md`).
 - Phase 3 (Büro): **fertig**, von Lukas abgenommen und auf dem iPhone in Gebrauch (5 Freigaben über die Seite gespeichert). Schlichte Team-Seite in `buero/` (Team, Agent-Karte, Postfach, Aufgaben, Projektdatei), Daten in `buero/daten.json`.
-- Phase 4 (Spielentwicklung): Gerüst `spiel/` vom Techniker angelegt. Als Nächstes Paket 01. Pakete 02–06 (Raster-Floß) liegen als Entwurf in `pakete/` (aus dem Planer-Test, noch nicht freigegeben).
+- Phase 4 (Spielentwicklung): läuft. Paket 01 (Mini-Prototyp) vom Team **selbstständig** geplant, freigegeben und gebaut (31/31 Prüfungen, alle Tests grün). Wartet auf Lukas (Postfach f-006), danach Debugger.
+- Team-Wissen: Programmierer hat Wissen in `.claude/skills/raft3d-programmierung/wissen/` (Lernbuch, Muster, Three.js/iPhone, Spielinhalt, Testen). Prüfungen: `bash tests/alle-tests.sh`, `node werkzeuge/pruefe-team.js`. Pakete 02–06 (Raster-Floß) liegen als Entwurf in `pakete/` (aus dem Planer-Test, noch nicht freigegeben).
 
 ## Phasen
 1. Skills entwickeln
@@ -79,11 +80,12 @@ Wer was an wen übergibt, wo es abgelegt wird und was bei „Ändern“/„Spät
 - Wie der Code auf späteren Multiplayer vorbereitet wird
 
 ## Nächste Schritte
-1. Planer schreibt `pakete/01-mini-prototyp.md` (Wasser, Würfel-Floß, Joystick) im Gerüst `spiel/`, nach Vorlage Testpaket T1; Leiter gibt frei.
-2. Programmierer baut Paket 01, Lukas gibt die Version frei, Debugger prüft.
-3. Danach Senior Owner zu „Treibgut mit Haken“, Planer plant Raster-Floß (02–06) neu gegen das Gerüst.
+1. Lukas: Paket 01 am iPhone ansehen (`neidelbert.github.io/raft/spiel/`), Postfach f-006 beantworten.
+2. Nach Freigabe: Debugger prüft Paket 01, trägt Erkenntnisse ins Lernbuch, Leiter setzt „Fertig“.
+3. Danach selbstständig weiter: Senior Owner zu „Treibgut mit Haken“ → Postfach; Planer überarbeitet Raster-Floß 02–06 gegen `spiel/` (Zieldateien nennen).
 
 ## Änderungsprotokoll
 - 24.10.2026: Phase 2 und 3 umgesetzt. Agents in `.claude/agents/` (Claude-Code-Format), Programmier-Skill in `.claude/skills/`, `TEAM.md` mit Übergaben, Team-Seite `buero/`, Rollentests `tests/agenten/`, Seitentest `tests/buero-test.js`.
   Behobene Widersprüche: Programmierer gab Version laut Rolle an Lukas, laut Skill an den Leiter → jetzt über den Leiter. Skill erlaubte Englisch im Code → Deutsch (Entscheidung von Lukas). Programmierer schrieb laut Skill in die Projektdatei → das macht nur der Leiter. Senior Owner gab an ein „Planer-Team“ → über den Leiter an den Planer. Techniker hatte keinen Platz im Ablauf → Schritt 4b in `TEAM.md`. Ablauf bei Fehlern und bei „Ändern“/„Später“ ergänzt.
 - 24.10.2026: Lukas hat f-001 bis f-005 über die Team-Seite freigegeben, eingetragen unter „Entscheidungen“. Techniker hat das Gerüst `spiel/` angelegt (Rollentest Teil 2).
+- 24.10.2026: Ziel von Lukas „Team fehlerfrei, teilweise selbstständig, Programmierer mit komplettem Wissen“: Wissensordner und Lernbuch im Skill, Regeln „Selbstständig entscheiden“, selbstständiger Ablauf in `TEAM.md`, Prüfwerkzeug `werkzeuge/pruefe-team.js`, Gesamttest `tests/alle-tests.sh`. Probe: Paket 01 lief Planer → Leiter → Programmierer ohne Rückfrage, alle Tests grün.
