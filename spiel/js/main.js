@@ -1,28 +1,41 @@
-// Start und Hauptschleife. Gerüst: zeigt nur einen leeren Bildschirm.
-// Spielinhalte kommen mit den Paketen (ab Paket 01) in die Bereichsordner.
+// Start und Hauptschleife: verbindet die Module.
 import * as THREE from 'three';
 import { LEISTUNG } from './config/leistung.js';
+import { erstelleBildschirm } from './kern/bildschirm.js';
+import { erstelleKameraFuehrung } from './kern/kamera.js';
+import { erstelleJoystick } from './steuerung/joystick.js';
+import { erstelleWasser } from './welt/wasser.js';
+import { erstelleFloss } from './floss/floss.js';
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, LEISTUNG.pixelRatioMax));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = LEISTUNG.schatten;
-renderer.setClearColor(0x6fc3e8);
-document.body.appendChild(renderer.domElement);
+const { renderer, szene, kamera } = erstelleBildschirm();
+const { eingabe } = erstelleJoystick(document.getElementById('joystick'), document.getElementById('joystick-knopf'));
+const floss = erstelleFloss(szene, eingabe);
+const wasser = erstelleWasser(szene, floss.position);
+const kameraFuehrung = erstelleKameraFuehrung(kamera, floss.position);
 
-const szene = new THREE.Scene();
-const kamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+// Reihenfolge: Eingabe (über Ereignisse), Welt, Floß, Kamera.
+const teile = [wasser, floss, kameraFuehrung];
 
-window.addEventListener('resize', () => {
-  kamera.aspect = window.innerWidth / window.innerHeight;
-  kamera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+const uhr = new THREE.Clock();
+let zeit = 0;
+let pausiert = false;
+
+// Kleine Schnittstelle für Tests (liest nur). Spielcode liest window.spiel nie.
+window.spiel = {
+  bereit: true, renderer, szene, kamera, floss, eingabe,
+  get zeit() { return zeit; },
+};
+
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(uhr.getDelta(), LEISTUNG.deltaMax);
+  if (!pausiert) {
+    zeit += dt;
+    for (const teil of teile) teil.aktualisiere(dt, zeit);
+  }
+  renderer.render(szene, kamera);
 });
 
-// Kleine Schnittstelle für Tests (liest nur).
-window.spiel = { bereit: true, renderer, szene, kamera };
-
-// Delta-Zeit (begrenzt auf LEISTUNG.deltaMax) kommt mit dem ersten bewegten Inhalt dazu.
-renderer.setAnimationLoop(() => {
-  renderer.render(szene, kamera);
+document.addEventListener('visibilitychange', () => {
+  pausiert = document.hidden;
+  uhr.getDelta(); // Sprung nach Rückkehr verwerfen
 });
