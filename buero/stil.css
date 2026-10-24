@@ -1,0 +1,133 @@
+:root {
+  --grund: #eaf6fb;
+  --flaeche: #ffffff;
+  --text: #16323f;
+  --leise: #5b7480;
+  --rand: #cfe3ec;
+  --meer: #0b6e99;
+  --frei: #2e9e5b;
+  --arbeitet: #1f78d1;
+  --wartet: #e08a00;
+  --problem: #d6342c;
+  --radius: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --grund: #0d1b22;
+    --flaeche: #15262f;
+    --text: #e3f1f7;
+    --leise: #93acb8;
+    --rand: #26404c;
+    --meer: #3aa6d8;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--grund);
+  color: var(--text);
+  font: 17px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+button, textarea, input { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
+
+.kopf {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  background: var(--meer); color: #fff;
+}
+.kopf h1 { margin: 0; font-size: 22px; }
+.klein { margin: 0; font-size: 14px; opacity: .85; }
+.rund {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 0; background: rgba(255,255,255,.18); color: inherit; font-size: 22px;
+}
+
+main { padding: 12px 16px; max-width: 720px; margin: 0 auto; }
+.ansicht { display: none; }
+.ansicht.aktiv { display: block; }
+h2 { font-size: 19px; margin: 18px 0 8px; }
+h3 { font-size: 17px; margin: 14px 0 6px; }
+
+.karte {
+  display: block; width: 100%; text-align: left;
+  background: var(--flaeche); border: 1px solid var(--rand); border-radius: var(--radius);
+  padding: 14px; margin: 0 0 10px;
+}
+button.karte { min-height: 64px; }
+.zeile { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.name { font-weight: 650; }
+.leise { color: var(--leise); font-size: 15px; }
+.aufgabe { margin-top: 4px; font-size: 15px; }
+
+.status {
+  flex: none; padding: 4px 10px; border-radius: 999px;
+  font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap;
+}
+.status-frei { background: var(--frei); }
+.status-arbeitet { background: var(--arbeitet); }
+.status-wartet { background: var(--wartet); }
+.status-problem { background: var(--problem); }
+
+.art {
+  display: inline-block; font-size: 13px; font-weight: 600;
+  padding: 2px 8px; border-radius: 6px; background: var(--rand); margin-bottom: 6px;
+}
+.knoepfe { display: flex; gap: 8px; margin-top: 12px; }
+.knoepfe button, .knopf {
+  flex: 1; min-height: 48px; border-radius: 12px; border: 1px solid var(--rand);
+  background: var(--grund); font-weight: 600; padding: 8px 10px;
+}
+.knopf-ja { background: var(--frei) !important; color: #fff; border-color: transparent !important; }
+.knopf-haupt { background: var(--meer) !important; color: #fff; border-color: transparent !important; width: 100%; }
+textarea, input[type=text], input[type=password] {
+  width: 100%; min-height: 48px; padding: 10px 12px; margin-top: 10px;
+  border-radius: 12px; border: 1px solid var(--rand); background: var(--grund);
+}
+textarea { min-height: 96px; resize: vertical; }
+
+details { margin: 6px 0 12px; }
+summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; color: var(--leise); }
+
+.stufe-kopf { display: flex; justify-content: space-between; align-items: baseline; }
+.anzahl { color: var(--leise); font-size: 15px; }
+.leer { color: var(--leise); font-style: italic; margin: 0 0 10px; }
+
+.projekt { background: var(--flaeche); border: 1px solid var(--rand); border-radius: var(--radius); padding: 4px 16px 12px; overflow-wrap: anywhere; }
+.projekt ul { padding-left: 20px; }
+.projekt code { background: var(--grund); padding: 1px 4px; border-radius: 4px; font-size: 15px; }
+.projekt table { border-collapse: collapse; font-size: 14px; display: block; overflow-x: auto; }
+.projekt td, .projekt th { border: 1px solid var(--rand); padding: 4px 6px; text-align: left; }
+
+.leiste {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  display: flex; background: var(--flaeche); border-top: 1px solid var(--rand);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.leiste button {
+  flex: 1; min-height: 60px; border: 0; background: none; font-size: 15px; font-weight: 600; color: var(--leise);
+}
+.leiste button.aktiv { color: var(--meer); box-shadow: inset 0 3px 0 var(--meer); }
+.zaehler { display: inline-block; min-width: 22px; padding: 0 6px; border-radius: 11px; background: var(--wartet); color: #fff; font-size: 13px; }
+
+.blatt { position: fixed; inset: 0; z-index: 10; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; }
+.blatt[hidden] { display: none; }
+.blatt-innen {
+  position: relative; width: 100%; max-width: 720px; margin: 0 auto; max-height: 88vh; overflow-y: auto;
+  background: var(--flaeche); border-radius: 20px 20px 0 0;
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+.blatt .schliessen { position: absolute; top: 10px; right: 10px; background: var(--grund); }
+.blatt h2 { margin-top: 4px; padding-right: 56px; }
+.ergebnisse { padding-left: 20px; margin: 4px 0; }
+
+.meldung {
+  position: fixed; left: 16px; right: 16px; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 20;
+  background: var(--text); color: var(--grund); padding: 12px 14px; border-radius: 12px; text-align: center;
+}
+.meldung[hidden] { display: none; }
