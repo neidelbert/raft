@@ -1,0 +1,223 @@
+{
+  "stand": "24.10.2026",
+  "agents": [
+    {
+      "id": "lukas",
+      "name": "Lukas",
+      "kurz": "Owner",
+      "rolle": "Hat die Ideen und die letzte Entscheidung: neue Features, Spielgefühl, Technik und jede fertige Version vor dem Debugger-Test.",
+      "status": "wartet",
+      "aufgabe": "Postfach ansehen: Team und Büro abnehmen.",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Büro: Antworten direkt in GitHub, Aufträge als Kopiertext, schlichte Team-Seite."
+        }
+      ]
+    },
+    {
+      "id": "senior-owner",
+      "name": "Senior Owner",
+      "kurz": "Vorschläge aus anderen Spielen",
+      "rolle": "Bringt vor jedem neuen Feature 2 bis 4 Vorschläge aus anderen Spielen, mit Begründung und Handy-Aufwand. Entscheidet nichts.",
+      "status": "wartet",
+      "aufgabe": "Hai-Verhalten: 4 Vorschläge liegen im Postfach.",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe bestanden: 4 Vorschläge zum Hai-Verhalten (berichte/2026-10-24-vorschlaege-hai-verhalten.md)."
+        }
+      ]
+    },
+    {
+      "id": "leiter",
+      "name": "Leiter",
+      "kurz": "Hält das Team zusammen",
+      "rolle": "Verteilt Aufgaben, gibt Pakete frei, prüft ob etwas wirklich fertig ist, führt PROJEKT.md und dieses Büro, meldet Lukas den Stand.",
+      "status": "arbeitet",
+      "aufgabe": "Phase 2 und 3 abschließen, Abnahme durch Lukas einholen.",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe bestanden: meldet ungeprüftes Wasser nicht als fertig, fordert Freigabe und Prüfung an."
+        }
+      ]
+    },
+    {
+      "id": "planer",
+      "name": "Planer",
+      "kurz": "Macht Aufgabenpakete",
+      "rolle": "Macht aus entschiedenen Ideen Pakete für je eine Sitzung, mit Ziel, Grenzen, Abhängigkeiten und prüfbarer Fertig-Bedingung.",
+      "status": "frei",
+      "aufgabe": "",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe bestanden: Raster-Floß in 5 Pakete (02–06) geplant."
+        }
+      ]
+    },
+    {
+      "id": "programmierer",
+      "name": "Programmierer",
+      "kurz": "Baut ein Paket pro Sitzung",
+      "rolle": "Setzt freigegebene Pakete um, strikt nach dem Skill raft3d-programmierung, und liefert Version plus Übergabebericht.",
+      "status": "frei",
+      "aufgabe": "",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe bestanden: Wasser, Würfel-Floß, Joystick in 7 Modulen, 8/8 Prüfungen (berichte/2026-10-24-paket-T1-uebergabe.md)."
+        }
+      ]
+    },
+    {
+      "id": "debugger",
+      "name": "Debugger",
+      "kurz": "Prüft und repariert",
+      "rolle": "Prüft jede von Lukas freigegebene Version, behebt Fehler, sagt ehrlich, was geprüft wurde und was nicht.",
+      "status": "frei",
+      "aufgabe": "",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe bestanden: Joystick-Fehler gefunden und mit einer Zeile behoben, 17/17 Prüfungen (berichte/2026-10-24-paket-T1-pruefung.md)."
+        }
+      ]
+    },
+    {
+      "id": "techniker",
+      "name": "Techniker",
+      "kurz": "Aufbau, Leistung, GitHub",
+      "rolle": "Projektaufbau, Ordnerstruktur, GitHub, Performance-Budget und Werkzeuge. Legt Technik-Entscheidungen Lukas mit Empfehlung vor.",
+      "status": "wartet",
+      "aufgabe": "Ordnerstruktur fürs Spiel: wartet auf Freigabe.",
+      "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe (Teil 1) bestanden: Ordnerstruktur und Performance-Budget vorgeschlagen, nichts ohne Freigabe angelegt."
+        }
+      ]
+    }
+  ],
+  "freigaben": [
+    {
+      "id": "f-001",
+      "art": "version",
+      "titel": "Team und Büro abnehmen (Phase 2 und 3)",
+      "text": "Sechs Agents mit bestandener Testaufgabe, Abläufe in TEAM.md, diese Team-Seite. Berichte in tests/agenten/TESTS.md.",
+      "beiFreigabe": "Phase 2 und 3 gelten als fertig, danach startet Phase 4 mit dem Mini-Prototyp.",
+      "von": "Leiter",
+      "datum": "24.10.2026",
+      "status": "offen",
+      "antwort": "",
+      "entschieden": ""
+    },
+    {
+      "id": "f-002",
+      "art": "technik",
+      "titel": "Ordnerstruktur fürs Spiel",
+      "text": "Neuer Ordner spiel/ neben buero/, darin Code nach Bereichen (welt, floss, figur, gegner, ueberleben …), Zahlen in js/config/. Läuft ohne Build über GitHub Pages. Details: berichte/2026-10-24-technik-ordnerstruktur.md.",
+      "beiFreigabe": "Der Techniker legt spiel/ mit dem ersten Paket an, der Leiter trägt es in PROJEKT.md ein.",
+      "von": "Techniker",
+      "datum": "24.10.2026",
+      "status": "offen",
+      "antwort": "",
+      "entschieden": ""
+    },
+    {
+      "id": "f-003",
+      "art": "feature",
+      "titel": "Hai-Verhalten: 4 Vorschläge",
+      "text": "1 Hai beißt Rand-Bauteile ab (Raft), 2 Warnung mit Flosse vor dem Biss, 3 abwehren und verscheuchen, 4 Jagd auf Schwimmer. Empfehlung: 1 und 2 zuerst. Details: berichte/2026-10-24-vorschlaege-hai-verhalten.md.",
+      "beiFreigabe": "Der Planer macht Pakete für die freigegebenen Vorschläge. Bei „Ändern“ bitte die Nummern nennen, die du willst.",
+      "von": "Senior Owner",
+      "datum": "24.10.2026",
+      "status": "offen",
+      "antwort": "",
+      "entschieden": ""
+    },
+    {
+      "id": "f-004",
+      "art": "feature",
+      "titel": "Flaschenpost, Netze und Wasserfilter in Version 1",
+      "text": "Vorschlag aus PROJEKT.md: Flaschenpost in Version 1 nur als Treibgut mit Hinweisen (volle Wirkung erst mit Inseln). Netze und Wasserfilter schon in Version 1.",
+      "beiFreigabe": "Beides kommt als Paket in die Planung für Version 1.",
+      "von": "Leiter",
+      "datum": "24.10.2026",
+      "status": "offen",
+      "antwort": "",
+      "entschieden": ""
+    },
+    {
+      "id": "f-005",
+      "art": "technik",
+      "titel": "Ablauf: Reparaturen ohne neue Freigabe",
+      "text": "Vorschlag: Reine Fehlerreparaturen des Debuggers brauchen keine neue Freigabe von dir. Ändert eine Reparatur das Spielgefühl, kommt sie als „Version“ ins Postfach.",
+      "beiFreigabe": "Steht so in TEAM.md und PROJEKT.md als entschieden.",
+      "von": "Leiter",
+      "datum": "24.10.2026",
+      "status": "offen",
+      "antwort": "",
+      "entschieden": ""
+    }
+  ],
+  "pakete": [
+    {
+      "id": "01",
+      "titel": "Mini-Prototyp: Wasser, Würfel-Floß, Joystick",
+      "stufe": "geplant",
+      "agent": "programmierer",
+      "fertigWenn": "startet ohne Fehler, Joystick bewegt das Floß, Kamera folgt (Testpaket T1 als Vorlage)."
+    },
+    {
+      "id": "02",
+      "titel": "Floß aus Rasterfeldern",
+      "stufe": "idee",
+      "agent": "planer",
+      "fertigWenn": "2 × 2 Platten sichtbar, Figur bleibt auf dem Floß."
+    },
+    {
+      "id": "03",
+      "titel": "Bau-Modus: Feld anbauen",
+      "stufe": "idee",
+      "agent": "planer",
+      "fertigWenn": "siehe pakete/03-bau-modus.md"
+    },
+    {
+      "id": "04",
+      "titel": "Baumaterial-Vorrat",
+      "stufe": "idee",
+      "agent": "planer",
+      "fertigWenn": "siehe pakete/04-baumaterial.md"
+    },
+    {
+      "id": "05",
+      "titel": "Floß und Vorrat speichern",
+      "stufe": "idee",
+      "agent": "planer",
+      "fertigWenn": "siehe pakete/05-floss-speichern.md"
+    },
+    {
+      "id": "06",
+      "titel": "Großes Floß ohne Ruckeln",
+      "stufe": "idee",
+      "agent": "planer",
+      "fertigWenn": "siehe pakete/06-grosses-floss-leistung.md"
+    },
+    {
+      "id": "P2",
+      "titel": "Agents fertigstellen (Phase 2)",
+      "stufe": "debugger",
+      "agent": "leiter",
+      "fertigWenn": "jeder Agent hat eine bestandene Testaufgabe."
+    },
+    {
+      "id": "P3",
+      "titel": "Büro: Team-Seite (Phase 3)",
+      "stufe": "debugger",
+      "agent": "leiter",
+      "fertigWenn": "läuft im iPhone-Safari, Testaufgabe der Spezifikation bestanden."
+    }
+  ]
+}

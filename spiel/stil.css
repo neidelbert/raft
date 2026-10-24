@@ -1,0 +1,13 @@
+/* Grundaussehen: Vollbild, keine Lupe, kein Markieren, Touch geht ans Spiel. */
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #6fc3e8;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+canvas { display: block; }

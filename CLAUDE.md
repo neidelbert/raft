@@ -19,6 +19,7 @@
 ## Vor jeder Abgabe
 ```bash
 node tests/buero-test.js                 # Team-Seite
+node tests/spiel/start-test.js           # Spiel startet ohne Fehler
 node tests/agenten/prototyp-test.js      # Rollentest-Prototyp (braucht lokale three.module.js, siehe Datei)
 ```
 Alles muss auf dem iPhone (Safari) laufen. Was nur am echten iPhone prüfbar ist, ehrlich als „offen“ melden.

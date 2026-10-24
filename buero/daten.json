@@ -6,9 +6,13 @@
       "name": "Lukas",
       "kurz": "Owner",
       "rolle": "Hat die Ideen und die letzte Entscheidung: neue Features, Spielgefühl, Technik und jede fertige Version vor dem Debugger-Test.",
-      "status": "wartet",
-      "aufgabe": "Postfach ansehen: Team und Büro abnehmen.",
+      "status": "frei",
+      "aufgabe": "",
       "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "f-001 bis f-005 freigegeben: Team und Büro abgenommen."
+        },
         {
           "datum": "24.10.2026",
           "text": "Büro: Antworten direkt in GitHub, Aufträge als Kopiertext, schlichte Team-Seite."
@@ -20,9 +24,13 @@
       "name": "Senior Owner",
       "kurz": "Vorschläge aus anderen Spielen",
       "rolle": "Bringt vor jedem neuen Feature 2 bis 4 Vorschläge aus anderen Spielen, mit Begründung und Handy-Aufwand. Entscheidet nichts.",
-      "status": "wartet",
-      "aufgabe": "Hai-Verhalten: 4 Vorschläge liegen im Postfach.",
+      "status": "frei",
+      "aufgabe": "",
       "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Hai-Verhalten: alle 4 Vorschläge freigegeben, 1 + 2 zuerst."
+        },
         {
           "datum": "24.10.2026",
           "text": "Testaufgabe bestanden: 4 Vorschläge zum Hai-Verhalten (berichte/2026-10-24-vorschlaege-hai-verhalten.md)."
@@ -35,7 +43,7 @@
       "kurz": "Hält das Team zusammen",
       "rolle": "Verteilt Aufgaben, gibt Pakete frei, prüft ob etwas wirklich fertig ist, führt PROJEKT.md und dieses Büro, meldet Lukas den Stand.",
       "status": "arbeitet",
-      "aufgabe": "Phase 2 und 3 abschließen, Abnahme durch Lukas einholen.",
+      "aufgabe": "Phase 4 vorbereiten: Paket 01 (Mini-Prototyp) planen lassen.",
       "ergebnisse": [
         {
           "datum": "24.10.2026",
@@ -90,9 +98,13 @@
       "name": "Techniker",
       "kurz": "Aufbau, Leistung, GitHub",
       "rolle": "Projektaufbau, Ordnerstruktur, GitHub, Performance-Budget und Werkzeuge. Legt Technik-Entscheidungen Lukas mit Empfehlung vor.",
-      "status": "wartet",
-      "aufgabe": "Ordnerstruktur fürs Spiel: wartet auf Freigabe.",
+      "status": "frei",
+      "aufgabe": "",
       "ergebnisse": [
+        {
+          "datum": "24.10.2026",
+          "text": "Testaufgabe Teil 2 bestanden: Gerüst spiel/ angelegt, Start-Test 4/4 (tests/spiel/start-test.js)."
+        },
         {
           "datum": "24.10.2026",
           "text": "Testaufgabe (Teil 1) bestanden: Ordnerstruktur und Performance-Budget vorgeschlagen, nichts ohne Freigabe angelegt."
@@ -208,16 +220,23 @@
     {
       "id": "P2",
       "titel": "Agents fertigstellen (Phase 2)",
-      "stufe": "debugger",
+      "stufe": "fertig",
       "agent": "leiter",
       "fertigWenn": "jeder Agent hat eine bestandene Testaufgabe."
     },
     {
       "id": "P3",
       "titel": "Büro: Team-Seite (Phase 3)",
-      "stufe": "debugger",
+      "stufe": "fertig",
       "agent": "leiter",
       "fertigWenn": "läuft im iPhone-Safari, Testaufgabe der Spezifikation bestanden."
+    },
+    {
+      "id": "G",
+      "titel": "Gerüst spiel/ (Ordnerstruktur)",
+      "stufe": "fertig",
+      "agent": "techniker",
+      "fertigWenn": "spiel/ startet ohne Konsolenfehler, Pixel-Ratio ≤ 2."
     }
   ]
 }

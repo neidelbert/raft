@@ -30,6 +30,36 @@ Der Programmierer setzt nur um, was der Planer als Aufgabenpaket geschrieben und
 - Einstellwerte (Geschwindigkeit, Größen, Farben) zentral in einer Konfigurationsdatei, nicht im Code verstreut.
 - Kurze Kommentare nur dort, wo das Warum nicht offensichtlich ist.
 
+## Ordnerstruktur und Performance-Budget
+Freigegeben von Lukas am 24.10.2026 (Vorlage `berichte/2026-10-24-technik-ordnerstruktur.md`).
+
+Das Spiel liegt in `spiel/` (Adresse `neidelbert.github.io/raft/spiel/`, kein Build):
+- `index.html` (Startseite, Import-Map für Three.js), `stil.css` (Knöpfe, Joystick, Anzeige)
+- `js/main.js` – Start und Hauptschleife
+- `js/config/` – alle Zahlen und Farben (nur Daten); Budget in `js/config/leistung.js`
+- `js/kern/` Bildschirm, Kamera, Zeit, Speichern, Sound · `js/steuerung/` Joystick links, Aktionsknöpfe rechts
+- `js/welt/` Wasser, Himmel, Tag und Nacht, Wetter, Treibgut · `js/floss/` Raster-Floß und Bauen
+- `js/figur/` Spielfigur und Haken · `js/gegner/` Hai (später mehr)
+- `js/ueberleben/` Hunger, Durst, Gesundheit, Sauerstoff, Kälte · `js/oberflaeche/` Anzeigen, Hinweise, Menüs
+- `medien/sound/` nur Sound-Effekte (Grafik per Code, Low-Poly)
+- Außerhalb von `spiel/`: `tests/spiel/` (Prüfungen des Debuggers), `werkzeuge/` (Hilfsskripte, nicht ausgeliefert)
+
+Regeln:
+- Namen auf Deutsch, ohne Umlaute, klein, mit Bindestrich (`hai.js`, `tag-nacht.js`).
+- Eine Datei, eine Aufgabe. Ein neuer Ordner nur mit Vorlage an Lukas.
+- Ordner entstehen mit ihrer ersten Datei (keine leeren Ordner).
+- Spielstand im Handy-Speicher unter `raft3d-v1`; neue Felder bekommen Standardwerte.
+
+Performance-Budget (Zielgerät iPhone ab etwa iPhone 11, Safari; Werte in `js/config/leistung.js`):
+- Bildrate Ziel 60, nie unter 30 · höchstens 100 Zeichenaufrufe pro Bild (Floßteile zusammenfassen) · höchstens 100.000 sichtbare Dreiecke
+- Pixel-Ratio höchstens 2 · höchstens 2 Lichter, keine echten Schatten (nur dunkler Fleck unter Figur und Hai)
+- Texturen höchstens 1024 × 1024 je Bild, zusammen unter 20 MB Grafikspeicher
+- Gleichzeitig höchstens 3 Haie und 50 Treibgut-Teile (wiederverwenden statt neu erzeugen)
+- Spiel ohne Three.js unter 2 MB, Start unter 3 Sekunden über Mobilfunk
+- Sound je Effekt unter 100 KB, `.m4a` oder `.mp3` · Arbeitsspeicher unter 150 MB · Spielstand unter 1 MB
+- Wird eine Grenze überschritten, meldet der Debugger es; der Techniker schlägt eine Lösung vor, bevor weitergebaut wird.
+- Start-Test: `node tests/spiel/start-test.js`
+
 ## Arbeitsweise
 - Kleine Schritte: eine Änderung, testen, weiter. Nie fünf Dinge gleichzeitig ändern.
 - Bestehende Funktionen nicht umbauen, wenn die Aufgabe es nicht verlangt.

@@ -1,5 +1,5 @@
 // Prüft die Team-Seite (buero/) in iPhone-Ansicht: node tests/buero-test.js
-// Arbeitet auf einer Kopie, die echte buero/daten.json bleibt unverändert.
+// Arbeitet auf einer Kopie mit tests/buero-beispiel.json, die echte buero/daten.json bleibt unverändert.
 const { chromium, devices } = require("playwright");
 const { spawn } = require("child_process");
 const fs = require("fs");
@@ -18,6 +18,8 @@ function pruefe(bedingung, text) {
   const kopie = fs.mkdtempSync(path.join(os.tmpdir(), "buero-"));
   fs.cpSync(path.join(REPO, "buero"), path.join(kopie, "buero"), { recursive: true });
   fs.copyFileSync(path.join(REPO, "PROJEKT.md"), path.join(kopie, "PROJEKT.md"));
+  // Feste Beispieldaten, damit der Test nicht vom echten Postfach-Stand abhängt.
+  fs.copyFileSync(path.join(__dirname, "buero-beispiel.json"), path.join(kopie, "buero/daten.json"));
   const server = spawn("python3", ["-m", "http.server", String(PORT), "--bind", "127.0.0.1"], { cwd: kopie, stdio: "ignore" });
   await new Promise((r) => setTimeout(r, 800));
 
