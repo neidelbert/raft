@@ -55,7 +55,7 @@ Rücksprünge:
 1. Debugger grenzt den Fehler ein und repariert (entschieden).
 2. Klappt die Reparatur nicht: Rückkehr zur letzten funktionierenden Version (Git), Meldung an den Leiter (entschieden).
 3. Leiter setzt den Agenten auf „Problem“ im Büro und meldet Lukas den Stand.
-4. **Vorschlag:** Reine Fehlerreparaturen des Debuggers brauchen keine neue Freigabe von Lukas. Ändert die Reparatur das Spielgefühl, geht sie als „Version“ ins Postfach.
+4. Reine Fehlerreparaturen des Debuggers brauchen keine neue Freigabe von Lukas. Ändert die Reparatur das Spielgefühl, geht sie als „Version“ ins Postfach (entschieden 24.10.2026).
 
 ## Übergabe-Prüfung (Phase 2)
 Geprüft am 24.10.2026, jede Übergabe hat Absender, Empfänger, Inhalt und Ablage:

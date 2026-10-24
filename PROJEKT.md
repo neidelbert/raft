@@ -5,9 +5,9 @@ Repository: `neidelbert/raft` · Team-Seite: `buero/` (GitHub Pages: `https://ne
 
 ## Stand
 - Phase 0/1: Interview abgeschlossen (etwa 90 %), Spielbeschreibung geschrieben, Programmier-Skill fertig (`.claude/skills/raft3d-programmierung/`).
-- Phase 2 (Agents): **gebaut und getestet**, wartet auf Abnahme durch Lukas. Sechs Agents in `.claude/agents/`, Abläufe und Übergaben in `TEAM.md`, alle Testaufgaben bestanden (`tests/agenten/TESTS.md`).
-- Phase 3 (Büro): **gebaut und getestet**, wartet auf Abnahme durch Lukas. Schlichte Team-Seite in `buero/` (Team, Agent-Karte, Postfach, Aufgaben, Projektdatei), Daten in `buero/daten.json`. Getestet in iPhone-Ansicht (Chromium), noch **nicht auf dem echten iPhone**.
-- Phase 4 (Spielentwicklung): noch nicht gestartet. Pakete 02–06 (Raster-Floß) liegen als Entwurf in `pakete/` (aus dem Planer-Test, noch nicht freigegeben).
+- Phase 2 (Agents): **fertig**, von Lukas abgenommen. Sechs Agents in `.claude/agents/`, Abläufe und Übergaben in `TEAM.md`, alle Testaufgaben bestanden (`tests/agenten/TESTS.md`).
+- Phase 3 (Büro): **fertig**, von Lukas abgenommen und auf dem iPhone in Gebrauch (5 Freigaben über die Seite gespeichert). Schlichte Team-Seite in `buero/` (Team, Agent-Karte, Postfach, Aufgaben, Projektdatei), Daten in `buero/daten.json`.
+- Phase 4 (Spielentwicklung): Gerüst `spiel/` vom Techniker angelegt. Als Nächstes Paket 01. Pakete 02–06 (Raster-Floß) liegen als Entwurf in `pakete/` (aus dem Planer-Test, noch nicht freigegeben).
 
 ## Phasen
 1. Skills entwickeln
@@ -50,17 +50,16 @@ Grundsatz: Die Basis soll zuerst stimmen, das Spiel ist das Ziel.
 - Büro (24.10.2026): Das „Büro“ ist das Agent-Team im Code, kein Raum mit Figuren. Dazu eine schlichte Team-Seite fürs Handy.
 - Büro: Lukas' Antworten im Postfach schreibt die Seite direkt in GitHub (`buero/daten.json`).
 - Büro: Aufträge an Agents gibt Lukas auf der Agent-Karte als Kopiertext für den Chat.
+- Phase 2 und 3 abgenommen (24.10.2026, f-001)
+- Ordnerstruktur fürs Spiel: `spiel/` neben `buero/`, Code nach Bereichen, Zahlen in `spiel/js/config/`, Performance-Budget laut `berichte/2026-10-24-technik-ordnerstruktur.md` (24.10.2026, f-002)
+- Hai-Verhalten: alle 4 Vorschläge (Rand-Bauteile abbeißen, Flossen-Warnung, abwehren und verscheuchen, Jagd auf Schwimmer), Reihenfolge laut Empfehlung: 1 + 2 zuerst, dann 3, dann 4 (24.10.2026, f-003)
+- Version 1: Flaschenpost nur als Treibgut mit Hinweisen (volle Wirkung erst mit Inseln), Netze und Wasserfilter schon in Version 1 (24.10.2026, f-004)
+- Reine Fehlerreparaturen des Debuggers brauchen keine neue Freigabe; ändert eine Reparatur das Spielgefühl, kommt sie ins Postfach (24.10.2026, f-005)
+- Der Techniker legt Technik-Entscheidungen Lukas vor (bestätigt mit der Abnahme des Teams)
 
 ## Vorschläge (noch nicht entschieden)
-Alle liegen im Postfach der Team-Seite.
-- Flaschenpost in Version 1 nur als Treibgut mit Hinweisen (volle Wirkung erst mit Inseln) – Postfach f-004
-- Netze und Wasserfilter in Version 1 – Postfach f-004
-- Der Techniker legt Technik-Entscheidungen Lukas vor (so in `.claude/agents/techniker.md` beschrieben)
-- Reine Fehlerreparaturen des Debuggers brauchen keine neue Freigabe; ändert eine Reparatur das Spielgefühl, kommt sie ins Postfach – Postfach f-005
-- Ordnerstruktur fürs Spiel: `spiel/` neben `buero/`, Code nach Bereichen, Performance-Budget (`berichte/2026-10-24-technik-ordnerstruktur.md`) – Postfach f-002
-- Hai-Verhalten: 4 Vorschläge, Empfehlung 1 + 2 zuerst (`berichte/2026-10-24-vorschlaege-hai-verhalten.md`) – Postfach f-003
+- Raster-Floß in 5 Paketen (02–06, `pakete/UEBERSICHT-raster-floss.md`), Technik-Fragen in 02, 03, 05, 06 – Leiter gibt erst nach Paket 01 frei
 - Three.js per Import-Map mit fester Version (`three@0.170.0`), Namen im Code ohne Umlaute (`floss`, `groesse`) – im Programmier-Skill so eingetragen
-- Raster-Floß in 5 Paketen (02–06, `pakete/UEBERSICHT-raster-floss.md`), Technik-Fragen in 02, 03, 05, 06
 
 ## Ablauf pro Idee
 1. Lukas bringt Idee oder Auftrag
@@ -78,14 +77,13 @@ Wer was an wen übergibt, wo es abgelegt wird und was bei „Ändern“/„Spät
 - Name des Spiels und Aussehen der Figur
 - Genaue Zahlen für Überlebenswerte, Hai-Verhalten, Werkzeug-Stufen
 - Wie der Code auf späteren Multiplayer vorbereitet wird
-- GitHub Pages: Das Repo ist privat. Pages für private Repos braucht GitHub Pro; sonst Repo öffentlich machen (Lukas entscheidet).
-- Team-Seite auf dem echten iPhone prüfen (Lukas)
 
 ## Nächste Schritte
-1. Lukas: GitHub Pages einrichten (Settings → Pages → Branch `main`, Ordner `/ (root)`), Team-Seite auf dem iPhone öffnen, Token unter ⚙ einrichten (`README.md`).
-2. Lukas: Postfach abarbeiten, zuerst f-001 (Team und Büro abnehmen) und f-002 (Ordnerstruktur).
-3. Danach Start Phase 4: Paket 01 Mini-Prototyp (Wasser, Würfel-Floß, Joystick) nach Vorlage Testpaket T1.
+1. Planer schreibt `pakete/01-mini-prototyp.md` (Wasser, Würfel-Floß, Joystick) im Gerüst `spiel/`, nach Vorlage Testpaket T1; Leiter gibt frei.
+2. Programmierer baut Paket 01, Lukas gibt die Version frei, Debugger prüft.
+3. Danach Senior Owner zu „Treibgut mit Haken“, Planer plant Raster-Floß (02–06) neu gegen das Gerüst.
 
 ## Änderungsprotokoll
 - 24.10.2026: Phase 2 und 3 umgesetzt. Agents in `.claude/agents/` (Claude-Code-Format), Programmier-Skill in `.claude/skills/`, `TEAM.md` mit Übergaben, Team-Seite `buero/`, Rollentests `tests/agenten/`, Seitentest `tests/buero-test.js`.
   Behobene Widersprüche: Programmierer gab Version laut Rolle an Lukas, laut Skill an den Leiter → jetzt über den Leiter. Skill erlaubte Englisch im Code → Deutsch (Entscheidung von Lukas). Programmierer schrieb laut Skill in die Projektdatei → das macht nur der Leiter. Senior Owner gab an ein „Planer-Team“ → über den Leiter an den Planer. Techniker hatte keinen Platz im Ablauf → Schritt 4b in `TEAM.md`. Ablauf bei Fehlern und bei „Ändern“/„Später“ ergänzt.
+- 24.10.2026: Lukas hat f-001 bis f-005 über die Team-Seite freigegeben, eingetragen unter „Entscheidungen“. Techniker hat das Gerüst `spiel/` angelegt (Rollentest Teil 2).
