@@ -121,9 +121,9 @@
       "beiFreigabe": "Der Techniker legt spiel/ mit dem ersten Paket an, der Leiter trägt es in PROJEKT.md ein.",
       "von": "Techniker",
       "datum": "24.10.2026",
-      "status": "offen",
+      "status": "freigegeben",
       "antwort": "",
-      "entschieden": ""
+      "entschieden": "24.10.2026"
     },
     {
       "id": "f-003",
