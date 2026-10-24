@@ -185,7 +185,7 @@
       "id": "f-006",
       "art": "version",
       "titel": "Paket 01: Mini-Prototyp ansehen",
-      "text": "Wasser, Würfel-Floß, Joystick links, Kamera von oben. Öffnen: neidelbert.github.io/raft/spiel/ – Joystick nach oben ziehen, Floß fährt weg; loslassen, es hält. Hinweis: Die Wellen sind von oben kaum zu sehen; wenn du mehr willst, schreib es bei „Ändern“.",
+      "text": "Wasser, Würfel-Floß, Joystick, Kamera von oben. Bitte am iPhone neidelbert.github.io/raft/spiel/ öffnen und kurz prüfen: 1) Bild erscheint (blaues Wasser, braunes Floß). 2) Joystick nach oben ziehen: Floß fährt weg. 3) Loslassen: Floß hält. 4) Beim Ziehen scrollt oder zoomt die Seite nicht. 5) Läuft flüssig, ruckelt nicht. Alles ok → Freigeben. Etwas nicht ok → Ändern und die Nummer nennen. Wellen sind von oben kaum zu sehen; mehr gewünscht → bei Ändern schreiben.",
       "beiFreigabe": "Der Debugger prüft (auch am iPhone mit deiner kurzen Prüfliste), danach ist Paket 01 fertig.",
       "von": "Leiter",
       "datum": "24.10.2026",
