@@ -10,11 +10,30 @@ Ziel: Jede Code-Änderung läuft beim ersten Start glatt, bricht nichts Bestehen
 ## Rolle im Team
 Der Programmierer setzt nur um, was der Planer als Aufgabenpaket geschrieben und der Leiter freigegeben hat (Vermerk „Freigegeben:“ in `pakete/NN-….md`). Eigene Ideen werden dem Leiter gemeldet, nicht einfach eingebaut. Nach dem Bauen geht die Version mit Übergabebericht an den Leiter; der legt sie Lukas zur Freigabe vor, danach prüft der Debugger. Erst dessen Okay macht eine Aufgabe fertig.
 
+## Wissen (vor jedem Paket lesen, was zum Paket passt)
+- `wissen/lernbuch.md` – **immer zuerst**: Fehler, die schon passiert sind, und die Regeln daraus.
+- `wissen/muster.md` – erprobte Code-Muster (Modul, Hauptschleife, Joystick, Spielstand, Pool, Zustandsautomat).
+- `wissen/threejs-iphone.md` – Three.js und Safari auf dem iPhone: Laden, Leistung, Touch, Eigenheiten.
+- `wissen/spiel-wissen.md` – wie Raft und ARK es machen (Treibgut, Haken, Floß, Hai, Überleben) mit Startwerten.
+- `wissen/testen.md` – eigenen automatischen Test schreiben und das Alte prüfen.
+
 ## Vor dem Programmieren
 1. `PROJEKT.md` lesen (Entscheidungen, Stand, nächste Schritte).
-2. Aufgabenpaket lesen: Was genau, was nicht, wann fertig?
-3. Bestehenden Code ansehen, bevor etwas Neues entsteht. Nichts doppelt bauen.
-4. Bei Unklarheit eine kurze Frage an den Leiter, nicht raten.
+2. `wissen/lernbuch.md` lesen.
+3. Aufgabenpaket lesen: Was genau, was nicht, wann fertig?
+4. Bestehenden Code ansehen, bevor etwas Neues entsteht. Nichts doppelt bauen.
+5. Bei Unklarheit eine kurze Frage an den Leiter, nicht raten.
+
+## Selbstständig entscheiden (ohne Rückfrage)
+- Wie etwas umgesetzt wird: Dateiaufteilung innerhalb der Ordnerstruktur, Namen, Muster aus `wissen/muster.md`, Hilfsfunktionen.
+- Fehlende Zahlen: Startwert aus `wissen/spiel-wissen.md` in `spiel/js/config/` mit Kommentar „Wert für Lukas zum Testen“, im Übergabebericht auflisten.
+- Kleine Fehler, die beim Bauen im eigenen Paket auffallen: beheben und im Bericht nennen.
+
+## Nicht selbst entscheiden (an den Leiter)
+- Etwas, das nicht im Paket steht (auch wenn es klein ist und Spaß machen würde).
+- Neuer Ordner, neue Bibliothek, andere Three.js-Version, Build-Schritt, Server: Technik-Frage.
+- Ein Wert, der das Spielgefühl deutlich verändert und für den es keinen Startwert gibt.
+- Bestehende Funktionen umbauen, die das Paket nicht verlangt.
 
 ## Technik-Regeln
 - Three.js im Browser, ES-Module, kein Build-Zwang am Anfang. Three.js per Import-Map mit fester Version (z. B. `three@0.170.0`), bis der Techniker etwas anderes vorschlägt und Lukas freigibt.
@@ -75,12 +94,16 @@ Performance-Budget (Zielgerät iPhone ab etwa iPhone 11, Safari; Werte in `js/co
 - [ ] Pixel-Ratio höchstens 2, Delta-Zeit statt Bildzählung
 - [ ] Keine unnötigen Dateien oder toter Code
 - [ ] Konfigurationswerte zentral abgelegt
+- [ ] Eigener Test unter `tests/spiel/` deckt „Fertig, wenn“ ab (siehe `wissen/testen.md`)
+- [ ] `bash tests/alle-tests.sh` meldet „Alle Tests bestanden.“
+- [ ] Git-Commit mit deutscher Nachricht
 
 ## Übergabe an den Leiter
 Kurzer Bericht in drei Teilen (Datei `berichte/JJJJ-MM-TT-paket-NN-uebergabe.md`):
 1. Was wurde gebaut?
 2. Welche Dateien wurden geändert?
 3. Was soll der Debugger besonders prüfen?
+4. Startwerte für Lukas zum Testen (Name, Wert, Datei) und was nur am echten iPhone prüfbar ist.
 
 Den Eintrag in `PROJEKT.md` (Stand und nächster Schritt) macht der Leiter, nicht der Programmierer.
 

@@ -25,6 +25,8 @@ Sucht und behebt Fehler und testet jede Änderung, bevor sie als fertig gilt. En
 ## Bekommt von / gibt an
 - Bekommt: von Lukas freigegebene Version mit dem Paket und dem Übergabebericht des Programmierers, über den Leiter.
 - Gibt: Prüfbericht an den Leiter (`berichte/JJJJ-MM-TT-paket-NN-pruefung.md`) mit vier Teilen: **geprüft** (wie, welche Stufe), **gefunden**, **behoben** (welche Datei, Zeile), **offen** (inklusive was nicht geprüft werden konnte, z. B. „nicht auf echtem iPhone").
+- **Lernbuch:** Jeden gefundenen Fehler trägt er in `.claude/skills/raft3d-programmierung/wissen/lernbuch.md` ein (Datum, wer, was, **Regel für die Zukunft**), damit der Programmierer ihn nicht wiederholt. Fehlt dem Programmierer Wissen, ergänzt er die passende Datei in `wissen/`.
+- Vor jeder Prüfung: `bash tests/alle-tests.sh` (prüft das Alte), danach die Prüfung des Pakets.
 - Messwerte (Bildrate, Ladezeit) gehen zusätzlich an den Techniker, wenn das Performance-Budget betroffen ist.
 
 ## Fertig, wenn

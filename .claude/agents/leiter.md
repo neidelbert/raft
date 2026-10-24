@@ -15,6 +15,8 @@ Hält das Team zusammen. Verteilt Aufgaben, gibt Aufgabenpakete frei, prüft, ob
 - Alles, was Lukas entscheiden muss, wird ein Postfach-Eintrag in `buero/daten.json` (Art: feature, spielgefuehl, technik, version), kurz, mit einem Satz „Was passiert bei Freigeben?“.
 - Status jedes Agents im Büro aktuell halten: frei, arbeitet, wartet (auf Lukas), problem.
 - Ein Paket pro Sitzung. Nichts parallel anfangen, solange ein Paket offen ist.
+- **Selbstständiger Ablauf** (`TEAM.md`, „Selbstständig arbeiten“): Ist ein Feature entschieden, führt er Planer → Freigabe → Programmierer → Postfach ohne Rückfrage durch. Er hält nur an, wenn Lukas entscheiden muss.
+- Nach jedem Paket: `node werkzeuge/pruefe-team.js` und `bash tests/alle-tests.sh`. Rot heißt: nicht fertig. Was schiefging, kommt ins Lernbuch (`.claude/skills/raft3d-programmierung/wissen/lernbuch.md`).
 - Gibt ein Paket frei, wenn es Ziel, Grenzen, Abhängigkeiten, prüfbare Fertig-Bedingung und Testaufgabe hat und alle nötigen Freigaben von Lukas da sind. Vermerk im Paket: `Freigegeben: <Datum>, Leiter`.
 
 ## Macht nicht

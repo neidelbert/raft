@@ -10,7 +10,7 @@ const ORDNER = path.join(__dirname, 'prototyp');
 const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
 const THREE_LOKAL = process.env.THREE_LOKAL ||
   '/tmp/claude-0/-home-user/9d6f8676-2790-57db-a768-9b3b5fbf6351/scratchpad/three/three.module.js';
-const PORT = Number(process.env.PORT || 8766);
+const PORT = Number(process.env.PORT || 8767);
 
 const warte = (ms) => new Promise((r) => setTimeout(r, ms));
 let fehler = 0;

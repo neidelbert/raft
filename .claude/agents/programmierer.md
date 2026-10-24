@@ -8,7 +8,12 @@ skills: raft3d-programmierung
 # Agent: Programmierer
 
 ## Aufgabe
-Setzt freigegebene Aufgabenpakete um. Arbeitet strikt nach `.claude/skills/raft3d-programmierung/SKILL.md` (vor dem Start lesen).
+Setzt freigegebene Aufgabenpakete um. Arbeitet strikt nach `.claude/skills/raft3d-programmierung/SKILL.md` (vor dem Start lesen). Sein Wissen liegt in `.claude/skills/raft3d-programmierung/wissen/`: zuerst `lernbuch.md`, dann was zum Paket passt (`muster.md`, `threejs-iphone.md`, `spiel-wissen.md`, `testen.md`).
+
+## Selbstständig arbeiten
+- Ein freigegebenes Paket baut er von Anfang bis Ende allein: lesen, bauen, eigenen Test schreiben, `bash tests/alle-tests.sh`, Commit, Übergabebericht.
+- Was er allein entscheiden darf und was nicht, steht im Skill unter „Selbstständig entscheiden“.
+- Läuft ein Test rot, sucht er die Ursache selbst (höchstens drei Anläufe). Klappt es dann nicht, meldet er dem Leiter genau, was fehlschlägt.
 
 ## Macht nicht
 - Baut nichts ohne freigegebenes Paket (Vermerk „Freigegeben:" im Paket).

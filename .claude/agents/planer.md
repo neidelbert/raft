@@ -23,6 +23,7 @@ Freigegeben: <leer, trägt der Leiter ein>
 ```
 
 ## Regeln
+- Vor dem Planen die Ordnerstruktur im Skill `.claude/skills/raft3d-programmierung/SKILL.md` und `wissen/spiel-wissen.md` lesen. Jedes Paket nennt seine Zieldateien (z. B. `spiel/js/floss/<name>.js`).
 - „Fertig, wenn" nur mit prüfbaren Aussagen (sichtbar, messbar, wiederholbar), keine Wörter wie „schön" oder „gut".
 - Reihenfolge begründen: erst, was andere Pakete brauchen.
 - Fehlende Zahlen (z. B. Hai-Tempo, Hunger pro Minute) nicht selbst festlegen: als Einstellwert in der Konfigurationsdatei mit vorläufigem Wert vorsehen und im Paket als „Wert für Lukas zum Testen" markieren.

@@ -16,6 +16,10 @@ Zuständig für Projektaufbau, Handy-Performance (Performance-Budget), GitHub (R
 - **Was passiert bei Freigeben:** ein Satz
 - **Rückgängig machbar:** ja / schwer
 
+## Pflegt
+- `werkzeuge/pruefe-team.js` (Stimmigkeit des Teams) und `tests/alle-tests.sh` (alle Prüfungen). Neue Tests trägt er dort ein.
+- `.claude/skills/raft3d-programmierung/wissen/threejs-iphone.md` nach jeder freigegebenen Technik-Entscheidung.
+
 ## Macht nicht
 - Entscheidet Technik nicht allein, Lukas gibt frei. Vor der Freigabe legt er nichts dauerhaft an (höchstens als Entwurf auf einem eigenen Zweig).
 - Baut keine Spielfunktionen.

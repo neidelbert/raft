@@ -29,6 +29,7 @@ Die Handy-Seite `buero/` zeigt Stand, Postfach und Aufgaben aus `buero/daten.jso
 | `PROJEKT.md` | nur Leiter | alle, zuerst bei jeder Sitzung |
 | `buero/daten.json` | Leiter (Status, Postfach, Pakete); Lukas über das Büro (Antworten im Postfach) | alle |
 | `pakete/NN-name.md` | Planer (Inhalt), Leiter (Freigabe-Vermerk) | Programmierer, Debugger |
+| `.claude/skills/raft3d-programmierung/wissen/` | Debugger (Lernbuch), Techniker (Technik), Leiter (Ablauf) | Programmierer vor jedem Paket |
 | `berichte/` | Programmierer (Übergabebericht), Debugger (Prüfbericht), Senior Owner (Vorschläge), Techniker (Empfehlungen) | Leiter |
 | Spiel-Code | Programmierer; Debugger nur für Reparaturen; Techniker nur Aufbau/Werkzeuge | – |
 
@@ -50,6 +51,21 @@ Rücksprünge:
 - Lukas sagt „Ändern“ (Schritt 3/6): Leiter gibt den Text an den Agenten des Schritts zurück (Senior Owner bzw. Programmierer).
 - Lukas sagt „Später“: Paket bleibt in der Stufe, Eintrag bleibt im Postfach unter „Später“, Leiter fragt nicht erneut in derselben Woche.
 - Kein neues Feature (z. B. reiner Fehler, Aufräumen): Schritte 2–3 entfallen, Leiter geht direkt zu 4a.
+
+## Selbstständig arbeiten (Ziel von Lukas, 24.10.2026: Team kann teilweise allein programmieren)
+Das Team läuft ohne Rückfrage, solange nichts ansteht, was Lukas entscheidet:
+1. Leiter liest Postfach und `PROJEKT.md`, wählt das nächste **entschiedene** Paket (oder lässt es vom Planer schreiben).
+2. Leiter gibt frei, wenn alle Felder da sind und keine offene Technik-Frage drin ist.
+3. Programmierer baut allein: Wissen lesen, bauen, eigener Test, `bash tests/alle-tests.sh`, Commit, Übergabebericht.
+4. Leiter prüft: `node werkzeuge/pruefe-team.js`, `bash tests/alle-tests.sh`, Bericht vollständig. Dann Postfach „Version“ an Lukas, Programmierer „frei“, Lukas „hat Post“.
+5. Nach Lukas' Freigabe: Debugger prüft und repariert allein (Reparaturen ohne neue Freigabe, entschieden), schreibt ins Lernbuch, Leiter setzt „Fertig“.
+
+Anhalten und Lukas fragen (Postfach) nur bei: neuem Feature, Spielgefühl, Technik-Entscheidung, fertiger Version vor dem Debugger-Test.
+
+## Wissen und Lernen
+- Das Wissen des Programmierers liegt in `.claude/skills/raft3d-programmierung/wissen/` (Lernbuch, Muster, Three.js/iPhone, Spielinhalt, Testen).
+- Nach jedem Paket wächst es: Debugger trägt Fehler ins Lernbuch ein, Techniker ergänzt Technik-Wissen nach Freigaben, Leiter trägt Ablauf-Fehler ein.
+- `node werkzeuge/pruefe-team.js` prüft, dass Agents, Skill, Wissen, Büro-Daten, Pakete und Verweise zusammenpassen.
 
 ## Ablauf bei Fehlern
 1. Debugger grenzt den Fehler ein und repariert (entschieden).
