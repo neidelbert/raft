@@ -24,3 +24,7 @@ Vor jeder Aufgabe lesen. Nach jeder Aufgabe eintragen: Datum · Wer · Was passi
   **Regel:** Testwerte aus `window.spiel` und config ableiten, nie Gerätemaße fest eintragen. Bei rotem Test erst fragen: Ist der Test richtig?
 - 25.10.2026 · Horst · Stufe 1: Ein langsames Gerät lässt sich im Test nachstellen, indem eine eigene `requestAnimationFrame`-Schleife jedes Bild 40 ms beschäftigt (≈ 20 Bilder/s). Zusätzlich prüfen, dass die Bremse wirkt (weniger Bilder).
   **Regel:** „Egal wie schnell das Gerät zeichnet“ immer mit normaler und gebremster Bildrate testen.
+- 25.10.2026 · Horst · Stufe 2 (Touch): Mehrfinger-Test per CDP (`Input.dispatchTouchEvent`): Bei `touchEnd`/`touchCancel` stehen in `touchPoints` die Finger, die **abheben**, nicht die, die liegen bleiben. Außerdem gehört der Touch-Zustand zur CDP-Sitzung: `t.ziehe(…, { loslassen: false })` gibt seine Sitzung zurück, nur mit der lässt sich der Finger wieder lösen.
+  **Regel:** Erst mit einem kleinen Versuch (Ereignisse mit `pointerId` mitschreiben) klären, was das Test-Werkzeug wirklich tut. Gehaltene Finger mit der zurückgegebenen Sitzung loslassen.
+- 25.10.2026 · Horst · Stufe 2: Ein Knopf, der bei `pointerdown` auslöst, reagiert nicht auf `element.click()` oder die Tastatur.
+  **Regel:** Zusätzlich `click` mit `e.detail === 0` auswerten (kein Finger, keine Maus), so gibt es keinen Doppelauslöser.

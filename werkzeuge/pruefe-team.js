@@ -41,7 +41,7 @@ for (const v of ["figur.svg", "gegner.svg", "gegenstand.svg", "boden.svg"])
 const quellen = [...Object.keys(AGENTS).map((a) => `.claude/agents/${a}.md`), ...Object.keys(SKILLS).map((s) => `.claude/skills/${s}/SKILL.md`), "TEAM.md", "CLAUDE.md", "ausbildung/AUSBILDUNG.md"];
 for (const q of quellen)
   for (const [, ziel] of lies(q).matchAll(/`((?:\.claude|tests|werkzeuge|ausbildung)\/[^`*<> ]+?\.(?:md|js|json|sh|svg))`/g)) {
-    if (/JJJJ|NN|stufe-N|<|…/.test(ziel)) continue;
+    if (/JJJJ|NN|stufe-N|<|…|ausbildung\/uebungen\//.test(ziel)) continue;   // Übungsergebnisse entstehen erst beim Lernen
     pruefe(gibt(ziel), `${q}: Verweis ${ziel} existiert`);
   }
 

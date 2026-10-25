@@ -39,8 +39,9 @@ const t = require("../../werkzeuge/test-hilfe.js");
     t.pruefe(Math.hypot(i.x - h.x, i.y - h.y) < 2, "Tippen rechts bewegt nichts");
 
     // schräg nicht schneller als gerade
+    // Jede Messung frisch aus der Mitte, damit kein Rand die Figur bremst.
     const tempo = async (dx, dy) => {
-      const s = await sp();
+      await seite.reload(); await seite.waitForFunction("window.spiel && window.spiel.bereit");
       const z = await t.ziehe(seite, 100, 600, 100 + dx, 600 + dy, { schritte: 4, halteMs: 0, loslassen: false });
       const s1 = await sp(); const t1 = Date.now();
       await seite.waitForTimeout(500);
