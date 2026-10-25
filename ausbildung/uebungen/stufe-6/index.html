@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Übung 6 – Spielgefühl, Sound, Ersatzbilder</title>
+  <link rel="stylesheet" href="stil.css">
+</head>
+<body>
+  <canvas id="leinwand"></canvas>
+  <div id="oberflaeche">
+    <div id="feld-joystick"></div>
+    <button id="knopf-sprung" type="button">Sprung</button>
+    <div id="leiste" hidden><span id="leiste-punkte"></span><span id="leiste-leben"></span></div>
+    <div id="tafel" hidden>
+      <div id="tafel-gross"></div>
+      <div id="tafel-punkte"></div>
+      <div id="tafel-rekord"></div>
+      <div id="tafel-hinweis"></div>
+    </div>
+    <!-- nach der Tafel: liegt im Titel und am Ende darüber und bleibt bedienbar -->
+    <button id="knopf-ton" type="button" aria-pressed="true">Ton an</button>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
