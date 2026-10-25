@@ -1,12 +1,13 @@
 // Prüfung Stufe 5 (Ausbilder): node ausbildung/pruefungen/stufe-5.js
 const t = require("../../werkzeuge/test-hilfe.js");
-const ORDNER = "ausbildung/uebungen/stufe-5";
+const ORDNER = process.env.PRUEF_ORDNER || "ausbildung/uebungen/stufe-5";   // PRUEF_ORDNER: Gegenprobe mit der fehlerhaften Vorlage
 
-// langsam = altes iPhone: nur etwa 16 Bilder pro Sekunde statt 60.
+// langsam = altes iPhone: etwa 20 Bilder pro Sekunde statt 60 (über der Deckelung von 0,1 s, damit Delta-Zeit voll wirkt).
 async function tempo(seite, langsam) {
   if (langsam) await seite.evaluate(() => {
     window.__rafEcht = window.requestAnimationFrame;
-    window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 60);
+    window.__bilder = [];
+    window.requestAnimationFrame = (cb) => setTimeout(() => { const t = performance.now(); window.__bilder.push(t); cb(t); }, 40);
   });
   await seite.evaluate(() => window.spiel.test.setzeSpieler(200, 400));
   const k = await seite.evaluate(() => { const r = document.getElementById("joystick").getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
@@ -15,9 +16,18 @@ async function tempo(seite, langsam) {
   await seite.waitForTimeout(400);
   const b = await seite.evaluate(() => ({ x: window.spiel.spieler.x, t: performance.now() }));
   await z.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  // Anteil der Zeit, die ein Spiel mit auf 0,1 s gedeckelter Delta-Zeit überhaupt rechnen darf
+  // (ist der Testrechner gerade sehr langsam, wäre sonst auch ein richtiges Spiel „zu langsam“).
+  let anteil = 1;
+  if (langsam) anteil = await seite.evaluate(([von, bis]) => {
+    const b = window.__bilder.filter((t) => t >= von - 200 && t <= bis + 200);
+    let erlaubt = 0, gesamt = 0;
+    for (let i = 1; i < b.length; i++) { const d = (b[i] - b[i - 1]) / 1000; erlaubt += Math.min(d, 0.1); gesamt += d; }
+    return gesamt ? erlaubt / gesamt : 1;
+  }, [a.t, b.t]);
   if (langsam) await seite.evaluate(() => { window.requestAnimationFrame = window.__rafEcht; });
   await seite.waitForTimeout(150);
-  return (b.x - a.x) / ((b.t - a.t) / 1000);
+  return (b.x - a.x) / ((b.t - a.t) / 1000) / anteil;
 }
 
 (async () => {

@@ -51,9 +51,28 @@ function warteAufServer(port) {
 // initSkript: Code, der vor dem Spiel läuft (z. B. localStorage sperren wie im privaten Modus).
 async function starte({ ordner, port, pfad = "index.html", geraet = "iPhone 13", warteAuf = "window.spiel && window.spiel.bereit", initSkript = null }) {
   const wurzel = path.resolve(REPO, ordner);
+  // Ein noch laufender alter Server würde sonst einen fremden Ordner ausliefern (falsches Testergebnis).
+  if (await portBelegt(port)) throw new Error(`Port ${port} ist belegt (alter Testserver?). Beenden mit: pkill -f "http.server ${port}"`);
   const server = spawn("python3", ["-m", "http.server", String(port), "--bind", "127.0.0.1"], { cwd: wurzel, stdio: "ignore" });
-  await warteAufServer(port);
-  const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+  let browser = null;
+  try {
+    await warteAufServer(port);
+    browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+    return await oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkript });
+  } catch (e) {
+    if (browser) await browser.close();
+    server.kill();   // auch bei Fehlern aufräumen, sonst bleibt der Port belegt
+    throw e;
+  }
+}
+
+function portBelegt(port) {
+  return new Promise((fertig) => {
+    http.get(`http://127.0.0.1:${port}/`, (a) => { a.resume(); fertig(true); }).on("error", () => fertig(false));
+  });
+}
+
+async function oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkript }) {
   const kontext = await browser.newContext({ ...devices[geraet] });
   await kontext.route(CDN, async (route) => {
     const [, , datei] = route.request().url().match(CDN);
