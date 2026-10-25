@@ -10,3 +10,8 @@
 | Testaufgabe | Ergebnis | Bemerkung |
 |---|---|---|
 | 5 Bilder „Sternenregen“ (Figur mit Korb, Stern, Stein, Herz, Nachthimmel) | bestanden | Einheitlicher Stil, alles fehlerfrei gerendert. Selbst nachgebessert: Mond gedämpft (Verwechslung mit Belohnung), Stein heller (Kontrast). Ablage: `ausbildung/zeichner-probe/sternenregen/`. |
+
+## Tester
+| Testaufgabe | Ergebnis | Bemerkung |
+|---|---|---|
+| Pilzsammler gründlich prüfen (ohne Hinweis auf die Fehler) | bestanden | Alle 4 versteckten Fehler gefunden, jeder mit Ursache (Zeile) und eigenem Nachweis. Dazu einen 5. echten Fehler (Pilze außerhalb des Bildes nach dem Drehen) und 3 kleinere Befunde. Ehrlich benannt, was nur am echten iPhone prüfbar ist. Bericht: `ausbildung/pruefungen/tester-bericht-pilzsammler.md` (bei den Prüfungen, damit er für Horsts Stufe 5 keine Lösung ist). |
