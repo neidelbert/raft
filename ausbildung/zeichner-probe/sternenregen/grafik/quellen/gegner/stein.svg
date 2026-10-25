@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 130">
+  <!-- Stein (fallende Gefahr): kantig, grau-braun, böser Blick. Mittelpunkt (70, 66). -->
+  <defs>
+    <linearGradient id="fels" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c2b19c"/><stop offset=".55" stop-color="#8f7a66"/><stop offset="1" stop-color="#5c4a3c"/>
+    </linearGradient>
+  </defs>
+  <path d="M30 34 L62 12 L104 18 L128 52 L120 98 L84 118 L36 112 L12 78 Z"
+        fill="url(#fels)" stroke="#2b1d2e" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Kanten-Flächen: hell oben links, dunkel unten rechts -->
+  <path d="M30 34 L62 12 L104 18 L88 32 L48 38 Z" fill="#dccdb8" opacity=".55"/>
+  <path d="M128 52 L120 98 L84 118 L92 100 L112 84 Z" fill="#3a302a" opacity=".45"/>
+  <ellipse cx="50" cy="26" rx="12" ry="5" fill="#fff" opacity=".4" transform="rotate(-25 50 26)"/>
+  <!-- Riss -->
+  <path d="M104 18 L98 34 L106 42" fill="none" stroke="#2b1d2e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- böse Augen -->
+  <g stroke="#2b1d2e" stroke-width="4.5" stroke-linejoin="round">
+    <path d="M34 52 L64 62 Q64 80 49 80 Q34 78 34 52 Z" fill="#fff"/>
+    <path d="M110 52 L80 62 Q80 80 95 80 Q110 78 110 52 Z" fill="#fff"/>
+  </g>
+  <circle cx="52" cy="69" r="6" fill="#2b1d2e"/>
+  <circle cx="92" cy="69" r="6" fill="#2b1d2e"/>
+  <!-- grimmiger Mund -->
+  <path d="M54 98 Q72 88 90 98" fill="none" stroke="#2b1d2e" stroke-width="5" stroke-linecap="round"/>
+</svg>

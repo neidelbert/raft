@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280">
+  <!-- Spielfigur von vorn, hält einen Korb über dem Kopf. Fußpunkt unten Mitte (110, 270). -->
+  <defs>
+    <linearGradient id="haut" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd7b0"/><stop offset="1" stop-color="#f0a97a"/>
+    </linearGradient>
+    <linearGradient id="hemd" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4fb3ff"/><stop offset="1" stop-color="#2275c9"/>
+    </linearGradient>
+    <linearGradient id="hose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6b5a8e"/><stop offset="1" stop-color="#463a63"/>
+    </linearGradient>
+    <linearGradient id="korb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e0a865"/><stop offset=".55" stop-color="#c58a4a"/><stop offset="1" stop-color="#7a4a2a"/>
+    </linearGradient>
+    <linearGradient id="rand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e8b878"/><stop offset="1" stop-color="#9a6234"/>
+    </linearGradient>
+    <linearGradient id="haar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f59a4e"/><stop offset="1" stop-color="#c85a1e"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#2b1d2e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Beine -->
+    <path d="M88 220 L85 252 Q85 258 93 258 L106 258 L108 220 Z" fill="url(#hose)"/>
+    <path d="M132 220 L135 252 Q135 258 127 258 L114 258 L112 220 Z" fill="url(#hose)"/>
+    <path d="M80 254 Q80 270 96 270 L108 270 L108 256 Z" fill="#7a4a2a"/>
+    <path d="M140 254 Q140 270 124 270 L112 270 L112 256 Z" fill="#7a4a2a"/>
+    <!-- Arme nach oben zum Korb -->
+    <path d="M80 172 Q46 140 54 80" fill="none" stroke-width="20"/>
+    <path d="M80 172 Q46 140 54 80" fill="none" stroke="url(#hemd)" stroke-width="10"/>
+    <path d="M140 172 Q174 140 166 80" fill="none" stroke-width="20"/>
+    <path d="M140 172 Q174 140 166 80" fill="none" stroke="url(#hemd)" stroke-width="10"/>
+    <!-- Körper -->
+    <path d="M78 166 Q110 154 142 166 L138 226 Q110 234 82 226 Z" fill="url(#hemd)"/>
+    <!-- Kopf -->
+    <ellipse cx="110" cy="126" rx="46" ry="43" fill="url(#haut)"/>
+    <!-- Haare -->
+    <path d="M64 128 Q56 80 108 80 Q160 80 156 124 Q146 104 124 108 Q106 94 86 110 Q72 114 64 128 Z" fill="url(#haar)"/>
+    <!-- Korb: Innenraum, Körper, Rand -->
+    <ellipse cx="110" cy="30" rx="78" ry="14" fill="#5a3418"/>
+    <path d="M32 30 L50 76 Q110 90 170 76 L188 30 Q110 48 32 30 Z" fill="url(#korb)"/>
+  </g>
+  <!-- Flechtmuster -->
+  <g stroke="#7a4a2a" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8">
+    <path d="M40 50 Q110 66 180 50"/>
+    <path d="M46 64 Q110 80 174 64"/>
+    <path d="M70 42 L76 80 M95 45 L98 84 M125 45 L122 84 M150 42 L144 80"/>
+  </g>
+  <path d="M32 30 Q110 48 188 30" fill="none" stroke="#2b1d2e" stroke-width="12" stroke-linecap="round"/>
+  <path d="M32 30 Q110 48 188 30" fill="none" stroke="url(#rand)" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="62" cy="54" rx="10" ry="5" fill="#fff" opacity=".35" transform="rotate(20 62 54)"/>
+  <!-- Hände greifen den Korb -->
+  <g stroke="#2b1d2e" stroke-width="6">
+    <circle cx="52" cy="76" r="11" fill="url(#haut)"/>
+    <circle cx="168" cy="76" r="11" fill="url(#haut)"/>
+  </g>
+  <!-- Glanz und Gesicht -->
+  <ellipse cx="88" cy="96" rx="12" ry="5" fill="#fff" opacity=".35" transform="rotate(-20 88 96)"/>
+  <ellipse cx="93" cy="128" rx="7" ry="9" fill="#2b1d2e"/>
+  <ellipse cx="127" cy="128" rx="7" ry="9" fill="#2b1d2e"/>
+  <circle cx="95" cy="124" r="2.8" fill="#fff"/>
+  <circle cx="129" cy="124" r="2.8" fill="#fff"/>
+  <ellipse cx="80" cy="144" rx="8" ry="5" fill="#ff8a8a" opacity=".55"/>
+  <ellipse cx="140" cy="144" rx="8" ry="5" fill="#ff8a8a" opacity=".55"/>
+  <path d="M100 146 Q110 156 120 146" fill="none" stroke="#2b1d2e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M86 172 Q110 164 134 172" fill="none" stroke="#fff" stroke-width="5" opacity=".3" stroke-linecap="round"/>
+</svg>

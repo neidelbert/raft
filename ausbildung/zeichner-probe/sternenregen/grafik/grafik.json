@@ -1,0 +1,32 @@
+[
+  {
+    "name": "boden/himmel",
+    "datei": "grafik/boden/himmel.png",
+    "breite": 576,
+    "hoehe": 1024
+  },
+  {
+    "name": "figuren/spieler",
+    "datei": "grafik/figuren/spieler.png",
+    "breite": 201,
+    "hoehe": 256
+  },
+  {
+    "name": "gegenstaende/stern",
+    "datei": "grafik/gegenstaende/stern.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegner/stein",
+    "datei": "grafik/gegner/stein.png",
+    "breite": 256,
+    "hoehe": 238
+  },
+  {
+    "name": "symbole/herz",
+    "datei": "grafik/symbole/herz.png",
+    "breite": 128,
+    "hoehe": 128
+  }
+]

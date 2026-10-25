@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Herz (Leben-Anzeige): Rot, Glanz oben links. Mittelpunkt (60, 60). -->
+  <defs>
+    <radialGradient id="rot" cx=".35" cy=".3" r=".85">
+      <stop offset="0" stop-color="#ff8a8a"/><stop offset=".5" stop-color="#e8443a"/><stop offset="1" stop-color="#a8232a"/>
+    </radialGradient>
+  </defs>
+  <path d="M60 104 C38 88 12 70 12 44 C12 26 26 14 40 14 C50 14 56 20 60 28 C64 20 70 14 80 14 C94 14 108 26 108 44 C108 70 82 88 60 104 Z"
+        fill="url(#rot)" stroke="#2b1d2e" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="34" cy="36" rx="11" ry="6" fill="#fff" opacity=".7" transform="rotate(-40 34 36)"/>
+  <circle cx="46" cy="26" r="3" fill="#fff" opacity=".6"/>
+</svg>

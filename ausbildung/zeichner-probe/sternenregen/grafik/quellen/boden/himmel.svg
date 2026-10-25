@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 1024">
+  <!-- Hintergrund Nachthimmel, Hochformat 9:16. Ruhig und dunkel, damit Figur und fallende Dinge hervortreten. -->
+  <defs>
+    <linearGradient id="himmel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#120c33"/><stop offset=".55" stop-color="#241a55"/><stop offset="1" stop-color="#3a2768"/>
+    </linearGradient>
+    <radialGradient id="schein" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#e8e0ff" stop-opacity=".25"/><stop offset=".5" stop-color="#c8b8ff" stop-opacity=".12"/><stop offset="1" stop-color="#c8b8ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mond" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#f6f1dc"/><stop offset=".6" stop-color="#ddd3ae"/><stop offset="1" stop-color="#b3a67e"/>
+    </radialGradient>
+    <linearGradient id="huegel1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2e2058"/><stop offset="1" stop-color="#22184a"/>
+    </linearGradient>
+    <linearGradient id="huegel2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f1640"/><stop offset="1" stop-color="#160f30"/>
+    </linearGradient>
+  </defs>
+  <rect width="576" height="1024" fill="url(#himmel)"/>
+  <!-- kleine Sterne -->
+  <g fill="#fff6d8">
+    <circle cx="190" cy="135" r="1.2" opacity="0.35"/><circle cx="334" cy="765" r="1.5" opacity="0.35"/><circle cx="58" cy="357" r="1.5" opacity="0.35"/><circle cx="316" cy="59" r="1.2" opacity="0.5"/><circle cx="361" cy="494" r="1.2" opacity="0.8"/><circle cx="38" cy="193" r="1.5" opacity="0.65"/><circle cx="243" cy="459" r="1.8" opacity="0.5"/><circle cx="67" cy="484" r="1.5" opacity="0.65"/><circle cx="64" cy="601" r="1.2" opacity="0.5"/><circle cx="286" cy="451" r="1.8" opacity="0.8"/><circle cx="336" cy="386" r="1.8" opacity="0.5"/><circle cx="452" cy="590" r="1.5" opacity="0.35"/><circle cx="329" cy="446" r="1.8" opacity="0.8"/><circle cx="170" cy="823" r="1.2" opacity="0.8"/><circle cx="102" cy="294" r="2.2" opacity="0.8"/><circle cx="32" cy="564" r="1.8" opacity="0.65"/><circle cx="397" cy="503" r="2.2" opacity="0.35"/><circle cx="477" cy="794" r="2.2" opacity="0.35"/><circle cx="44" cy="592" r="2.2" opacity="0.65"/><circle cx="408" cy="746" r="1.8" opacity="0.35"/><circle cx="533" cy="305" r="1.2" opacity="0.8"/><circle cx="43" cy="647" r="1.5" opacity="0.5"/><circle cx="231" cy="771" r="2.2" opacity="0.35"/><circle cx="102" cy="343" r="1.8" opacity="0.5"/><circle cx="466" cy="727" r="1.8" opacity="0.8"/><circle cx="558" cy="576" r="2.2" opacity="0.5"/><circle cx="94" cy="156" r="1.5" opacity="0.5"/><circle cx="17" cy="700" r="1.5" opacity="0.65"/><circle cx="167" cy="131" r="1.8" opacity="0.65"/><circle cx="540" cy="583" r="1.2" opacity="0.8"/><circle cx="510" cy="657" r="2.2" opacity="0.8"/><circle cx="232" cy="96" r="2.2" opacity="0.35"/><circle cx="116" cy="827" r="2.2" opacity="0.5"/><circle cx="71" cy="508" r="1.2" opacity="0.35"/><circle cx="325" cy="455" r="1.8" opacity="0.35"/><circle cx="49" cy="183" r="2.2" opacity="0.5"/><circle cx="363" cy="803" r="1.8" opacity="0.8"/><circle cx="78" cy="714" r="2.2" opacity="0.8"/><circle cx="279" cy="81" r="1.2" opacity="0.65"/><circle cx="422" cy="407" r="1.5" opacity="0.35"/><circle cx="124" cy="800" r="1.8" opacity="0.5"/><circle cx="394" cy="768" r="1.8" opacity="0.35"/><circle cx="214" cy="149" r="1.5" opacity="0.65"/><circle cx="364" cy="519" r="1.5" opacity="0.5"/><circle cx="465" cy="624" r="1.5" opacity="0.5"/><circle cx="298" cy="305" r="1.2" opacity="0.35"/><circle cx="449" cy="402" r="1.5" opacity="0.65"/><circle cx="259" cy="787" r="1.8" opacity="0.65"/><circle cx="55" cy="95" r="2.2" opacity="0.5"/><circle cx="198" cy="410" r="1.2" opacity="0.8"/><circle cx="516" cy="295" r="1.2" opacity="0.35"/><circle cx="516" cy="659" r="1.5" opacity="0.8"/><circle cx="504" cy="370" r="1.8" opacity="0.35"/><circle cx="455" cy="816" r="2.2" opacity="0.8"/><circle cx="233" cy="796" r="1.5" opacity="0.5"/><circle cx="562" cy="33" r="2.2" opacity="0.5"/><circle cx="350" cy="504" r="2.2" opacity="0.65"/><circle cx="97" cy="465" r="1.2" opacity="0.35"/><circle cx="454" cy="613" r="1.2" opacity="0.5"/><circle cx="251" cy="733" r="1.5" opacity="0.35"/><circle cx="150" cy="253" r="1.5" opacity="0.65"/><circle cx="154" cy="358" r="1.5" opacity="0.35"/><circle cx="516" cy="304" r="2.2" opacity="0.8"/><circle cx="470" cy="739" r="1.5" opacity="0.5"/><circle cx="301" cy="26" r="2.2" opacity="0.5"/><circle cx="348" cy="654" r="1.5" opacity="0.5"/><circle cx="89" cy="524" r="1.2" opacity="0.35"/><circle cx="191" cy="440" r="2.2" opacity="0.35"/>
+  </g>
+  <g fill="#fff6d8" opacity=".7">
+    <path d="M90 111 Q90 120 99 120 Q90 120 90 129 Q90 120 81 120 Q90 120 90 111 Z"/><path d="M250 63 Q250 70 257 70 Q250 70 250 77 Q250 70 243 70 Q250 70 250 63 Z"/><path d="M150 322 Q150 330 158 330 Q150 330 150 338 Q150 330 142 330 Q150 330 150 322 Z"/><path d="M520 413 Q520 420 527 420 Q520 420 520 427 Q520 420 513 420 Q520 420 520 413 Z"/><path d="M60 552 Q60 560 68 560 Q60 560 60 568 Q60 560 52 560 Q60 560 60 552 Z"/><path d="M330 514 Q330 520 336 520 Q330 520 330 526 Q330 520 324 520 Q330 520 330 514 Z"/><path d="M470 633 Q470 640 477 640 Q470 640 470 647 Q470 640 463 640 Q470 640 470 633 Z"/><path d="M200 694 Q200 700 206 700 Q200 700 200 706 Q200 700 194 700 Q200 700 200 694 Z"/>
+  </g>
+  <!-- Mond mit Schein -->
+  <circle cx="430" cy="170" r="150" fill="url(#schein)"/>
+  <circle cx="430" cy="170" r="62" fill="url(#mond)" stroke="#2b1d2e" stroke-width="4"/>
+  <g fill="#bfb38a" opacity=".6">
+    <circle cx="452" cy="186" r="13"/><circle cx="414" cy="200" r="8"/><circle cx="446" cy="146" r="7"/>
+  </g>
+  <ellipse cx="404" cy="142" rx="18" ry="9" fill="#fff" opacity=".5" transform="rotate(-35 404 142)"/>
+  <!-- ferne Hügel unten (Standfläche) -->
+  <path d="M0 900 Q120 850 250 880 Q400 912 576 860 L576 1024 L0 1024 Z" fill="url(#huegel1)"/>
+  <path d="M0 960 Q160 920 310 950 Q450 976 576 940 L576 1024 L0 1024 Z" fill="url(#huegel2)"/>
+</svg>
