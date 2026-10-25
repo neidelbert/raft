@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Münze Rahmen 1 von 6: um 0 Grad um die senkrechte Achse gedreht. Mitte (60, 60). -->
+  <defs>
+    <radialGradient id="gold" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3a8"/><stop offset=".5" stop-color="#ffc928"/><stop offset="1" stop-color="#d98a0b"/></radialGradient>
+    <linearGradient id="rand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc928"/><stop offset="1" stop-color="#b86e06"/></linearGradient>
+  </defs>
+  <ellipse cx="60" cy="60" rx="47" ry="47" fill="url(#rand)" stroke="#2b1d2e" stroke-width="6"/><rect x="60" y="13" width="0" height="94" fill="url(#rand)"/><path d="M60 13 L60 13 M60 107 L60 107" stroke="#2b1d2e" stroke-width="6" stroke-linecap="round"/><ellipse cx="60" cy="60" rx="47" ry="47" fill="url(#gold)" stroke="#2b1d2e" stroke-width="6"/><ellipse cx="60" cy="60" rx="32" ry="32" fill="none" stroke="#d98a0b" stroke-width="5"/><path d="M60 38 L66 54 L83 54 L69 64 L74 81 L60 71 L46 81 L51 64 L37 54 L54 54 Z" fill="#fff6c4" stroke="#b86e06" stroke-width="3" stroke-linejoin="round"/><ellipse cx="40" cy="34" rx="12" ry="6" fill="#fff" opacity=".7" transform="rotate(-35 40 34)"/>
+</svg>

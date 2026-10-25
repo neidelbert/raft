@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+  <!-- Laufzyklus Rahmen 3 von 6. Held von der Seite, schaut nach rechts. Fußpunkt (100, 230) = unten Mitte, in allen Rahmen gleich. -->
+  <defs>
+    <linearGradient id="haut" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd7b0"/><stop offset="1" stop-color="#f0a97a"/></linearGradient>
+    <linearGradient id="hemd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fb3ff"/><stop offset="1" stop-color="#2275c9"/></linearGradient>
+    <linearGradient id="hose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b5a8e"/><stop offset="1" stop-color="#463a63"/></linearGradient>
+  </defs>
+  <g stroke="#2b1d2e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- hinterer Arm und hinteres Bein (etwas dunkler) -->
+    <path d="M100 127 L95.7 148.6 L100.5 168" fill="none" stroke-width="20"/><path d="M100 127 L95.7 148.6 L100.5 168" fill="none" stroke="#2a6fb8" stroke-width="10"/><circle cx="100.5" cy="168" r="9" fill="#e9a37a"/>
+    <path d="M100 169 L121.4 185.5 L110 210" fill="none" stroke-width="22"/><path d="M100 169 L121.4 185.5 L110 210" fill="none" stroke="#3f3458" stroke-width="12"/><path d="M102 204 L102 215 Q102 218 105 218 L122 218 Q129 218 127 211 Q124 204 113 204 Z" fill="#7a4a2a" transform="rotate(-6 110 210)"/>
+    <!-- vorderes Bein -->
+    <path d="M100 169 L99.2 196 L92 222" fill="none" stroke-width="22"/><path d="M100 169 L99.2 196 L92 222" fill="none" stroke="url(#hose)" stroke-width="12"/><path d="M84 216 L84 227 Q84 230 87 230 L104 230 Q111 230 109 223 Q106 216 95 216 Z" fill="#7a4a2a" transform="rotate(0 92 222)"/>
+    <g transform="translate(0 -3)">
+      <!-- Körper -->
+      <path d="M80 122 Q102 110 124 122 L126 184 Q102 192 78 184 Z" fill="url(#hemd)"/>
+      <!-- Nase (vom Kopf halb verdeckt) -->
+      <circle cx="152" cy="84" r="8" fill="url(#haut)"/>
+      <!-- Kopf -->
+      <ellipse cx="104" cy="72" rx="50" ry="48" fill="url(#haut)"/>
+      <!-- Ohr -->
+      <ellipse cx="86" cy="80" rx="8" ry="11" fill="url(#haut)" stroke-width="4"/>
+      <path d="M85 75 Q90 80 85 86" fill="none" stroke-width="3"/>
+      <!-- Haare (hinten und oben) -->
+      <path d="M56 92 Q40 40 90 22 Q144 10 156 58 Q140 42 118 46 Q104 38 92 50 Q84 60 84 70 Q74 66 70 76 Q66 86 56 92 Z" fill="#e8742a"/>
+    </g>
+    <!-- vorderer Arm -->
+    <path d="M100 127 L104.3 148.6 L116.1 164.7" fill="none" stroke-width="20"/><path d="M100 127 L104.3 148.6 L116.1 164.7" fill="none" stroke="url(#hemd)" stroke-width="10"/><circle cx="116.1" cy="164.7" r="9" fill="url(#haut)"/>
+  </g>
+  <g transform="translate(0 -3)">
+    <!-- Glanz und Gesicht (ohne Umriss) -->
+    <ellipse cx="82" cy="36" rx="14" ry="7" fill="#fff" opacity=".35" transform="rotate(-20 82 36)"/>
+    <ellipse cx="128" cy="76" rx="6.5" ry="9" fill="#2b1d2e"/>
+    <circle cx="130" cy="73" r="2.5" fill="#fff"/>
+    <ellipse cx="122" cy="96" rx="8" ry="5" fill="#ff8a8a" opacity=".55"/>
+    <path d="M130 102 Q139 108 147 101" fill="none" stroke="#2b1d2e" stroke-width="4" stroke-linecap="round"/>
+    <path d="M86 128 Q104 121 120 127" fill="none" stroke="#fff" stroke-width="5" opacity=".3" stroke-linecap="round"/>
+  </g>
+</svg>

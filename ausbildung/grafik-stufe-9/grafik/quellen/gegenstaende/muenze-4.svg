@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Münze Rahmen 4 von 6: um 90 Grad um die senkrechte Achse gedreht. Mitte (60, 60). -->
+  <defs>
+    <radialGradient id="gold" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3a8"/><stop offset=".5" stop-color="#ffc928"/><stop offset="1" stop-color="#d98a0b"/></radialGradient>
+    <linearGradient id="rand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc928"/><stop offset="1" stop-color="#b86e06"/></linearGradient>
+  </defs>
+  <rect x="52.0" y="13" width="16" height="94" rx="5" fill="url(#rand)" stroke="#2b1d2e" stroke-width="6"/><path d="M54 26 L66 26" stroke="#b86e06" stroke-width="2.5" stroke-linecap="round"/><path d="M54 38 L66 38" stroke="#b86e06" stroke-width="2.5" stroke-linecap="round"/><path d="M54 50 L66 50" stroke="#b86e06" stroke-width="2.5" stroke-linecap="round"/><path d="M54 62 L66 62" stroke="#b86e06" stroke-width="2.5" stroke-linecap="round"/><path d="M54 74 L66 74" stroke="#b86e06" stroke-width="2.5" stroke-linecap="round"/><path d="M54 86 L66 86" stroke="#b86e06" stroke-width="2.5" stroke-linecap="round"/><path d="M58 22 L58 40" stroke="#fff" stroke-width="3" opacity=".7" stroke-linecap="round"/>
+</svg>

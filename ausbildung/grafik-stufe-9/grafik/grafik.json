@@ -1,0 +1,140 @@
+[
+  {
+    "name": "boden/wiese",
+    "datei": "grafik/boden/wiese.png",
+    "breite": 512,
+    "hoehe": 512
+  },
+  {
+    "name": "effekte/explosion-1",
+    "datei": "grafik/effekte/explosion-1.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "effekte/explosion-2",
+    "datei": "grafik/effekte/explosion-2.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "effekte/explosion-3",
+    "datei": "grafik/effekte/explosion-3.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "effekte/explosion-4",
+    "datei": "grafik/effekte/explosion-4.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "effekte/explosion-5",
+    "datei": "grafik/effekte/explosion-5.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "effekte/explosion-6",
+    "datei": "grafik/effekte/explosion-6.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "figuren/held-lauf-1",
+    "datei": "grafik/figuren/held-lauf-1.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "figuren/held-lauf-2",
+    "datei": "grafik/figuren/held-lauf-2.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "figuren/held-lauf-3",
+    "datei": "grafik/figuren/held-lauf-3.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "figuren/held-lauf-4",
+    "datei": "grafik/figuren/held-lauf-4.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "figuren/held-lauf-5",
+    "datei": "grafik/figuren/held-lauf-5.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "figuren/held-lauf-6",
+    "datei": "grafik/figuren/held-lauf-6.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "figuren/held-steht",
+    "datei": "grafik/figuren/held-steht.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "gegenstaende/muenze-1",
+    "datei": "grafik/gegenstaende/muenze-1.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegenstaende/muenze-2",
+    "datei": "grafik/gegenstaende/muenze-2.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegenstaende/muenze-3",
+    "datei": "grafik/gegenstaende/muenze-3.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegenstaende/muenze-4",
+    "datei": "grafik/gegenstaende/muenze-4.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegenstaende/muenze-5",
+    "datei": "grafik/gegenstaende/muenze-5.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegenstaende/muenze-6",
+    "datei": "grafik/gegenstaende/muenze-6.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "symbole/pause",
+    "datei": "grafik/symbole/pause.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "symbole/ton-an",
+    "datei": "grafik/symbole/ton-an.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "symbole/ton-aus",
+    "datei": "grafik/symbole/ton-aus.png",
+    "breite": 128,
+    "hoehe": 128
+  }
+]
