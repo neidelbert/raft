@@ -8,7 +8,7 @@
 } }</script>
 ```
 Zusatzmodule: `import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';`
-Die Version ist fest. Ein Wechsel ist eine Technik-Entscheidung. Im Test leitet `werkzeuge/test-hilfe.js` das CDN auf eine lokale Kopie um; im Spiel bleibt die CDN-Adresse.
+Die Version ist fest. Ein Wechsel ist eine Technik-Entscheidung. Im Test leitet die Test-Hilfe (`test-hilfe.js`) das CDN auf eine lokale Kopie um; im Spiel bleibt die CDN-Adresse.
 
 ## Renderer und Schleife
 - `renderer.setPixelRatio(Math.min(devicePixelRatio, 2))` und bei `resize` `renderer.setSize(innerWidth, innerHeight)`, `kamera.aspect` neu, `updateProjectionMatrix()`.

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>__TITEL__</title>
+  <link rel="stylesheet" href="stil.css">
+  <!-- Three.js fest in Version 0.170.0 (ein Wechsel ist eine Technik-Entscheidung). Tests leiten das CDN lokal um. -->
+  <script type="importmap">{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }</script>
+</head>
+<body>
+  <canvas id="leinwand"></canvas>
+  <div id="oberflaeche">
+    <div id="feld-joystick"></div>
+    <div id="joystick-ring" hidden></div>
+    <div id="joystick-daumen" hidden></div>
+    <div id="leiste" hidden><span id="leiste-punkte"></span><span id="leiste-zeit"></span></div>
+    <button id="knopf-ton" type="button" aria-label="Ton an oder aus">Ton an</button>
+  </div>
+  <!-- Ladebildschirm: reines HTML/CSS, erscheint sofort, bevor ein Asset geladen ist. -->
+  <div id="laden" class="tafel" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <p>Lädt …</p>
+    <div class="balken"><div id="balken-fuellung"></div></div>
+  </div>
+  <div id="titel" class="tafel" hidden>
+    <h1>__TITEL__</h1>
+    <p>Tippen zum Starten</p>
+    <p id="titel-rekord" class="hinweis"></p>
+    <p class="hinweis">Daumen links: laufen.</p>
+  </div>
+  <div id="ende" class="tafel" hidden>
+    <h1>Vorbei!</h1>
+    <p id="ende-punkte"></p>
+    <p id="ende-rekord" class="hinweis"></p>
+    <p>Tippen für eine neue Runde</p>
+  </div>
+  <div id="hinweis-neu-laden" class="tafel" hidden><p>Die Grafik wurde unterbrochen. Bitte neu laden.</p></div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

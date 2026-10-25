@@ -1,0 +1,9 @@
+{
+ "grafik": "grafik/grafik.json",
+ "abstand": 2,
+ "groesseMax": 2048,
+ "atlanten": [],
+ "einzeln": ["boden/kachel"],
+ "anker": {},
+ "animationen": {}
+}

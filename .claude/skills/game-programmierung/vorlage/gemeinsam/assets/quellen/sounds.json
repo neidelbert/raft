@@ -1,0 +1,14 @@
+{
+ "rate": 44100,
+ "spitzeDb": -1,
+ "kbps": 96,
+ "sounds": {
+  "start": {
+   "dauer": 0.25,
+   "welle": "dreieck",
+   "frequenz": [440, 880],
+   "rauschen": 0,
+   "huelle": { "anschlag": 0.005, "halten": 0.04, "kurve": 2 }
+  }
+ }
+}

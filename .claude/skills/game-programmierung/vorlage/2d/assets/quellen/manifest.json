@@ -1,0 +1,6 @@
+{
+ "budget": { "startpaketBytes": 2000000, "bildspeicherBytes": 60000000 },
+ "bilder": {},
+ "sounds": { "start": { "laut": 0.7 } },
+ "spaeter": []
+}

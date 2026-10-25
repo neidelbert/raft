@@ -4,7 +4,7 @@
 //   Rauschen ist mit festem Startwert berechnet: Gleiches Rezept gibt dieselbe Datei (die Asset-Version bleibt gleich).
 //   Spitze wird auf spitzeDb normalisiert (Standard −1 dB: Platz für die AAC-Umwandlung, kein Übersteuern).
 //   Die Lautstärke im Spiel regelt "laut" im Manifest (manifest.json), nicht das Rezept.
-// Aufruf:   node .claude/skills/game-programmierung/werkzeuge/sounds.js <spielordner>
+// Aufruf:   node <skill>/werkzeuge/sounds.js <spielordner>
 // Braucht:  ffmpeg (mit aac und libmp3lame). Fehlt es, bricht das Werkzeug mit einer Meldung ab (Rückgabewert 1).
 // Liest:    <spielordner>/assets/quellen/sounds.json, z. B.
 //   { "rate": 44100, "spitzeDb": -1, "kbps": 96,

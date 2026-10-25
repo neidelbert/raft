@@ -5,7 +5,7 @@
 //   (Randverlängerung), sonst blitzen beim Skalieren Nachbarbilder durch. Höchstens `groesseMax` (2048) je Seite,
 //   sonst mehrere Atlanten (<name>-2, <name>-3 …). Animationen entstehen aus Namen `<name>-<nr>` (nach Nummer sortiert).
 //   Bilder unter `einzeln` (Boden-Kacheln, Hintergründe) werden nur nach assets/bilder/ kopiert, nicht gepackt.
-// Aufruf:   node .claude/skills/game-programmierung/werkzeuge/atlas.js <spielordner>
+// Aufruf:   node <skill>/werkzeuge/atlas.js <spielordner>
 // Liest:    <spielordner>/assets/quellen/atlas.json, z. B.
 //   { "grafik": "grafik/grafik.json",                     Liste des Zeichners (relativ zum Spielordner)
 //     "abstand": 2, "groesseMax": 2048,

@@ -1,12 +1,13 @@
 # Testen
 
-Jeder Auftrag bringt einen Test mit: `tests/<spiel>/<spiel>-test.js`. `bash tests/alle-tests.sh` findet ihn automatisch. Reine Regeln zusätzlich ohne Browser (`tests/<spiel>/<spiel>-regeln.js`, vom Haupttest aufgerufen oder eigenständig).
+Jeder Auftrag bringt einen Test mit: `<spiel>/tests/<name>-test.js`, daneben die Test-Hilfe `test-hilfe.js` (beides legt `neues-spiel.js` an). Hat das Projekt einen Gesamttest, muss er den Test finden. Reine Regeln prüft derselbe Test ohne Browser (Funktion `regeln()` im Gerüst-Test) oder eine eigene Datei `<name>-regeln.js`.
 
 ## Vorlage
 ```js
-// Test für <Spiel>: node tests/<spiel>/<spiel>-test.js
-const t = require('../../werkzeuge/test-hilfe.js');
-const ORDNER = process.env.ORDNER || 'spiele/<spiel>';   // Gegenprobe: ORDNER=<kaputte Kopie>
+// Test für <Spiel>: node <spiel>/tests/<name>-test.js (aus jedem Ordner)
+const path = require('path');
+const t = require('./test-hilfe.js');
+const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.resolve(__dirname, '..');   // Gegenprobe: ORDNER=<kaputte Kopie>
 (async () => {
   const lauf = await t.starte({ ordner: ORDNER, port: 9000, pfad: 'index.html?seed=42&test=1' });
   const { seite } = lauf;
@@ -20,8 +21,8 @@ const ORDNER = process.env.ORDNER || 'spiele/<spiel>';   // Gegenprobe: ORDNER=<
   t.ergebnis();
 })();
 ```
-- `werkzeuge/test-hilfe.js` startet Server und Chromium in iPhone-Ansicht (390 × 664 Punkte, Pixel-Ratio 3), leitet Three.js vom CDN auf eine lokale Kopie um (das CDN ist in der Cloud gesperrt), sammelt Konsolenfehler (`lauf.fehler`) und bietet `ziehe`, `tippe` und `bildrate`. `initSkript` läuft vor dem Spiel (z. B. localStorage sperren, AudioContext zählen).
-- **Port je Spiel:** ein Zehnerblock ab 9000, eingetragen in `TEAM.md` unter „Ports“. Die Bausteine nutzen 8880–8889.
+- `test-hilfe.js` (Werkzeug des Skills, Kopie im Spiel) startet Server und Chromium in iPhone-Ansicht (390 × 664 Punkte, Pixel-Ratio 3), leitet Three.js vom CDN auf eine lokale Kopie um (das CDN ist in der Cloud gesperrt), sammelt Konsolenfehler (`lauf.fehler`) und bietet `ziehe`, `tippe` und `bildrate`. `initSkript` läuft vor dem Spiel (z. B. localStorage sperren, AudioContext zählen).
+- **Port je Spiel:** ein Zehnerblock ab 9000 (`neues-spiel.js --port`, im Test mit `PORT=…` änderbar), in der Port-Liste des Projekts eintragen. Die Bausteine nutzen 8880–8889.
 - `?seed=42` macht den Zufall gleich, damit der Test immer gleich abläuft. Feste Beispieldaten, nie echte, sich ändernde Daten.
 
 ## Was jeder Test prüft
@@ -47,6 +48,9 @@ const ORDNER = process.env.ORDNER || 'spiele/<spiel>';   // Gegenprobe: ORDNER=<
 - **Ton:** `ton.bereit` prüfen; Sound-Dateien zählt ein `initSkript`, das `AudioBufferSourceNode.prototype.start` umhüllt; gespielte Klänge zählt ein `initSkript`, das `AudioContext` und `createOscillator` umhüllt.
 - **Speicher (keine neuen Objekte):** mit dem Heap-Profiler messen (`HeapProfiler.startSampling` mit `includeObjectsCollectedByMinorGC`), nach Aufwärmen, nur die eigenen Dateien. Nicht Speicherbereinigungen zählen (hängt vom Rest des Prozesses ab). Eine Gegenprobe mit absichtlich neuen Objekten zeigt, dass die Messung wirkt. Beispiel: `bausteine/tests/hilfe.js` (`angelegterSpeicher`).
 - **3D:** Zeichenaufrufe in jedem Bild mitschreiben (eigene `requestAnimationFrame`-Schleife, `renderer.info.render.calls`), das Höchste prüfen. Pixel-Ratio-Grenze direkt prüfbar, weil der iPhone 13 im Test 3 hat.
+- **Nichts still überspringen:** Fehlt eine Datei, die ein Test braucht, ist das eine rote Prüfung, kein `if (fs.existsSync(…))`. Ein übersprungener Test fällt niemandem auf (Lernbuch Stufe 10).
+- **Pfade:** Tests übergeben der Test-Hilfe absolute Pfade (`path.resolve(__dirname, '..')`), dann laufen sie aus jedem Ordner und als Kopie.
+- **Vorbild:** der Test jedes Gerüsts aus `neues-spiel.js` (Regeln ohne Browser, Ladebildschirm, Touch, Abbruch, Tab-Wechsel, Speicher, fehlende und hängende Assets, 3D-Zeichenaufrufe).
 - **Testausgaben nie mit `| head` abschneiden**, sondern in eine Datei umleiten: Ein abgebrochener Lauf lässt seinen Server laufen. Wirkt ein Ergebnis zu gut, `pgrep -fa http.server` prüfen. `test-hilfe.js` bricht ab, wenn der Port belegt ist.
 
 ## Reine Rechenregeln ohne Browser

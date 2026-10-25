@@ -14,9 +14,13 @@ t.pruefe(/Neues Spiel in 5 Schritten/i.test(handbuch.slice(0, 2500)), "„Neues 
 t.pruefe(handbuch.includes("neues-spiel.js"), "Handbuch nennt neues-spiel.js");
 
 // Verweise im Skill zeigen nicht nach außen (außer auf das Spiel selbst)
-const texte = [path.join(SKILL, "SKILL.md"), ...fs.readdirSync(path.join(SKILL, "wissen")).map((d) => path.join(SKILL, "wissen", d))];
+// Das Lernbuch ist Verlauf und darf erzählen, woher etwas kam; ../ ist nur ein Fehler, wenn es aus dem Skill hinausführt.
+const texte = [path.join(SKILL, "SKILL.md"), ...fs.readdirSync(path.join(SKILL, "wissen")).filter((d) => d !== "lernbuch.md").map((d) => path.join(SKILL, "wissen", d))];
 const aussen = [];
-for (const d of texte) for (const [, ziel] of fs.readFileSync(d, "utf8").matchAll(/`((?:\.\.\/|\/home|ausbildung\/|tests\/alle-tests\.sh)[^`]*)`/g)) aussen.push(`${path.basename(d)}: ${ziel}`);
+for (const d of texte) for (const [, ziel] of fs.readFileSync(d, "utf8").matchAll(/`((?:\.\.\/|\/home|ausbildung\/|tests\/alle-tests\.sh)[^`]*)`/g)) {
+  if (ziel.startsWith("../") && path.resolve(path.dirname(d), ziel).startsWith(SKILL)) continue;
+  aussen.push(`${path.basename(d)}: ${ziel}`);
+}
 t.pruefe(aussen.length === 0, `keine Verweise aus dem Skill hinaus ${aussen.slice(0, 5).join(" | ")}`);
 
 // Gerüst in leerem Ordner, Test grün – 2D und 3D

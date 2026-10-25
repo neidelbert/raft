@@ -1,0 +1,6 @@
+{
+ "budget": { "startpaketBytes": 2000000, "bildspeicherBytes": 60000000 },
+ "bilder": { "kachel": { "ersatz": "#4f8f45" } },
+ "sounds": { "start": { "laut": 0.7 } },
+ "spaeter": []
+}

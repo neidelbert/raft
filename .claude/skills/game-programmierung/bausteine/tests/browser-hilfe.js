@@ -1,10 +1,10 @@
-// Hilfen für die Baustein-Tests im Browser (Touch, Canvas, Ton) über werkzeuge/test-hilfe.js.
+// Hilfen für die Baustein-Tests im Browser (Touch, Canvas, Ton) über werkzeuge/test-hilfe.js (Kopie im Skill).
 //   const b = require('./browser-hilfe.js');
 //   const lauf = await b.starteProbe('joystick', 8882);   // öffnet tests/seite/index.html?teil=joystick
-// Prüfen mit h.pruefe aus hilfe.js (ein Zähler für Regeln und Browser). Ports 8880–8889 (TEAM.md). Bildschirmfotos landen in FOTO_ORDNER (Standard: Temp-Ordner).
+// Prüfen mit h.pruefe aus hilfe.js (ein Zähler für Regeln und Browser). Ports 8880–8889 (Baustein-Tests). Bildschirmfotos landen in FOTO_ORDNER (Standard: Temp-Ordner).
 const os = require('os');
 const path = require('path');
-const t = require('../../../../../werkzeuge/test-hilfe.js');
+const t = require('../../werkzeuge/test-hilfe.js');
 const { ORDNER } = require('./hilfe.js');
 
 function starteProbe(teil, port, { zusatz = '', geraet, initSkript, routen } = {}) {

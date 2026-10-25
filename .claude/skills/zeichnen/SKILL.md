@@ -1,6 +1,6 @@
 ---
 name: zeichnen
-description: Handbuch des Zeichners: Spielgrafiken als SVG im einheitlichen Cartoon-Stil zeichnen, mit werkzeuge/zeichner/render.js in PNG umwandeln und am Kontaktbogen prüfen. Immer verwenden, wenn Figuren, Gegner, Gegenstände, Symbole, Boden, Hintergründe oder Oberflächen-Grafiken für ein Spiel entstehen oder geändert werden.
+description: Handbuch des Zeichners: Spielgrafiken als SVG im einheitlichen Cartoon-Stil zeichnen, mit render.js (liegt im Skill-Ordner) in PNG umwandeln und am Kontaktbogen prüfen. Immer verwenden, wenn Figuren, Gegner, Gegenstände, Symbole, Boden, Hintergründe oder Oberflächen-Grafiken für ein Spiel entstehen oder geändert werden.
 ---
 
 # Handbuch des Zeichners
@@ -12,7 +12,7 @@ Ziel: Jede Grafik ist im Spiel sofort erkennbar, passt im Stil zu allen anderen 
 2. `vorlagen/` ansehen (Figur, Gegner, Gegenstand, Boden). Sie zeigen den Stil. Neue Bilder bauen auf ihnen auf.
 3. SVG schreiben nach `stil.md` und `svg-techniken.md`. Ablage: `spiele/<name>/grafik/quellen/<gruppe>/<name>.svg`.
    Gruppen: `figuren`, `gegner`, `gegenstaende`, `symbole`, `boden`, `effekte`, `oberflaeche`.
-4. Umwandeln: `node werkzeuge/zeichner/render.js spiele/<name>`. Die Größe kommt aus der Gruppe, eigene Größen in `grafik/groessen.json` (`{ "boden/nacht": 1024 }`).
+4. Umwandeln: `node <skill>/render.js spiele/<name>` (`render.js` liegt in diesem Skill-Ordner, in Claude Code also `node .claude/skills/zeichnen/render.js spiele/<name>`; braucht Node und Playwright mit Chromium). Die Größe kommt aus der Gruppe, eigene Größen in `grafik/groessen.json` (`{ "boden/nacht": 1024 }`).
 5. **Ansehen:** `grafik/kontaktbogen.png` und wichtige PNGs mit dem Read-Werkzeug öffnen. Prüfen und nachbessern:
    - Ist das Motiv auf den ersten Blick klar? Auch verkleinert (stell dir 40 px vor)?
    - Ist nichts am Rand abgeschnitten (viewBox mit Luft für Umriss und Schatten)?
@@ -40,6 +40,7 @@ Ziel: Jede Grafik ist im Spiel sofort erkennbar, passt im Stil zu allen anderen 
 - In der Meldung an Horst: Animationsname, Zahl der Rahmen, empfohlenes Tempo (Bilder pro Sekunde), Schleife ja/nein.
 
 ## Wissen
+- `render.js` – das Werkzeug: SVG → PNG, `grafik.json` und Kontaktbogen (Kopfkommentar erklärt Quelle und Ziel)
 - `stil.md` – der Haus-Stil: Formen, Proportionen, Farben, Umriss, Licht
 - `svg-techniken.md` – wie man in SVG schöne Cartoon-Grafik baut
 - `vorlagen/*.svg` – Muster für Figur, Gegner, Gegenstand, Boden

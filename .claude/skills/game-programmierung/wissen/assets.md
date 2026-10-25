@@ -12,12 +12,13 @@ assets/quellen/     ├─ Werkzeuge ─→ assets/atlas, bilder, sounds, modell
 Spiel: ladeAssets (bausteine/assets.js) → Ladebalken → „Tippen zum Starten“ (weckt Ton, dekodiert Sounds)
        → animation.js zeichnet Rahmen aus dem Atlas, ton.spiele spielt Sound-Puffer
 ```
-Werkzeuge: `node .claude/skills/game-programmierung/werkzeuge/<werkzeug>.js spiele/<name>`, Reihenfolge atlas → sounds → modell → manifest. Nach jeder Änderung an Quellen oder Bildern neu erzeugen und die erzeugten Dateien mit einchecken (GitHub Pages hat keinen Build-Schritt). Vorbild: `ausbildung/uebungen/stufe-9/`.
+Werkzeuge: `node <skill>/werkzeuge/<werkzeug>.js spiele/<name>`, Reihenfolge atlas → sounds → modell → manifest. Nach jeder Änderung an Quellen oder Bildern neu erzeugen und die erzeugten Dateien mit einchecken (GitHub Pages hat keinen Build-Schritt). Vorbild: jedes Gerüst aus `neues-spiel.js` (Ladebildschirm, Atlas mit Beispiel-Bild, Ersatz, Sound-Rezept, in 3D Modell-Quelle und Boden-Kachel) samt Test für fehlende und hängende Dateien.
 
 ## Grundsätze
 - **Ein Verzeichnis, eine Liste:** Alle Assets stehen in `assets/assets.json` (Manifest). Das Spiel lädt nur, was dort steht. Kein Pfad wird im Code fest eingetragen.
 - **Quellen getrennt von Auslieferung:** Quellen (SVG des Zeichners, Sound-Rezepte, Modell-Code) liegen in `assets/quellen/`. Ausgeliefert werden nur die erzeugten Dateien. Erzeugt wird mit einem Werkzeug, nie von Hand.
 - **Budget:** Startpaket (alles, was vor dem ersten Bild nötig ist) unter 2 MB. Was erst später gebraucht wird (Level 2, Musik), lädt nach dem Start im Hintergrund.
+- **Werkzeuge einer Kette brechen nicht ab, wenn es nichts zu tun gibt** (`modell.js` in einem 2D-Spiel: „nichts zu tun“). Nur echte Fehler (kaputte Quelle, ffmpeg fehlt) enden mit Rückgabewert 1.
 - **Jedes Asset hat einen Ersatz:** Fehlt eine Datei oder lädt sie nicht innerhalb der Zeitgrenze, läuft das Spiel mit Ersatz (Form, Stille, Systemschrift, Box) weiter. Dazu eine Warnung in der Konsole, kein Fehler, der das Spiel stoppt.
 
 ## Manifest (`assets/assets.json`)
@@ -108,7 +109,7 @@ Viele kleine Bilder in einem großen Bild: eine Datei statt vieler Anfragen, bei
 - Das ist eine Technik-Entscheidung für Lukas, weil falsch gespeicherte Dateien schwer zu löschen sind.
 
 ## Prüfen
-- Test: Ladebildschirm erscheint, Fortschritt steigt bis 100 %, `window.spiel.assets` meldet geladen, ersetzt und fehlend. Verzögerte Antworten (Option `routen` von `werkzeuge/test-hilfe.js`, `route.continue()` nach einer Wartezeit) machen den Balken im Test sichtbar.
+- Test: Ladebildschirm erscheint, Fortschritt steigt bis 100 %, `window.spiel.assets` meldet geladen, ersetzt und fehlend. Verzögerte Antworten (Option `routen` der Test-Hilfe `test-hilfe.js`, `route.continue()` nach einer Wartezeit) machen den Balken im Test sichtbar.
 - `fehlend`: Einträge, deren Datei nicht kam (404, Netz, Zeitgrenze, kaputt). `ersetzt`: Namen, für die jetzt ein Ersatz gilt (Bild → Ersatzfarbe, Sound → Stille, Schrift → Systemschrift, Modell → Box, bei Atlanten die einzelnen Rahmen-Namen aus `ersatz()`).
 - Gegenprobe: eine Datei löschen (`route.fulfill({ status: 404 })`), eine Datei hängen lassen (`kontext.route(muster, () => {})`: Server antwortet nie), das Manifest löschen und hängen lassen. Das Spiel startet trotzdem, mit Ersatz.
 - Budget messen: Summe der Dateigrößen des Startpakets und ausgepackter Bildspeicher (Breite × Höhe × 4).

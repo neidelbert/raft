@@ -1,19 +1,27 @@
 ---
 name: game-programmierung
-description: Horsts Handbuch für Handy-Browserspiele (2D Canvas oder 3D Three.js, iPhone-Safari, GitHub Pages, ohne Build). Immer verwenden, wenn Code für ein Spiel geschrieben, geändert, erweitert, getestet oder repariert wird, auch bei kleinen Änderungen.
+description: Horsts Handbuch für Handy-Browserspiele (2D Canvas oder 3D Three.js, iPhone-Safari, GitHub Pages, ohne Build), mit geprüften Bausteinen, Asset-Werkzeugen (Atlas, Sounds, Modelle, Manifest) und dem Gerüst-Werkzeug neues-spiel.js. Immer verwenden, wenn ein Spiel angelegt oder Code für ein Spiel geschrieben, geändert, erweitert, getestet oder repariert wird, auch bei kleinen Änderungen.
 ---
 
 # Horsts Handbuch
 
 Ziel: Jedes Spiel startet beim ersten Mal ohne Fehler, läuft flüssig auf dem iPhone, fühlt sich gut an und bricht nichts, was schon lief.
+Alles, was dieses Handbuch braucht, liegt in seinem Ordner. Im Folgenden heißt dieser Ordner `<skill>` (in Claude Code meist `.claude/skills/game-programmierung`), das Spiel `<spiel>` (z. B. `spiele/stern-jagd`, der Ordnername ist der Spielname).
+
+## Neues Spiel in 5 Schritten
+1. **Gerüst:** `node <skill>/werkzeuge/neues-spiel.js <spiel> [--3d] [--port 9000] [--titel "Stern-Jagd"]`, dann `node <spiel>/tests/<name>-test.js` → „Alle Prüfungen bestanden.“ Das Gerüst läuft sofort: Ladebildschirm → Titel → Spiel (Joystick, Punkte, Zeit) → Ende mit Rekord, Ton-Knopf, Speicher, Ersatz für fehlende Assets. `<spiel>/LIESMICH.md` erklärt jede Datei. Je Spiel ein eigener Port-Zehnerblock ab 9000.
+2. **Assets:** Bilder des Zeichners nach `<spiel>/grafik/`, eintragen in `assets/quellen/atlas.json` (Gruppen, Fußpunkt, Animationen), Klänge in `sounds.json`, 3D-Modelle in `modelle/`; dann Werkzeuge atlas → sounds → modell → manifest (Kapitel „Assets“ unten). Das Spiel lädt nur, was im Manifest steht.
+3. **Spielregeln:** in `js/regeln/` ohne DOM (mit Node testbar), jede Zahl in `js/config/` mit Kommentar, Zeichnen in `js/welt/darstellung.js`. Erst in den Bausteinen nachsehen (Tabelle unten, Kopien in `js/kern/`). Eine Regel nach der anderen, jede mit Test.
+4. **Test:** `<spiel>/tests/<name>-test.js` um jede Zeile aus „Fertig, wenn“ erweitern (`wissen/testen.md`), Gegenprobe mit kaputter Kopie (`ORDNER=<kopie>` muss rot werden), Bildschirmfoto ansehen, Fertig-Checkliste abhaken.
+5. **Bericht:** Übergabebericht (Aufbau unten), Schulden in `<spiel>/SCHULDEN.md`, Gelerntes ins Lernbuch. Melden: „bereit zum Testen“.
 
 ## Vor jeder Aufgabe (in dieser Reihenfolge)
 1. `wissen/lernbuch.md` (die neuesten Einträge) und `wissen/haltung.md` lesen. Im Lernbuch stehen Fehler, die schon passiert sind; die Regeln daraus stehen auch in den Wissensdateien.
-2. `PROJEKT.md` und den Auftrag lesen: Was genau, was nicht, wann fertig?
+2. Die Projektdatei (falls das Projekt eine hat) und den Auftrag lesen: Was genau, was nicht, wann fertig?
 3. Den vorhandenen Code des Spiels ansehen. Nichts doppelt bauen.
 4. Die Bausteine-Tabelle unten ansehen: Was gibt es schon geprüft?
 5. Die passenden Wissensdateien lesen (Tabelle unten).
-6. Bei echter Unklarheit eine kurze Frage an den Spiel-Leiter. Kleinigkeiten entscheidet Horst selbst (siehe „Selbst entscheiden“).
+6. Bei echter Unklarheit eine kurze Frage an den Auftraggeber (Spiel-Leiter). Kleinigkeiten entscheidet Horst selbst (siehe „Selbst entscheiden“).
 
 ## Wissen
 | Datei | Wann lesen |
@@ -27,7 +35,37 @@ Ziel: Jedes Spiel startet beim ersten Mal ohne Fehler, läuft flüssig auf dem i
 | `wissen/spielgefuehl.md` | alles, was der Spieler sieht und spürt: Rückmeldung, Wackeln, Partikel, Schwierigkeit |
 | `wissen/grafik-und-sound.md` | Bilder vom Zeichner einbinden, Ersatzbilder, Ton per Code |
 | `wissen/assets.md` | Spiele mit Assets: Atlas, Rahmen-Animation, Sound-Dateien, Schriften, 3D-Modelle, Manifest, Ladebildschirm, Budget |
-| `wissen/testen.md` | jeder Auftrag: eigener Test mit `werkzeuge/test-hilfe.js`, Gegenprobe, Messen |
+| `wissen/testen.md` | jeder Auftrag: eigener Test mit der Test-Hilfe (`test-hilfe.js`), Gegenprobe, Messen |
+
+## Werkzeuge
+Alle im Ordner `werkzeuge/` dieses Skills, mit Node aufzurufen, die Asset-Werkzeuge mit dem Spielordner. Jedes hat oben einen Kopfkommentar mit Aufruf-Beispiel und lässt sich auch aus Code nutzen (`require`).
+
+| Werkzeug | macht | aus |
+|---|---|---|
+| `neues-spiel.js` | startfähiges Gerüst (2D oder mit `--3d` Three.js) samt Bausteinen, Test, Test-Hilfe, Beispiel-Bild, Manifest; überschreibt nichts | `vorlage/` und `bausteine/` dieses Skills |
+| `atlas.js` | Atlas-PNG + JSON (Rahmen mit Anker, Animationen aus `<name>-<nr>`, 2 px Abstand mit Randverlängerung, ≤ 2048 px) und Einzelbilder | `grafik/` des Zeichners + `assets/quellen/atlas.json` |
+| `sounds.js` | `.m4a` (AAC) und `.mp3` per ffmpeg | Rezepten in `assets/quellen/sounds.json` |
+| `modell.js` | `.glb` (GLTFExporter im kopflosen Chromium); ohne Quellen „nichts zu tun“ | `assets/quellen/modelle/<name>.js` |
+| `manifest.js` | `assets/assets.json` mit Version (Fingerabdruck) und Größen; meldet das Budget, Rückgabewert 1 bei Überschreitung | allem in `assets/` |
+| `png.js` | PNG lesen und schreiben ohne Pakete (Hilfe für `atlas.js` und `neues-spiel.js`) | – |
+| `test-hilfe.js` | Server + Chromium in iPhone-Ansicht, Touch (`ziehe`, `tippe`), Konsolenfehler, Three.js lokal; jedes Gerüst hat eine Kopie in `tests/` | – |
+| `paket.js` | `dist/game-programmierung.zip`, `dist/zeichnen.zip` (Zeichner-Skill daneben) und `dist/INSTALLIEREN.md` zum Weitergeben | diesem Skill-Ordner |
+
+**Gerüst verbessern:** in `vorlage/` (`gemeinsam/` für beide Arten, `2d/`, `3d/`; Platzhalter `__NAME__`, `__TITEL__`, `__PORT__`), dann `node <skill>/bausteine/tests/geruest-test.js` grün. Spiele, die schon angelegt sind, ändern sich dadurch nicht.
+
+Brauchen: Node 18+, Playwright mit Chromium (`require('playwright')`), python3 (Testserver); ffmpeg nur für `sounds.js`; für 3D-Tests einmal npm mit Netz (holt Three.js 0.170.0 in den Temp-Ordner, weil das CDN im Test umgeleitet wird).
+
+## Assets (Bilder, Animationen, Sounds, Schriften, Modelle)
+Einzelheiten und Gründe: `wissen/assets.md`. Kurz:
+- **Kette:** `grafik/` (Zeichner) und `assets/quellen/` → Werkzeuge → `assets/atlas|bilder|sounds|modelle` → `manifest.js` → `assets/assets.json`. Ausgeliefert wird nur Erzeugtes, nie von Hand ändern. Nach jeder Änderung an Quellen neu erzeugen und mit einchecken (GitHub Pages hat keinen Build-Schritt).
+  ```bash
+  W=<skill>/werkzeuge
+  node $W/atlas.js <spiel> && node $W/sounds.js <spiel> && node $W/modell.js <spiel> && node $W/manifest.js <spiel>
+  ```
+  `sounds.js` braucht ffmpeg (ohne Sound-Rezepte weglassen), `modell.js` meldet in 2D „nichts zu tun“.
+- **Laden:** `ladeAssets` (`bausteine/assets.js`) mit Ladebalken, Zeitgrenze je Asset (Gerüst 4 s: Manifest + Asset höchstens 8 s), Ersatz für alles (Bild → Farbe, Atlas → Code-Zeichnung über `ersatz()`, Sound → Code-Klang gleichen Namens, Schrift → Systemschrift, Modell → Box). Ton und Sounds erst nach „Tippen zum Starten“.
+- **Bilder:** doppelt aufgelöst (Skala 0,5), PNG für Figuren, WebP für große Flächen, Atlas ≤ 2048 px, Bildspeicher (Breite × Höhe × 4) unter 60 MB, Startpaket unter 2 MB. Rahmen-Animation mit `bausteine/animation.js` nach Zeit, um den Fußpunkt.
+- **Prüfen:** Test mit fehlender Datei (404), hängender Datei und hängendem Manifest: Seite läuft mit Ersatz. Der Gerüst-Test zeigt, wie.
 
 ## Bausteine (geprüft, wiederverwendbar)
 In `bausteine/` liegen vierzehn Module aus den Übungen, jedes mit Kopfkommentar (wofür, Schnittstelle, Beispiel) und eigenem Test. **Erst nachsehen, dann bauen:** Was ein Baustein kann, wird nicht neu geschrieben.
@@ -49,30 +87,13 @@ In `bausteine/` liegen vierzehn Module aus den Übungen, jedes mit Kopfkommentar
 | `bausteine/assets.js` | alles aus `assets/assets.json` laden: Fortschritt für den Ladebalken, Zeitgrenze je Asset, Ersatz, Atlanten, Sounds dekodieren (nach der ersten Berührung), Schriften, Modelle |
 | `bausteine/animation.js` | Rahmen-Animation aus dem Atlas mit Delta-Zeit (Schleife oder einmal mit „fertig“), Zeichnen um den Fußpunkt, gespiegelt |
 
-- **Einbauen:** Datei unverändert ins Spiel kopieren (`spiele/<name>/js/kern/…`, Ordner siehe `wissen/aufbau.md`). Ein Spiel auf GitHub Pages kann nicht aus `.claude/` laden. Den Kopfkommentar behalten.
-- **Ändern:** Braucht ein Spiel mehr, wird der Baustein hier verbessert, sein Test erweitert und `node bausteine/tests/alle.js` grün, dann neu kopiert. Keine stillen Abweichungen in der Kopie.
-- **Tests:** `node .claude/skills/game-programmierung/bausteine/tests/alle.js` (alle, mit Browser-Tests auf den Ports 8880–8889, dazu `werkzeuge-test.js` für die Asset-Werkzeuge). `node .claude/skills/game-programmierung/bausteine/tests/gegenprobe.js` baut jeden Baustein absichtlich kaputt und zeigt, dass sein Test rot wird.
-
-## Asset-Werkzeuge (Quellen → fertige Dateien)
-Im Skill-Ordner unter `werkzeuge/`, mit Node aufzurufen, immer mit dem Spielordner. Jedes hat oben Kopfkommentar und Aufruf-Beispiel. Quellen liegen in `<spiel>/assets/quellen/`, ausgeliefert wird nur, was die Werkzeuge erzeugen (Einzelheiten: `wissen/assets.md`).
-
-| Werkzeug | macht | aus |
-|---|---|---|
-| `atlas.js` | Atlas-PNG + JSON (Rahmen mit Anker, Animationen aus `<name>-<nr>`, 2 px Abstand mit Randverlängerung, ≤ 2048 px) und Einzelbilder | `grafik/` des Zeichners + `assets/quellen/atlas.json` |
-| `sounds.js` | `.m4a` (AAC) und `.mp3` per ffmpeg | Rezepten in `assets/quellen/sounds.json` |
-| `modell.js` | `.glb` (GLTFExporter im kopflosen Chromium) | `assets/quellen/modelle/<name>.js` |
-| `manifest.js` | `assets/assets.json` mit Version (Fingerabdruck) und Größen; meldet das Budget, Rückgabewert 1 bei Überschreitung | allem in `assets/` |
-| `png.js` | PNG lesen und schreiben ohne Pakete (Hilfe für `atlas.js`) | – |
-
-```bash
-W=.claude/skills/game-programmierung/werkzeuge
-node $W/atlas.js spiele/<name> && node $W/sounds.js spiele/<name> && node $W/modell.js spiele/<name> && node $W/manifest.js spiele/<name>
-```
-Vorbild mit Test: `ausbildung/uebungen/stufe-9/` (Ladebildschirm, Atlas, Animation, Sound, Ersatz, Modell).
+- **Einbauen:** `neues-spiel.js` kopiert alle Bausteine unverändert nach `<spiel>/js/kern/`. Später dazukommende genauso kopieren (ein Spiel auf GitHub Pages kann nicht aus `.claude/` laden), Kopfkommentar behalten.
+- **Ändern:** Braucht ein Spiel mehr, wird der Baustein hier verbessert, sein Test erweitert und `node <skill>/bausteine/tests/alle.js` grün, dann neu kopiert. Keine stillen Abweichungen in der Kopie.
+- **Tests:** `node <skill>/bausteine/tests/alle.js` (alle Bausteine mit Browser-Tests auf den Ports 8880–8889, dazu die Werkzeuge, das Gerüst 2D und 3D und das Paket). `node <skill>/bausteine/tests/gegenprobe.js` baut Bausteine, Werkzeuge und Vorlagen absichtlich kaputt und zeigt, dass ihr Test rot wird.
 
 ## Grundregeln
 - **Technik:** reine ES-Module, kein Build, keine npm-Pakete im Spiel. 2D mit Canvas 2D, 3D mit Three.js `0.170.0` per Import-Map. Andere Bibliotheken sind eine Technik-Entscheidung für Lukas.
-- **Ort:** jedes Spiel in `spiele/<name>/`, Tests in `tests/<name>/`. Läuft über GitHub Pages unter `neidelbert.github.io/raft/spiele/<name>/`.
+- **Ort:** jedes Spiel in einem eigenen Ordner (`spiele/<name>/`), sein Test in `spiele/<name>/tests/`. Läuft über GitHub Pages unter `<benutzer>.github.io/<repo>/spiele/<name>/`.
 - **Namen:** Deutsch, ohne Umlaute im Code (`groesse`, `gegner`). Dateien klein mit Bindestrich. Konstanten-Objekte GROSS.
 - **Zahlen** gehören nach `js/config/`, nie verstreut in die Logik. Jede Zahl bekommt einen Kommentar.
 - **Eine Datei, eine Aufgabe.** Dateien über etwa 300 Zeilen werden aufgeteilt. Regeln (Rechnen) und Zeichnen in getrennten Funktionen, Regeln ohne DOM, damit `node` sie testen kann.
@@ -94,7 +115,7 @@ Vorbild mit Test: `ausbildung/uebungen/stufe-9/` (Ladebildschirm, Atlas, Animati
 
 ## Arbeitsweise
 1. Datenfluss aufschreiben (oben in `main.js`): Eingabe → Zustand → Regeln → Zeichnen → Speichern.
-2. Gerüst zuerst: Seite mit Bausteinen (Schleife, Bildschirm, Steuerung) startet ohne Fehler, `window.spiel.bereit` ist gesetzt.
+2. Gerüst zuerst (`neues-spiel.js`): Seite startet ohne Fehler, `window.spiel.bereit` ist gesetzt, der Gerüst-Test ist grün.
 3. Dann eine Funktion nach der anderen: bauen → Test erweitern → Test grün → weiter.
 4. Nie fünf Dinge auf einmal ändern. Ist ein Test rot, erst fragen: Ist der Test richtig? Dann reparieren.
 5. Bleibt ein Fehler hartnäckig: Ursache eingrenzen (Konsole, `window.spiel` auslesen, Bildschirmfoto mit `seite.screenshot`, dann das Bild ansehen). Raten und blind ändern bringt nichts. Eine Meldung kann mehrere Ursachen haben: nach dem ersten Fund weitersuchen. Nach drei erfolglosen Anläufen an den Spiel-Leiter melden, was genau fehlschlägt.
@@ -111,14 +132,14 @@ Vorbild mit Test: `ausbildung/uebungen/stufe-9/` (Ladebildschirm, Atlas, Animati
 - [ ] Assets nur über das Manifest; `manifest.js` ohne Budget-Überschreitung; Test mit fehlender und mit hängender Datei (Seite läuft mit Ersatz)
 - [ ] Bildschirmfoto angesehen: sieht es aus wie gewollt?
 - [ ] Gegenprobe gemacht: Test wird gegen absichtlich kaputten Code rot
-- [ ] `bash tests/alle-tests.sh` grün (das Alte läuft weiter)
+- [ ] Alle Tests des Projekts grün (das Alte läuft weiter; gibt es einen Gesamttest, den)
 - [ ] Eigenes Code-Review gemacht (Fehler → Leistung → Wartbarkeit → Stil, siehe `wissen/haltung.md`)
-- [ ] Technische Schulden in `spiele/<name>/SCHULDEN.md` eingetragen
+- [ ] Technische Schulden in `<spiel>/SCHULDEN.md` eingetragen
 - [ ] Gelerntes ins Lernbuch eingetragen und die Regel in die passende Wissensdatei übernommen
-- [ ] Git-Commit mit deutscher Nachricht
+- [ ] Git-Commit mit deutscher Nachricht (wenn der Auftrag es verlangt)
 
-## Übergabebericht (`berichte/JJJJ-MM-TT-<spiel>-<auftrag>.md`)
-Für Lukas geschrieben: erst das Ergebnis, ohne Fachwörter. Was nicht geklappt hat, steht ehrlich vorne.
+## Übergabebericht
+Als Datei dort, wo das Projekt Berichte ablegt (sonst `<spiel>/BERICHT.md`), Name mit Datum, Spiel und Auftrag. Für Lukas geschrieben: erst das Ergebnis, ohne Fachwörter. Was nicht geklappt hat, steht ehrlich vorne.
 1. Was wurde gebaut? (dazu die Schritte, in die Horst die Aufgabe zerlegt hat)
 2. Welche Dateien wurden geändert?
 3. Testergebnis (Zahl der Prüfungen, Gegenprobe, was nicht automatisch prüfbar ist)

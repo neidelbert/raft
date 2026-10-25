@@ -1,0 +1,28 @@
+/* Vollbild, Touch-Einstellungen, Oberfläche (2D und 3D gleich). Farben der Tafeln: Startwerte. */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #1c2b3a; overscroll-behavior: none; }
+body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+       -webkit-tap-highlight-color: transparent; font-family: -apple-system, system-ui, sans-serif; color: #fff; }
+canvas#leinwand { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; touch-action: none; }
+#oberflaeche { position: fixed; inset: 0; pointer-events: none; }
+#feld-joystick { position: absolute; left: 0; top: 0; width: 50%; height: 100%; pointer-events: auto; touch-action: none; }
+#joystick-ring, #joystick-daumen { position: absolute; left: 0; top: 0; border-radius: 50%; pointer-events: none; }
+#joystick-ring { border: 3px solid rgba(255, 255, 255, 0.45); box-sizing: border-box; }
+#joystick-daumen { background: rgba(255, 255, 255, 0.55); }
+#joystick-ring[hidden], #joystick-daumen[hidden] { display: none; }
+#knopf-ton { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right));
+  min-width: 48px; min-height: 48px; padding: 0 12px; border: 0; border-radius: 24px; background: rgba(0, 0, 0, 0.35);
+  color: #fff; font: 600 15px -apple-system, system-ui, sans-serif; pointer-events: auto; touch-action: none; transition: transform 0.08s; }
+#knopf-ton.gedrueckt { transform: scale(0.92); }
+#leiste { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: calc(16px + env(safe-area-inset-left));
+  display: flex; gap: 16px; font-size: 20px; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+#leiste[hidden] { display: none; }
+.tafel { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; font-size: 22px; font-weight: 600; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
+.tafel[hidden] { display: none; }
+.tafel h1 { margin: 0 0 12px; font-size: 34px; }
+#laden { background: #1c2b3a; pointer-events: auto; }        /* deckt alles ab, solange geladen wird */
+#titel, #ende { background: rgba(0, 0, 0, 0.35); pointer-events: none; }   /* das Tippen fängt main.js am window ab */
+.hinweis { font-size: 16px; font-weight: 400; max-width: 300px; }
+.balken { width: 220px; height: 14px; border-radius: 7px; background: rgba(255, 255, 255, 0.25); overflow: hidden; }
+#balken-fuellung { width: 100%; height: 100%; background: #f5c534; transform: scaleX(0); transform-origin: left; transition: transform 0.15s; }
+#hinweis-neu-laden { background: #1c2b3a; pointer-events: auto; }

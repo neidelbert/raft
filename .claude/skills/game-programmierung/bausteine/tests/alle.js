@@ -1,4 +1,4 @@
-// Alle Baustein-Tests nacheinander: node .claude/skills/game-programmierung/bausteine/tests/alle.js
+// Alle Baustein-Tests nacheinander: node <skill>/bausteine/tests/alle.js
 // Jeder Test läuft als eigener Prozess; die Ausgabe wird ganz gelesen (nie mit head abschneiden, Lernbuch Stufe 5).
 // Ausführlich: ALLES=1 zeigt jede Prüfung. BAUSTEINE=<ordner> testet eine Kopie (siehe gegenprobe.js).
 const fs = require('fs');

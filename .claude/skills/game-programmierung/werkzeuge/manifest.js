@@ -5,7 +5,7 @@
 //   Budget: Bytes des Startpakets (alles außer „spaeter“) und ausgepackter Bildspeicher (Breite × Höhe × 4 aller
 //   Bilder und Atlanten). Grenze überschritten → Meldung „ÜBER DEM BUDGET“ und Rückgabewert 1 (assets.json wird
 //   trotzdem geschrieben, damit man weiterarbeiten kann).
-// Aufruf:   node .claude/skills/game-programmierung/werkzeuge/manifest.js <spielordner>
+// Aufruf:   node <skill>/werkzeuge/manifest.js <spielordner>
 //   Reihenfolge: atlas.js → sounds.js → modell.js → manifest.js.
 // Liest:    <spielordner>/assets/ (atlas/*.json + .png, bilder/*, sounds/*, schriften/*.woff2, modelle/*.glb) und die
 //   Vorgaben <spielordner>/assets/quellen/manifest.json (alles freiwillig):

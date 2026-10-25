@@ -37,7 +37,7 @@ const h = require('./hilfe.js');
   // Kein neuer Speicher beim Holen und Zurückgeben
   const q = erstellePool(240, ['x', 'y', 'vx', 'vy']);
   const schritt = () => {
-    while (q.hole() !== -1) { /* auffüllen */ }
+    for (let n = 0; n < q.max && q.hole() !== -1; n++) { /* auffüllen; begrenzt, damit ein kaputter Pool rot meldet statt hängt */ }
     for (let k = 0; k < 120; k++) q.gib(k);
   };
   const angelegt = await h.angelegterSpeicher(schritt, 20000, /pool\.js/);

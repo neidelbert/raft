@@ -38,12 +38,10 @@ function pngTests(ordner) {
   for (let i = 0; i < bild.daten.length; i++) bild.daten[i] = (i * 7919) % 256;
   const zurueck = lesePng(schreibePng(bild));
   h.pruefe(zurueck.breite === 37 && zurueck.hoehe === 23 && Buffer.from(zurueck.daten).equals(Buffer.from(bild.daten)), 'png: schreiben und wieder lesen ergibt dieselben Pixel');
-  const wiese = path.join(h.ORDNER, '..', '..', '..', '..', 'ausbildung', 'grafik-stufe-9', 'grafik', 'boden', 'wiese.png');
+  const wiese = path.join(h.ORDNER, 'tests', 'seite', 'grafik', 'boden', 'wiese.png');   // Wiese des Zeichners (RGB, ohne Alpha)
   const figur = path.join(h.ORDNER, 'tests', 'seite', 'grafik', 'figuren', 'figur.png');
-  if (fs.existsSync(wiese)) {
-    const w = lesePng(fs.readFileSync(wiese));
-    h.pruefe(w.breite === 512 && w.daten[3] === 255, 'png: RGB-Bild des Zeichners lesbar (ohne Alpha → undurchsichtig)');
-  }
+  const w = lesePng(fs.readFileSync(wiese));
+  h.pruefe(w.breite === 512 && w.daten[3] === 255, 'png: RGB-Bild des Zeichners lesbar (ohne Alpha → undurchsichtig)');
   const f = lesePng(fs.readFileSync(figur));
   h.pruefe(f.breite === 213 && f.daten[3] === 0, 'png: RGBA-Bild des Zeichners lesbar (Ecke durchsichtig)');
   let meldung = '';
@@ -160,6 +158,10 @@ function soundTests(ordner) {
 }
 
 async function modellTests(ordner) {
+  const ohne = fs.mkdtempSync(path.join(os.tmpdir(), 'modell-ohne-'));   // 2D-Spiel ohne Modell-Quellen
+  const leer = await baueModelle(ohne, [], { still: true });
+  h.pruefe(Array.isArray(leer) && leer.length === 0 && !fs.existsSync(path.join(ohne, 'assets', 'modelle')), 'modell: ohne Quellen „nichts zu tun“, kein Fehler');
+  fs.rmSync(ohne, { recursive: true, force: true });
   schreibe(path.join(ordner, 'assets', 'quellen', 'modelle', 'kiste.js'),
     'export default function baue(THREE) { const g = new THREE.Group(); g.add(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0xff0000 }))); return g; }\n');
   schreibe(path.join(ordner, 'assets', 'quellen', 'modelle', 'kaputt.js'), 'export default function baue() { return 42; }\n');

@@ -7,8 +7,8 @@
 // Quelle:   <spielordner>/assets/quellen/modelle/<name>.js, ohne eigene Importe:
 //   export default function baue(THREE) { const gruppe = new THREE.Group(); …; return gruppe; }
 //   Farben als MeshStandardMaterial({ color, flatShading: true }); Maße in Metern. Ohne Texturen (keine Bilddateien).
-// Aufruf:   node .claude/skills/game-programmierung/werkzeuge/modell.js <spielordner> [name …]
-//   Ohne Namen: alle Modelle im Quellordner. Schreibt <spielordner>/assets/modelle/<name>.glb und meldet die Dreiecke.
+// Aufruf:   node <skill>/werkzeuge/modell.js <spielordner> [name …]
+//   Ohne Namen: alle Modelle im Quellordner (fehlt er, meldet es „nichts zu tun“). Schreibt <spielordner>/assets/modelle/<name>.glb und meldet die Dreiecke.
 //   Danach manifest.js aufrufen.
 // Aus Code: const { baueModelle } = require('./modell.js'); await baueModelle(ordner, ['boot']);
 const fs = require('fs');
@@ -58,7 +58,12 @@ async function exportiereImBrowser(name) {
 
 async function baueModelle(spielordner, namen = null, { still = false } = {}) {
   const quellen = path.join(spielordner, 'assets', 'quellen', 'modelle');
-  const liste = namen && namen.length ? namen : fs.readdirSync(quellen).filter((d) => d.endsWith('.js')).map((d) => d.slice(0, -3));
+  const ohneNamen = !namen || !namen.length;
+  if (ohneNamen && !fs.existsSync(quellen)) {   // 2D-Spiel ohne Modelle: nichts zu tun, kein Fehler
+    if (!still) console.log('Keine Modell-Quellen (assets/quellen/modelle/), nichts zu tun.');
+    return [];
+  }
+  const liste = ohneNamen ? fs.readdirSync(quellen).filter((d) => d.endsWith('.js')).map((d) => d.slice(0, -3)) : namen;
   const ziel = path.join(spielordner, 'assets', 'modelle');
   fs.mkdirSync(ziel, { recursive: true });
   const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });

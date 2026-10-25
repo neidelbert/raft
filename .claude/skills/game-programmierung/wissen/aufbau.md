@@ -6,19 +6,20 @@ spiele/<name>/
 ├── index.html          Startseite: Canvas, Knöpfe, (3D: Import-Map)
 ├── stil.css            Vollbild, Touch-Einstellungen, Oberfläche
 ├── grafik/             vom Zeichner: PNGs + grafik.json (Horst ändert hier nichts)
+├── assets/             quellen/ (atlas.json, sounds.json, manifest.json, modelle/) → erzeugte Dateien + assets.json
 ├── SCHULDEN.md         technische Schulden (was, warum, Aufwand)
-└── js/
-    ├── main.js         Start, Datenfluss (Kommentar oben), Hauptschleife
-    ├── test-schnittstelle.js   window.spiel (nur lesen) und mit ?test=1 window.spiel.test
-    ├── config/         nur Daten: spiel.js, spieler.js, gegner.js, effekte.js, ton.js … (jede Zahl kommentiert)
-    ├── kern/           Kopien der Bausteine: schleife.js, bildschirm.js, zufall.js, speicher.js, bilder.js, ton.js, pool.js, gitter.js
-    ├── steuerung/      joystick.js, knopf.js (Bausteine)
-    ├── ablauf/         zustaende.js (Baustein), runde.js (Regeln einer Runde)
-    ├── welt/           Spielinhalt nach Bereichen: spieler.js, gegner.js, partikel.js (Baustein), effekte.js …
-    └── oberflaeche/    Anzeige (Punkte, Leben), Tafeln, Hinweise
-tests/<name>/<name>-test.js
+├── LIESMICH.md         was wo liegt, nächste Schritte
+├── js/
+│   ├── main.js         Start, Datenfluss (Kommentar oben), Zustände, Hauptschleife
+│   ├── test-schnittstelle.js   window.spiel (nur lesen) und mit ?test=1 window.spiel.test
+│   ├── config/         nur Daten: spiel.js, steuerung.js, welt.js, später gegner.js, effekte.js … (jede Zahl kommentiert)
+│   ├── kern/           unveränderte Kopien aller Bausteine (schleife, bildschirm, joystick, knopf, zustaende, speicher, assets …)
+│   ├── regeln/         Spielregeln ohne DOM: spieler.js, runde.js, später gegner.js, treffer.js … (mit Node testbar)
+│   ├── welt/           Zeichnen: darstellung.js (2D Canvas oder 3D Three.js), später Effekte, Ersatz-Zeichnungen
+│   └── oberflaeche/    HTML-Anzeige: Tafeln, Leiste, Ladebalken, Joystick-Anzeige
+└── tests/              <name>-test.js (Regeln ohne Browser + Browser-Test), test-hilfe.js (Kopie aus dem Skill)
 ```
-Ordner entstehen mit ihrer ersten Datei. Kleine Spiele brauchen nicht alle. Bausteine kommen aus `../bausteine/` (siehe `SKILL.md`) und werden unverändert kopiert; `partikel.js` braucht `pool.js` im selben Ordner (Import-Pfad im Kopf der Datei anpassen, wenn sie getrennt liegen).
+So legt es `neues-spiel.js` an (2D und 3D unterscheiden sich nur in `index.html`, `js/welt/darstellung.js`, `js/config/welt.js` und den Asset-Quellen). Weitere Ordner entstehen mit ihrer ersten Datei. Bausteine kommen aus `../bausteine/` (siehe `SKILL.md`) und werden unverändert kopiert; `partikel.js` braucht `pool.js` im selben Ordner.
 
 ## index.html (2D)
 ```html
