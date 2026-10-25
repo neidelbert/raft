@@ -33,13 +33,13 @@ async function eigenePruefung() {
   } catch (e) { t.pruefe(false, `zufall nicht nutzbar: ${e.message}`); }
   try {
     const p = await import(url("pool"));
-    const erstelle = Object.values(p).find((f) => typeof f === "function");
-    const pool = erstelle(() => ({}), 3);
-    const hole = pool.hole || pool.nimm, gib = pool.gib || pool.frei || pool.zurueck;
-    const x = [hole(), hole(), hole(), hole()];
-    t.pruefe(x[0] && x[1] && x[2] && !x[3], "pool: Grenze wird eingehalten, kein Absturz");
-    gib(x[0]);
-    t.pruefe(hole() === x[0], "pool: zurückgegebenes Objekt wird wiederverwendet");
+    // Schnittstelle laut Kopfkommentar: erstellePool(max, felder), hole() → Index oder −1, gib(i), Felder als Float64Array.
+    const pool = p.erstellePool(3, ["x"]);
+    const x = [pool.hole(), pool.hole(), pool.hole(), pool.hole()];
+    t.pruefe(x[0] === 0 && x[1] === 1 && x[2] === 2 && x[3] === -1, "pool: Grenze wird eingehalten, kein Absturz");
+    pool.x[2] = 7; pool.gib(0);
+    t.pruefe(pool.anzahl === 2 && pool.x[0] === 7 && pool.hole() === 2, "pool: Eintrag zurück, letzter rückt nach, Platz wird wiederverwendet");
+    t.pruefe(pool.x instanceof Float64Array, "pool: Felder als feste Zahlen-Liste (kein neuer Speicher)");
   } catch (e) { t.pruefe(false, `pool nicht nutzbar: ${e.message}`); }
   try {
     global.localStorage = { d: { kaputt: "nicht{json" }, getItem(k) { return this.d[k] ?? null; }, setItem(k, v) { this.d[k] = String(v); }, removeItem(k) { delete this.d[k]; } };

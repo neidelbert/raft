@@ -1,5 +1,7 @@
 # Horsts Zeugnis
 
+**Ausbildung abgeschlossen am 25.10.2026: alle 8 Stufen bestanden.** In 3 Stufen lag ein roter Punkt an der Prüfung des Ausbilders, nicht an Horst; die Prüfungen wurden korrigiert und mit Gegenproben gegen fehlerhaften Code abgesichert.
+
 | Stufe | Thema | Prüfung des Ausbilders | Horsts eigener Test | Ergebnis | Bemerkung |
 |---|---|---|---|---|---|
 | 1 | Grundgerüst und Hauptschleife | 9/9 | 25/25 | Stufe 1 bestanden | Sauber aufgeteilt (config, kern, welt), Ballregeln ohne DOM testbar. Eigenen Fehler (Zeitsprung nach Tab-Wechsel) selbst gefunden, Ursache behoben, Regel ins Lernbuch. Tempo auch bei gebremstem Gerät richtig. |
@@ -9,6 +11,7 @@
 | 5 | Fehlersuche und Code-Review | 10/10 | 22/22 | Stufe 5 bestanden | Alle 4 gemeldeten Fehler an der Ursache behoben, insgesamt 6 Ursachen gefunden (mehr als versteckt waren). Für jeden Fehler zuerst ein Test, der gegen den alten Code rot ist (12 rote Prüfungen gegen die Vorlage). Review und Bericht für Lukas verständlich. Ein roter Punkt lag an der Prüfung des Ausbilders (Simulation zu langsam, verwaister Testserver), nicht an Horst. |
 | 6 | Spielgefühl, Sound, Ersatzbilder | 13/13 | 165/165 | Stufe 6 bestanden | Treffer-Blitz, Wackeln (nach 0,28 s ruhig), Partikel aus festem Vorrat, WebAudio erst nach Berührung, Ton-Einstellung mit Spielstand-Version 2 und Übernahme alter Stände. Grenze der Aufgabe selbst erkannt und belegt (Browser meldet fehlende Dateien immer, beide Wege getestet). Gegenprobe gegen eigenen Test gemacht. |
 | 7 | 3D mit Three.js | 8/8 | 46/46 | Stufe 7 bestanden | Low-Poly-Boot aus verschmolzenen Formen, 30 Bojen als ein InstancedMesh, nur 4 Zeichenaufrufe (erlaubt 20), Kamera folgt bildratenunabhängig, WebGL-Verlust abgefangen. Fünf Gegenproben mit absichtlichen Fehlern gegen den eigenen Test. Komplizierte Lösung ohne Nutzen selbst zurückgebaut. |
+| 8 | Abschluss: der eigene Skill | 89/89 | 247/247 (13 Tests) | Stufe 8 bestanden | 12 Bausteine aus dem eigenen Übungscode verallgemeinert, jeder mit Kopfkommentar und Test. Gegenprobe mit 20 absichtlichen Fehlern, alle rot. Handbuch überarbeitet: veralteter Beispielcode ersetzt, der alte Fehler weitergegeben hätte, Lernbuch-Regeln an die richtigen Stellen. Lücken ehrlich benannt (Safari, kein 3D-Baustein). |
 
 ## Zeichner
 | Testaufgabe | Ergebnis | Bemerkung |

@@ -41,10 +41,11 @@ Lukas hat festgelegt, wie Horst arbeiten soll (25.10.2026). Jede Eigenschaft ist
 - **Schnittstellen** zwischen Modulen sind klein und beschrieben: Was gibt `erstelleGegner()` zurück, welche Felder hat ein Gegner? Das steht oben in der Datei als kurzer Kommentar.
 - Daten (Gegnertypen, Waffen, Level) sind Listen in `config/`, Verhalten ist Code. Einen neuen Gegnertyp gibt es mit einem neuen Eintrag, ohne den Code umzubauen.
 - Leistung und Speicher plant er von Anfang an mit (Pool, Gitter, keine neuen Objekte in der Schleife), statt sie später zu flicken.
+- **Bausteine zuerst:** Was es in `bausteine/` geprüft gibt (Schleife, Bildschirm, Joystick, Speicher …), baut er nicht neu. Fehlt einem Baustein etwas, verbessert er ihn samt Test, statt die Kopie im Spiel still abzuändern.
 
 ### Werkzeuge und Methoden
 - **Git:** kleine Commits mit deutscher Nachricht, die sagt, was und warum. Ein Commit pro abgeschlossenem Schritt, damit man zurückkann.
-- **Automatisch testen:** Jeder Auftrag hat einen Playwright-Test (`testen.md`). Reine Rechenregeln (Schaden, Punkte, Kollision) werden zusätzlich ohne Browser mit `node` getestet.
+- **Automatisch testen:** Jeder Auftrag hat einen Playwright-Test (`testen.md`). Reine Rechenregeln (Schaden, Punkte, Kollision) werden zusätzlich ohne Browser mit `node` getestet. Jeder Test bekommt eine Gegenprobe: gegen absichtlich kaputten Code muss er rot sein.
 - **Kanban:** Aufträge laufen über Idee → Geplant → In Arbeit → Test → Fertig. Horst arbeitet immer nur an einem.
 - **Sprachen:** JavaScript (ES-Module) für das Spiel, Python und Node für Werkzeuge. Neue Sprachen nur, wenn ein Werkzeug sie wirklich braucht.
 

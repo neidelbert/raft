@@ -1,29 +1,35 @@
 # Spielgefühl: Damit es sich gut anfühlt
 
-Wie stark ein Effekt wirkt, entscheidet Lukas. Horst baut alles abschaltbar und mit Werten in `config/`.
+Wie stark ein Effekt wirkt, entscheidet Lukas. Horst baut alles abschaltbar (Stärke 0 = aus) und mit Werten in `config/effekte.js`.
 
 ## Rückmeldung auf jede Handlung
 | Ereignis | Rückmeldung (klein, aber sofort) |
 |---|---|
 | Treffer am Gegner | kurz weiß aufblitzen (0,08 s), kleiner Rückstoß, Schadenszahl steigt auf und verblasst |
-| Spieler getroffen | rot aufblitzen, Bildschirm wackelt kurz, 0,5–1 s unverwundbar mit Blinken |
+| Spieler getroffen | rot aufblitzen, Bildschirm wackelt kurz, 0,5–1 s unverwundbar mit Blinken, tiefer Ton |
 | Gegner besiegt | Partikel in Gegnerfarbe, kurzer Ton, Beute fliegt heraus |
-| Einsammeln | Gegenstand fliegt zur Anzeige, Zahl hüpft kurz größer |
-| Knopf gedrückt | Knopf wird kleiner (Skalierung 0,92), Ton |
+| Einsammeln | Partikel, hoher Ton, Gegenstand fliegt zur Anzeige, Zahl hüpft kurz größer |
+| Knopf gedrückt | Knopf wird kleiner (Klasse `gedrueckt`, Skalierung 0,94), Ton |
+
+- Jede Rückmeldung läuft über eine Funktion (`beiTreffer()`, `beimSammeln(x, y)`), die Spiel und Test-Hilfe gemeinsam nutzen.
+- Effekte laufen in jedem nicht pausierten Bild weiter, auch nach dem Wechsel in „ende“ (letzter Treffer).
+- Effekte bekommen einen eigenen Zufall (`seed + 1`): So ändern sie nie die Folge der Gegner, und gleicher Seed heißt gleiches Spiel.
 
 ## Werkzeuge
-- **Wackeln (Screen Shake):** `wackeln = Math.min(1, wackeln + staerke)`, abklingen mit `wackeln -= dt * 3`. Versatz = `max * wackeln² * (zufall*2-1)`. Nie dauerhaft.
+- **Wackeln (Screen Shake):** `wackeln = Math.min(1, wackeln + staerke)` bei Treffer, abklingen mit `wackeln -= dt * abklingen` (z. B. 2,5: von 1 auf 0 in 0,4 s). Versatz = `round(max * wackeln² * (zufall*2-1))` in ganzen Punkten, nur die Spielwelt verschieben. Nie dauerhaft; im Test: nach unter 1 s wieder 0, auch bei 10 Bildern/s.
+- **Aufblitzen:** eingefärbte Kopie des Bildes einmal beim Start (`faerbeEin` in `bausteine/bilder.js`), beim Treffer mit abnehmender Deckkraft darüber zeichnen.
 - **Treffer-Pause (Hit Stop):** bei großen Treffern 0,03–0,06 s die Spielzeit anhalten (`dt = 0`). Wirkt wuchtig.
 - **Weiche Übergänge (Easing):** `ausEase = 1 - (1 - t) ** 3` für Aufpoppen, `federn = 1 + 2.7 * (t-1)**3 + 1.7 * (t-1)**2` für Überschwingen.
-- **Partikel:** aus einem Pool, je 0,3–0,8 s Lebenszeit, Geschwindigkeit nimmt ab, Größe und Deckkraft gehen gegen 0. Höchstens etwa 200 gleichzeitig.
+- **Partikel:** `bausteine/partikel.js`: fester Vorrat, je 0,3–0,8 s Lebenszeit, werden langsamer, Größe und Deckkraft gehen gegen 0. Höchstens etwa 200 gleichzeitig.
 - **Quetschen und Dehnen:** Beim Landen kurz breit und flach (1,2 × 0,8), beim Springen schmal und hoch. Wirkt lebendig, braucht nur Bildskalierung.
 - **Wackeln im Leerlauf:** Figuren atmen leicht (`1 + sin(zeit*3)*0.03`). Die Bilder sind Einzelbilder, Bewegung entsteht per Code.
+- **Ton:** `bausteine/ton.js`, Klänge in `config/ton.js` (Treffer tief und fallend, Einsammeln hoch und steigend).
 
 ## Schwierigkeit
 - Langsam steigern: z. B. Gegner pro Minute `basis * (1 + minute * 0.15)`, mit Obergrenze.
 - Die ersten 30 Sekunden sollen fast immer gelingen, dann wird es spannend.
 - Wellen mit Pausen dazwischen statt gleichmäßigem Druck.
-- Fairness: Gefahr ist vorher sichtbar (Warnung, Ausholen), Treffer-Kreise eher etwas kleiner als das Bild.
+- Fairness: Gefahr ist vorher sichtbar (Warnung, Ausholen), Treffer-Kreise eher etwas kleiner als das Bild, nichts entsteht direkt unter der Figur.
 - Alle Werte in `config/` mit Kommentar, damit Lukas sie zum Testen ändern kann.
 
 ## Hinweise statt Tutorial

@@ -2,6 +2,8 @@
 
 Vor jeder Aufgabe lesen. Nach jeder Aufgabe eintragen: Datum · Wer · Was passierte · **Regel für die Zukunft**
 
+Das Lernbuch ist der Verlauf. Die Regeln bis Stufe 7 stehen seit Stufe 8 (25.10.2026) auch in den Wissensdateien und in den Bausteinen (`../bausteine/`). Neue Regel: hier eintragen **und** in die passende Wissensdatei übernehmen.
+
 ## Aus früheren Projekten (Letzte Nacht, Raft 3D)
 - Joystick: Beim Loslassen wurde nur `x` zurückgesetzt, die Figur lief weiter.
   **Regel:** Loslassen und `pointercancel` setzen alle Eingabewerte zurück. Jeder Steuerungstest prüft den Stillstand danach.
@@ -54,3 +56,8 @@ Vor jeder Aufgabe lesen. Nach jeder Aufgabe eintragen: Datum · Wer · Was passi
   **Regel:** Zeichenaufrufe in jedem Bild per eigener `requestAnimationFrame`-Schleife mitschreiben und das Höchste prüfen. Bewegte Instanzen: `frustumCulled = false` (ein Aufruf kostet wenig) oder die Hülle neu rechnen. Wasserfläche: Hülle einmal groß genug setzen. Modelle aus Grundformen mit Eckfarben zu einer Geometrie verschmelzen, so ist ein Modell ein Zeichenaufruf.
 - 25.10.2026 · Horst · Stufe 7: Eine Richtungsprüfung mit Tempo-Grenze („mindestens 6 m in 1,5 s“) wurde in der Gegenprobe rot, nur weil die Seite langsamer zeichnete (Deckelung). Die Gegenprobe deckte also eine Schwäche im Test auf, nicht im Spiel. Der Playwright-iPhone-13 hat Pixel-Ratio 3, damit lässt sich die Begrenzung auf 2 direkt prüfen. Three.js legt in Chrome selbst etwa 3 KB pro Bild an; eigene Matrizen von Hand statt `Object3D` brachten anfangs sogar mehr (Interpreter, Lernbuch Stufe 4).
   **Regel:** Im Browser nur die Richtung mit kleiner Grenze prüfen, das Tempo in der Regel ohne Browser. Gegenproben mit mehreren absichtlichen Fehlern (Richtung, Pixel-Ratio, Kamera, Zeichenaufrufe) laufen lassen. Speicher erst messen, dann optimieren; was nach dem Aufwärmen verschwindet, nicht umbauen.
+- 25.10.2026 · Horst · Stufe 8 (eigener Skill): Aus den Übungen wurden zwölf Bausteine mit Tests. Dabei fiel auf: Im Handbuch stand noch die alte Hauptschleife (`letzte = jetzt`, also genau der Zeitsprung-Fehler aus Stufe 1), dazu ein Speichern, das immer schreibt, und ein Gitter mit `push(...z)`, das pro Bild Speicher anlegt. Und die Speicher-Messung der Partikel zeigte 13 Byte pro Bild, nach längerem Aufwärmen 0 (`streuePartikel` läuft nur einmal pro Bild und bleibt lange im Interpreter).
+  **Regel:** Was im Lernbuch gelernt wird, sofort auch im Beispielcode der Wissensdateien ändern, sonst lehrt das Handbuch den alten Fehler weiter. Bewährten Code als Baustein mit Test ablegen und kopieren statt abschreiben. Speicher-Tests für Funktionen, die selten laufen, länger aufwärmen (40.000 Aufrufe).
+- 25.10.2026 · Horst · Stufe 8: Die Gegenprobe „Joystick ohne `pointercancel`“ blieb grün: Beim echten Abbruch kommt auch `lostpointercapture`, das ebenfalls alles zurücksetzt. Zwei Sicherungen verdecken sich gegenseitig, der Test sah keine einzeln. Und die Gegenprobe „Gitter leert nicht“ ließ den Test abstürzen bzw. endlos laufen statt eine rote Prüfung zu zeigen.
+  **Regel:** Jeden Sicherungsweg einzeln prüfen (Ereignis mit der `pointerId` des liegenden Fingers nachgestellt per `dispatchEvent`). Schleifen im Test begrenzen und nach einer roten Grundprüfung früh beenden, damit ein kaputter Baustein rot meldet statt hängt.
+

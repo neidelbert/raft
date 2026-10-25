@@ -1,0 +1,12 @@
+html, body { margin: 0; height: 100%; overflow: hidden; background: #111; overscroll-behavior: none; }
+body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+       -webkit-tap-highlight-color: transparent; font-family: -apple-system, system-ui, sans-serif; }
+canvas { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; touch-action: none; }
+/* Linke Bildschirmhälfte: hier setzt der Daumen den schwebenden Joystick ab. */
+#feld-joystick { position: absolute; left: 0; top: 0; width: 50%; height: 100%; touch-action: none; }
+/* Runder Knopf rechts unten, 80 × 80 Punkte, Abstand zum Rand plus Safe-Area. */
+#knopf { position: absolute; width: 80px; height: 80px; border-radius: 50%; padding: 0;
+         right: calc(24px + env(safe-area-inset-right)); bottom: calc(24px + env(safe-area-inset-bottom));
+         touch-action: none; border: 3px solid rgba(255,255,255,0.55); background: rgba(255,180,60,0.35);
+         color: #fff; font: 600 15px -apple-system, system-ui, sans-serif; -webkit-appearance: none; appearance: none; }
+#knopf.gedrueckt { background: rgba(255,180,60,0.75); transform: scale(0.94); }

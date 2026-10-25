@@ -4,7 +4,7 @@
 cd "$(dirname "$0")/.." || exit 1
 fehler=0
 log=$(mktemp)
-liste=(werkzeuge/pruefe-team.js tests/*/*-test.js)
+liste=(werkzeuge/pruefe-team.js .claude/skills/game-programmierung/bausteine/tests/alle.js tests/*/*-test.js)
 for stufe in ausbildung/uebungen/stufe-*; do
   n=${stufe##*-}
   [ -f "ausbildung/pruefungen/stufe-$n.js" ] && grep -q "Stufe $n.*bestanden" ausbildung/ZEUGNIS.md 2>/dev/null && liste+=("ausbildung/pruefungen/stufe-$n.js")
