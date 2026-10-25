@@ -1,0 +1,20 @@
+[
+  {
+    "name": "figuren/figur",
+    "datei": "grafik/figuren/figur.png",
+    "breite": 213,
+    "hoehe": 256
+  },
+  {
+    "name": "gegenstaende/stern",
+    "datei": "grafik/gegenstaende/stern.png",
+    "breite": 128,
+    "hoehe": 128
+  },
+  {
+    "name": "gegner/gegner",
+    "datei": "grafik/gegner/gegner.png",
+    "breite": 256,
+    "hoehe": 230
+  }
+]
