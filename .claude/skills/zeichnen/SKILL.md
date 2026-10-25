@@ -30,6 +30,15 @@ Ziel: Jede Grafik ist im Spiel sofort erkennbar, passt im Stil zu allen anderen 
 - [ ] Keine Schrift in Bildern (Texte macht das Spiel, damit sie übersetzbar bleiben)
 - [ ] `render.js` ohne Fehler, Kontaktbogen angesehen
 
+## Animationen (Rahmen für Spritesheets)
+- Jeder Rahmen eine eigene SVG: `<gruppe>/<name>-<nr>.svg` (`figuren/held-lauf-1.svg` … `-6.svg`), Nummern ab 1, lückenlos.
+- **Alle Rahmen einer Animation haben dieselbe viewBox** und denselben Fußpunkt. Nur so wackelt nichts, wenn Horst sie hintereinander abspielt.
+- Zuerst den Mittel-Rahmen gut zeichnen, dann die anderen daraus ableiten. Nur bewegen, was sich bewegt (Beine, Arme, Flammen). Farben, Umriss und Gesicht bleiben gleich.
+- Laufzyklus mit 6 Rahmen: Kontakt → Tiefpunkt → Durchgang → Hochpunkt, dann gespiegelt mit dem anderen Bein. Der Körper hebt und senkt sich um etwa 3 % der Höhe.
+- Effekte (Explosion, Funken) mit 5–8 Rahmen: schnell groß, dann langsam zerfallen, der letzte Rahmen fast leer.
+- Prüfen: alle Rahmen nebeneinander auf dem Kontaktbogen ansehen und einen Streifen bauen (Rahmen nebeneinander, gleiche Grundlinie). Springt etwas, das stillstehen soll?
+- In der Meldung an Horst: Animationsname, Zahl der Rahmen, empfohlenes Tempo (Bilder pro Sekunde), Schleife ja/nein.
+
 ## Wissen
 - `stil.md` – der Haus-Stil: Formen, Proportionen, Farben, Umriss, Licht
 - `svg-techniken.md` – wie man in SVG schöne Cartoon-Grafik baut

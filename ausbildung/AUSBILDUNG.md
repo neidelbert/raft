@@ -68,3 +68,43 @@ Gemeinsame Regeln für alle Stufen:
 3. **Handbuch:** `SKILL.md` und die Wissensdateien so überarbeiten, dass ein neuer Programmierer ohne die Übungen genauso gut arbeitet: Bausteine-Tabelle (wann welcher), Regeln aus dem Lernbuch an die passende Stelle übernehmen, Widersprüche und Veraltetes entfernen. Das Lernbuch bleibt als Verlauf erhalten.
 4. **Bericht:** `ausbildung/uebungen/stufe-8/BERICHT.md` für Lukas: Was kann Horst jetzt, was hat sich am Skill geändert, wo sind noch Lücken?
 **Fertig, wenn:** alle Bausteine vorhanden, mit Kommentar und grünem Test; Handbuch verweist auf jeden Baustein; `node werkzeuge/pruefe-team.js` und `bash tests/alle-tests.sh` grün; keine Spiel-Dateien angelegt.
+
+---
+
+# Aufbaukurs: Assets und eigenständiger Skill (Ziel von Lukas, 25.10.2026)
+Ziel ist ein Programmierer-Skill, der Spiele **mit Assets** (Bilder, Animationen, Sounds, Schriften, 3D-Modelle) bauen kann, und zwar so, dass auch ein neuer Programmierer ohne Horsts Vorgeschichte damit arbeiten kann. Es entsteht weiterhin kein Spiel.
+
+## Stufe 9 – Assets
+**Lernziel:** vollständige Asset-Pipeline: Quellen → Werkzeuge → Manifest → Laden mit Fortschritt und Ersatz → Animation und Sound im Spiel. Wissen: `wissen/assets.md`.
+**Material:** Der Zeichner liefert in `ausbildung/grafik-stufe-9/` Rahmen-Animationen (Held läuft, Explosion, Münze dreht sich), Symbole und eine Bodenkachel, mit `MELDUNG.md` (Tempo, Fußpunkte).
+**Auftrag:**
+1. **Werkzeuge** im Skill (`.claude/skills/game-programmierung/werkzeuge/`), jedes mit Kopfkommentar und Aufruf-Beispiel:
+   - `atlas.js` – packt die PNGs einer Grafik-Ausgabe zu einem Atlas (PNG + JSON nach `wissen/assets.md`: Rahmen mit Anker, Animationen aus `<name>-<nr>`, 2 px Abstand mit Randverlängerung, höchstens 2048 × 2048, sonst mehrere Atlanten).
+   - `sounds.js` – erzeugt Sound-Effekte aus Rezepten (`assets/quellen/sounds.json`: Wellenform, Frequenzverlauf, Rauschen, Hüllkurve, Dauer) als WAV und wandelt sie mit `ffmpeg` in `.m4a` und `.mp3` um.
+   - `modell.js` – macht aus einem Low-Poly-Modell, das als JS-Modul beschrieben ist (`assets/quellen/modelle/<name>.js`, exportiert eine Funktion, die mit Three.js eine Gruppe baut), eine `.glb`-Datei (GLTFExporter im kopflosen Chromium).
+   - `manifest.js` – schreibt `assets/assets.json` (Version, alle Einträge, Größen) und meldet das Budget: Bytes des Startpakets, ausgepackter Bildspeicher. Grenze überschritten → Rückgabewert 1.
+2. **Bausteine** `bausteine/assets.js` (Manifest laden, Fortschritt melden, Zeitgrenze je Asset, Ersatz, Atlanten, Sounds dekodieren und abspielen, Schriften, Modelle über eine übergebene Lade-Funktion) und `bausteine/animation.js` (Spritesheet-Animation mit Delta-Zeit, Schleife oder einmal, „fertig“-Meldung, Rahmen zeichnen mit Anker), mit Tests in `bausteine/tests/` und Gegenprobe.
+3. **Übungsseite** `ausbildung/uebungen/stufe-9/` (Port 8890–8899), kein Spiel:
+   - `index.html`: Ladebildschirm mit Balken → „Tippen zum Starten“ → Wiese als Boden, der Held läuft per schwebendem Joystick nach links/rechts (Lauf-Animation, im Stand `held-steht`, Blickrichtung gespiegelt), Münzen drehen sich, Tippen in der rechten Hälfte löst dort eine Explosion (Animation einmal) mit Sound aus, Ton-Knopf mit Symbol.
+   - `modell.html`: zeigt das Modell `boot.glb` (aus `assets/quellen/modelle/boot.js` erzeugt) drehend in Three.js.
+**Test-Schnittstelle:**
+- `index.html`: `window.spiel = { bereit, zustand ('laden'|'start'|'laeuft'), fortschritt (0 bis 1), assets: { geladen: [], ersetzt: [], fehlend: [] }, held: { x, animation, rahmen, blick (1|-1) }, explosionen (Anzahl aktiv), sounds: { abgespielt (Zähler), dekodiert (Anzahl) }, atlas: { breite, hoehe } }`. `bereit` ist wahr, sobald die Seite läuft (auch während `laden`). Mit `?test=1`: `spiel.test.explosion(x, y)`.
+- `modell.html`: `window.modell = { bereit, ersatz (bool), dreiecke }`.
+**Fertig, wenn:**
+- Ladebildschirm erscheint, bevor Assets geladen sind; Fortschritt steigt nie zurück und erreicht 1; danach „start“, Tippen → „laeuft“.
+- Atlas höchstens 2048 × 2048; Rahmen mit Abstand; Animation „held-lauf“ wechselt beim Laufen die Rahmen mit dem Tempo aus der Meldung, im Stand `held-steht`; Blick nach links gespiegelt.
+- Explosion läuft einmal ab und verschwindet; dabei wird ein Sound abgespielt; Sounds liegen als `.m4a` und `.mp3` vor und werden dekodiert.
+- Fehlt eine Asset-Datei → Eintrag unter `ersetzt`/`fehlend`, Seite läuft. Antwortet der Server für eine Datei nie → nach der Zeitgrenze Ersatz, Seite läuft (höchstens 10 s).
+- `assets.json` hat eine Version, Adressen tragen `?v=<version>`; `manifest.js` meldet das Budget.
+- `modell.html` zeigt das Boot (`dreiecke` > 0); ohne `boot.glb` eine Ersatz-Box (`ersatz: true`), keine Abstürze.
+- Keine Konsolenfehler (außer der Browser-Zeile für absichtlich fehlende Dateien).
+
+## Stufe 10 – Eigenständiger Skill
+**Lernziel:** Der Skill funktioniert ohne Horst: ein neuer Programmierer bekommt nur den Skill und baut damit.
+**Auftrag:**
+1. **In sich geschlossen:** Alles, was der Skill braucht, liegt im Skill-Ordner: `werkzeuge/test-hilfe.js` (Kopie mit Hinweis, woher), die Asset-Werkzeuge, Bausteine, Wissen. Keine Verweise mehr auf Dateien außerhalb des Skills, außer auf das Spiel selbst.
+2. **Gerüst-Werkzeug** `werkzeuge/neues-spiel.js <zielordner> [--3d]`: legt ein startfähiges Spiel-Gerüst an: `index.html`, `stil.css`, `js/main.js` (Schleife, Bildschirm, Assets mit Ladebildschirm, Zustände Titel → Spiel → Ende, Joystick, Speicher, Ton-Knopf), `js/config/`, Kopien der Bausteine in `js/kern/`, `assets/` mit Manifest und einem Beispiel-Bild, `tests/<name>-test.js` (prüft das Gerüst), `SCHULDEN.md`, `LIESMICH.md` (nächste Schritte). Mit `--3d` statt Canvas eine Three.js-Szene. Das Gerüst startet ohne Konsolenfehler und sein eigener Test ist grün.
+3. **Handbuch:** `SKILL.md` so, dass ein Neuer in 5 Minuten weiß, wo er anfängt: „Neues Spiel in 5 Schritten“ (Gerüst → Assets → Spielregeln → Test → Bericht) ganz oben, Assets-Kapitel, Werkzeug-Tabelle.
+4. **Paket** `werkzeuge/paket.js`: baut `dist/game-programmierung.zip` (der Skill-Ordner, ohne Testseiten-Bildschirmfotos und Abfall) und `dist/zeichnen.zip` (Zeichner-Skill plus `render.js`), dazu `dist/INSTALLIEREN.md` (Claude Code: Ordner nach `.claude/skills/`; Claude.ai: Zip unter Einstellungen → Fähigkeiten hochladen).
+5. **Bericht** `ausbildung/uebungen/stufe-10/BERICHT.md` für Lukas.
+**Fertig, wenn:** Ein frischer Programmierer, der nur das entpackte Paket bekommt, legt in einem leeren Ordner mit `neues-spiel.js` ein Gerüst an, dessen Test grün ist, und versteht aus `SKILL.md` die nächsten Schritte (Prüfung durch den Ausbilder mit einem neuen Agenten); `node werkzeuge/pruefe-team.js` und `bash tests/alle-tests.sh` grün.

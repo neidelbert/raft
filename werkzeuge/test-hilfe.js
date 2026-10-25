@@ -49,7 +49,8 @@ function warteAufServer(port) {
 
 // Startet Server und Browser, öffnet die Seite. Gibt { seite, kontext, fehler, ende } zurück.
 // initSkript: Code, der vor dem Spiel läuft (z. B. localStorage sperren wie im privaten Modus).
-async function starte({ ordner, port, pfad = "index.html", geraet = "iPhone 13", warteAuf = "window.spiel && window.spiel.bereit", initSkript = null }) {
+// routen: async (kontext) => { await kontext.route(…) } – Netz-Anfragen umleiten, verzögern oder sperren.
+async function starte({ ordner, port, pfad = "index.html", geraet = "iPhone 13", warteAuf = "window.spiel && window.spiel.bereit", initSkript = null, routen = null }) {
   const wurzel = path.resolve(REPO, ordner);
   // Ein noch laufender alter Server würde sonst einen fremden Ordner ausliefern (falsches Testergebnis).
   if (await portBelegt(port)) throw new Error(`Port ${port} ist belegt (alter Testserver?). Beenden mit: pkill -f "http.server ${port}"`);
@@ -58,7 +59,7 @@ async function starte({ ordner, port, pfad = "index.html", geraet = "iPhone 13",
   try {
     await warteAufServer(port);
     browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
-    return await oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkript });
+    return await oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkript, routen });
   } catch (e) {
     if (browser) await browser.close();
     server.kill();   // auch bei Fehlern aufräumen, sonst bleibt der Port belegt
@@ -72,7 +73,7 @@ function portBelegt(port) {
   });
 }
 
-async function oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkript }) {
+async function oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkript, routen }) {
   const kontext = await browser.newContext({ ...devices[geraet] });
   await kontext.route(CDN, async (route) => {
     const [, , datei] = route.request().url().match(CDN);
@@ -81,6 +82,7 @@ async function oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkrip
     route.fulfill({ status: 200, contentType: "application/javascript", body: fs.readFileSync(lokal) });
   });
   if (initSkript) await kontext.addInitScript(initSkript);
+  if (routen) await routen(kontext);   // z. B. eine Datei hängen lassen oder verbieten, bevor die Seite lädt
   const seite = await kontext.newPage();
   const fehler = [];
   seite.on("console", (m) => m.type() === "error" && fehler.push(m.text()));
