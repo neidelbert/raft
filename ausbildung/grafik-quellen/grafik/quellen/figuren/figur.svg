@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+  <!-- Vorlage Spielfigur: Cartoon, Ansicht leicht von oben, Kopf groß (etwa 40 % der Höhe), Licht von oben links. -->
+  <defs>
+    <linearGradient id="haut" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd7b0"/><stop offset="1" stop-color="#f0a97a"/>
+    </linearGradient>
+    <linearGradient id="hemd" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4fb3ff"/><stop offset="1" stop-color="#2275c9"/>
+    </linearGradient>
+    <linearGradient id="hose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6b5a8e"/><stop offset="1" stop-color="#463a63"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#2b1d2e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Beine -->
+    <path d="M78 178 L74 214 Q74 222 84 222 L96 222 L98 178 Z" fill="url(#hose)"/>
+    <path d="M122 178 L126 214 Q126 222 116 222 L104 222 L102 178 Z" fill="url(#hose)"/>
+    <path d="M70 216 Q70 230 86 230 L98 230 L98 218 Z" fill="#7a4a2a"/>
+    <path d="M130 216 Q130 230 114 230 L102 230 L102 218 Z" fill="#7a4a2a"/>
+    <!-- Arme -->
+    <path d="M62 124 Q44 150 50 172" fill="none" stroke-width="20"/>
+    <path d="M62 124 Q44 150 50 172" fill="none" stroke="url(#hemd)" stroke-width="10"/>
+    <path d="M138 124 Q156 150 150 172" fill="none" stroke-width="20"/>
+    <path d="M138 124 Q156 150 150 172" fill="none" stroke="url(#hemd)" stroke-width="10"/>
+    <circle cx="50" cy="176" r="10" fill="url(#haut)"/>
+    <circle cx="150" cy="176" r="10" fill="url(#haut)"/>
+    <!-- Körper -->
+    <path d="M62 120 Q100 106 138 120 L132 184 Q100 192 68 184 Z" fill="url(#hemd)"/>
+    <!-- Kopf -->
+    <ellipse cx="100" cy="72" rx="52" ry="50" fill="url(#haut)"/>
+    <!-- Haare -->
+    <path d="M50 70 Q46 24 96 20 Q150 18 152 66 Q136 46 112 50 Q90 34 70 54 Q60 58 50 70 Z" fill="#e8742a"/>
+  </g>
+  <!-- Glanz und Gesicht (ohne Umriss) -->
+  <ellipse cx="78" cy="44" rx="14" ry="7" fill="#fff" opacity=".35" transform="rotate(-20 78 44)"/>
+  <ellipse cx="82" cy="78" rx="7" ry="9" fill="#2b1d2e"/>
+  <ellipse cx="118" cy="78" rx="7" ry="9" fill="#2b1d2e"/>
+  <circle cx="84" cy="75" r="2.5" fill="#fff"/>
+  <circle cx="120" cy="75" r="2.5" fill="#fff"/>
+  <ellipse cx="70" cy="94" rx="8" ry="5" fill="#ff8a8a" opacity=".55"/>
+  <ellipse cx="130" cy="94" rx="8" ry="5" fill="#ff8a8a" opacity=".55"/>
+  <path d="M90 98 Q100 106 110 98" fill="none" stroke="#2b1d2e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M70 128 Q100 120 128 128" fill="none" stroke="#fff" stroke-width="5" opacity=".3" stroke-linecap="round"/>
+</svg>

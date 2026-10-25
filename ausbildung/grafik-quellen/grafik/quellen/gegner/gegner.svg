@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180">
+  <!-- Vorlage Gegner: klar anders als die Figur (Farbe, Form), Gefahr sofort erkennbar (Zähne, böser Blick). -->
+  <defs>
+    <radialGradient id="schleim" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#b6f06a"/><stop offset=".6" stop-color="#5fc23a"/><stop offset="1" stop-color="#2f8a2a"/>
+    </radialGradient>
+  </defs>
+  <path d="M20 150 Q14 92 52 58 Q100 14 148 58 Q186 92 180 150 Q160 166 140 154 Q120 170 100 156 Q80 170 60 154 Q40 166 20 150 Z"
+        fill="url(#schleim)" stroke="#2b1d2e" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="70" cy="56" rx="22" ry="10" fill="#fff" opacity=".45" transform="rotate(-25 70 56)"/>
+  <!-- böse Augen -->
+  <g stroke="#2b1d2e" stroke-width="5" stroke-linejoin="round">
+    <path d="M58 86 L92 98 Q92 118 74 118 Q56 116 58 86 Z" fill="#fff"/>
+    <path d="M142 86 L108 98 Q108 118 126 118 Q144 116 142 86 Z" fill="#fff"/>
+  </g>
+  <circle cx="78" cy="106" r="7" fill="#2b1d2e"/>
+  <circle cx="122" cy="106" r="7" fill="#2b1d2e"/>
+  <!-- Maul mit Zähnen -->
+  <path d="M70 130 Q100 150 130 130 Q100 140 70 130 Z" fill="#7a1f2b" stroke="#2b1d2e" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M82 133 L88 142 L94 136 Z M106 136 L112 142 L118 133 Z" fill="#fff"/>
+</svg>

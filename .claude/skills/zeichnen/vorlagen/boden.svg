@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Vorlage Bodenkachel: nahtlos kachelbar (alles, was über den Rand geht, kommt auf der Gegenseite wieder), ruhig, wenig Kontrast. -->
+  <rect width="256" height="256" fill="#7cc25a"/>
+  <g fill="#6fb24f">
+    <circle cx="40" cy="60" r="26"/><circle cx="296" cy="60" r="26"/><circle cx="-216" cy="60" r="26"/>
+    <circle cx="170" cy="150" r="34"/><circle cx="90" cy="220" r="22"/><circle cx="90" cy="-36" r="22"/>
+    <circle cx="230" cy="20" r="18"/><circle cx="230" cy="276" r="18"/><circle cx="-26" cy="20" r="18"/><circle cx="-26" cy="276" r="18"/>
+  </g>
+  <g stroke="#4e9a3a" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M30 120 l4 -12 M38 122 l0 -14 M46 120 l-4 -12"/>
+    <path d="M150 60 l4 -12 M158 62 l0 -14 M166 60 l-4 -12"/>
+    <path d="M200 220 l4 -12 M208 222 l0 -14 M216 220 l-4 -12"/>
+    <path d="M100 160 l3 -9 M107 161 l0 -10"/>
+  </g>
+  <g fill="#ffe36b"><circle cx="120" cy="40" r="4"/><circle cx="60" cy="180" r="4"/><circle cx="220" cy="120" r="4"/></g>
+</svg>

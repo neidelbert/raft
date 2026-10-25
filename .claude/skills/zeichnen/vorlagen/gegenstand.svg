@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Vorlage Gegenstand/Symbol: eine klare Form, starker Umriss, Glanzpunkt, liest sich auch in 32 px. -->
+  <defs>
+    <radialGradient id="gold" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#fff3a8"/><stop offset=".5" stop-color="#ffc928"/><stop offset="1" stop-color="#d98a0b"/>
+    </radialGradient>
+  </defs>
+  <circle cx="60" cy="60" r="48" fill="url(#gold)" stroke="#2b1d2e" stroke-width="6"/>
+  <circle cx="60" cy="60" r="32" fill="none" stroke="#d98a0b" stroke-width="5"/>
+  <path d="M60 38 L66 54 L83 54 L69 64 L74 81 L60 71 L46 81 L51 64 L37 54 L54 54 Z" fill="#fff6c4" stroke="#b86e06" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="40" cy="34" rx="12" ry="6" fill="#fff" opacity=".7" transform="rotate(-35 40 34)"/>
+</svg>
