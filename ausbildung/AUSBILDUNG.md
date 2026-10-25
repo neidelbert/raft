@@ -60,8 +60,11 @@ Gemeinsame Regeln für alle Stufen:
 **Test-Schnittstelle:** `window.spiel = { bereit, boot: { x, z }, kamera: { x, y, z }, renderer, szene }` (`renderer.info` lesbar).
 **Fertig, wenn:** keine Konsolenfehler; Joystick oben → Boot fährt nach −z, Loslassen stoppt; Kamera folgt (Abstand bleibt ungefähr gleich); höchstens 20 Zeichenaufrufe; Pixel-Ratio höchstens 2.
 
-## Stufe 8 – Abschlussprüfung: ein ganzes Spiel
-**Lernziel:** alles zusammen, selbstständig, mit Grafiken des Zeichners.
-**Auftrag:** „Sternenregen“: Sterne und Steine fallen von oben. Der Spieler (unten, links/rechts mit Ziehen irgendwo auf dem Bildschirm) fängt Sterne (+1 Punkt) und weicht Steinen aus (−1 Leben, Start 3). Es wird alle 20 s schneller. Titel, Spiel, Ende mit Rekord. Treffer-Rückmeldung, Partikel, Ton. Grafiken liefert der Zeichner in `spiele/sternenregen/grafik/`, das Spiel liegt in `spiele/sternenregen/`, der Test in `tests/sternenregen/`.
-**Test-Schnittstelle:** `window.spiel = { bereit, zustand, punkte, rekord, spieler: { x, leben }, fallend: <Anzahl>, tempoStufe }`. Mit `?test=1`: `spiel.test.lasseFallen(art, x)` (`art` = 'stern'|'stein').
-**Fertig, wenn:** spielbar von Titel bis Ende; Fangen und Ausweichen zählen richtig; Tempo steigt; Rekord bleibt; alles aus der Fertig-Checkliste des Handbuchs; Bericht für Lukas verständlich.
+## Stufe 8 – Abschluss: der eigene Skill
+**Lernziel:** Wissen festhalten und weitergeben. Horst programmiert kein Spiel, sondern macht aus allem, was er in Stufe 1 bis 7 gelernt hat, seinen Skill besser.
+**Auftrag:**
+1. **Bausteine:** Die bewährten Teile aus den Übungen werden wiederverwendbare, geprüfte Module in `.claude/skills/game-programmierung/bausteine/`: `schleife.js` (Hauptschleife mit gedeckelter Delta-Zeit, Pause, kein Zeitsprung), `bildschirm.js` (scharfer Canvas, Pixel-Ratio ≤ 2, Größenänderung), `joystick.js` (schwebend, Loslassen und Abbruch), `knopf.js`, `zufall.js` (mit Seed), `speicher.js` (Standardwerte, kaputte Daten, privater Modus), `pool.js`, `gitter.js` (Kollision), `partikel.js`, `ton.js` (WebAudio, erst nach Berührung), `bilder.js` (Laden mit Ersatz), `zustaende.js`. Jeder Baustein hat oben einen Kommentar: wofür, Schnittstelle, Beispiel.
+2. **Baustein-Tests:** `.claude/skills/game-programmierung/bausteine/tests/` mit einem Test pro Baustein (Logik mit `node`, Touch und Canvas mit `werkzeuge/test-hilfe.js` über eine kleine Testseite). `node .claude/skills/game-programmierung/bausteine/tests/alle.js` meldet „Alle Prüfungen bestanden.“
+3. **Handbuch:** `SKILL.md` und die Wissensdateien so überarbeiten, dass ein neuer Programmierer ohne die Übungen genauso gut arbeitet: Bausteine-Tabelle (wann welcher), Regeln aus dem Lernbuch an die passende Stelle übernehmen, Widersprüche und Veraltetes entfernen. Das Lernbuch bleibt als Verlauf erhalten.
+4. **Bericht:** `ausbildung/uebungen/stufe-8/BERICHT.md` für Lukas: Was kann Horst jetzt, was hat sich am Skill geändert, wo sind noch Lücken?
+**Fertig, wenn:** alle Bausteine vorhanden, mit Kommentar und grünem Test; Handbuch verweist auf jeden Baustein; `node werkzeuge/pruefe-team.js` und `bash tests/alle-tests.sh` grün; keine Spiel-Dateien angelegt.

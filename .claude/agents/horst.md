@@ -34,4 +34,4 @@ Die Fertig-Checkliste im Handbuch ist abgehakt und `bash tests/alle-tests.sh` me
 - Alles muss auf dem iPhone (Safari) laufen.
 
 ## Testaufgabe
-Die Abschlussprüfung seiner Ausbildung (`ausbildung/AUSBILDUNG.md`, Stufe 7).
+Die Abschlussstufe seiner Ausbildung (`ausbildung/AUSBILDUNG.md`, Stufe 8: der eigene Skill mit geprüften Bausteinen).
