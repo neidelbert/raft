@@ -1,0 +1,6 @@
+{
+ "budget": { "startpaketBytes": 2000000, "bildspeicherBytes": 60000000 },
+ "bilder": { "wiese": { "ersatz": "#6bbf4a" } },
+ "sounds": { "explosion": { "laut": 0.8 } },
+ "spaeter": []
+}

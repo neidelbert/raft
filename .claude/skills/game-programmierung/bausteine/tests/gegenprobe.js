@@ -2,12 +2,14 @@
 // sein Test rot wird. node .claude/skills/game-programmierung/bausteine/tests/gegenprobe.js
 // Bleibt ein Test grün, prüft er den Fehler nicht (Lernbuch: eine Gegenprobe gegen den alten Code muss rot sein).
 // Passt ein Suchtext nicht mehr (Baustein geändert), meldet die Gegenprobe das, statt still nichts zu prüfen.
+// Fälle mit „../werkzeuge/…“ machen ein Asset-Werkzeug kaputt (Kopie über WERKZEUGE=…).
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
 const ORIGINAL = path.resolve(__dirname, '..');
+const WERKZEUGE = path.resolve(ORIGINAL, '..', 'werkzeuge');
 // [Baustein-Datei, Test, Suchtext, Ersatz, was der Fehler ist]
 const FAELLE = [
   ['schleife.js', 'schleife', 'Math.min(Math.max(jetzt - letzte, 0) / 1000, deltaMax)', 'Math.max(jetzt - letzte, 0) / 1000', 'Delta-Zeit nicht gedeckelt'],
@@ -30,24 +32,45 @@ const FAELLE = [
   ['bilder.js', 'bilder', "if (!Array.isArray(liste)) throw new Error('keine Liste');", '', 'Liste ohne Array stürzt ab'],
   ['zustaende.js', 'zustaende', 'aktuell?.verlassen?.();', '', 'verlassen() wird nicht aufgerufen'],
   ['zufall.js', 'kopf', '//   zwischen(zufall, min, max)', '//   zwischen(zufall, min, max)\n// window.spiel', 'Baustein liest window.spiel'],
+  ['ton.js', 'ton', 'if (p) return spielePuffer(p, t);', '', 'Sound-Datei wird nicht abgespielt'],
+  ['assets.js', 'assets', 'return Promise.race([arbeit(steuerung.signal), grenze])', 'return arbeit(steuerung.signal)', 'keine Zeitgrenze (hängender Server blockiert)'],
+  ['assets.js', 'assets', '    if (anteil <= assets.fortschritt) return;   // nie zurück\n', '', 'Fortschritt meldet doppelt oder rückwärts'],
+  ['assets.js', 'assets', 'const voll = (datei) => `${basis}${datei}?v=${encodeURIComponent(assets.version)}`;', 'const voll = (datei) => `${basis}${datei}`;', 'Adressen ohne ?v=<version>'],
+  ['assets.js', 'assets', "        else ERSATZ[art](e);\n", '', 'kein Ersatz für fehlende Bilder, Sounds, Schriften, Modelle'],
+  ['assets.js', 'assets', '        catch (f) { letzterFehler = f; if (signal.aborted) break; }', '        catch (f) { throw f; }', 'm4a fehlt: kein Versuch mit mp3'],
+  ['assets.js', 'assets', '    s.bytes = null;   // decodeAudioData', '    // decodeAudioData', 'Sound wird doppelt dekodiert'],
+  ['animation.js', 'animation', '    abspieler.fertig = true;\n    return true;', '    abspieler.fertig = true;\n    return false;', 'einmalige Animation meldet nie „fertig“'],
+  ['animation.js', 'animation', "  return animation.schleife ? schritt % anzahl : Math.min(schritt, anzahl - 1);", '  return schritt % anzahl;', 'einmalige Animation springt zurück auf den ersten Rahmen'],
+  ['animation.js', 'animation', 'abspieler.zeit += dt * tempo;', 'abspieler.zeit += (1 / 60) * tempo;', 'Rahmen nach Bildern statt nach Zeit'],
+  ['animation.js', 'animation', '    ctx.scale(-1, 1);', '    ctx.scale(1, 1);', 'Blick links nicht gespiegelt'],
+  ['../werkzeuge/atlas.js', 'werkzeuge', '      for (let k = 0; k < 4; k++) ziel.daten[z + k] = bild.daten[q + k];', '      if (x >= 0 && y >= 0 && x < quelle.b && y < quelle.h) for (let k = 0; k < 4; k++) ziel.daten[z + k] = bild.daten[q + k];', 'Atlas ohne Randverlängerung'],
+  ['../werkzeuge/atlas.js', 'werkzeuge', '  const rand = Math.floor(abstand / 2), luecke = abstand - 2 * rand;', '  const rand = 0, luecke = 0;', 'Atlas ohne Abstand'],
+  ['../werkzeuge/atlas.js', 'werkzeuge', "ankerX: r.ax - r.teil.x, ankerY: r.ay - r.teil.y", 'ankerX: r.ax, ankerY: r.ay', 'Anker wandert beim Zuschnitt nicht mit'],
+  ['../werkzeuge/atlas.js', 'werkzeuge', 'if (y + z.h > hoeheMax) continue;', 'if (false) continue;', 'Atlas wird größer als die Grenze'],
+  ['../werkzeuge/sounds.js', 'werkzeuge', "      wandle(wav, dateien[1], 'libmp3lame', kbps);\n", '', 'kein mp3 erzeugt'],
+  ['../werkzeuge/manifest.js', 'werkzeuge', "    process.exit(ueber.length ? 1 : 0);", '    process.exit(0);', 'Budget überschritten, aber Rückgabewert 0'],
+  ['../werkzeuge/manifest.js', 'werkzeuge', "const merke = (teil) => { fingerabdruck.update(teil); fingerabdruck.update(fs.readFileSync(path.join(assets, teil))); };", 'const merke = (teil) => { fingerabdruck.update(teil); };', 'Version ändert sich nicht, wenn sich eine Datei ändert'],
 ];
 
-const ziel = fs.mkdtempSync(path.join(os.tmpdir(), 'bausteine-gegenprobe-'));
+const basis = fs.mkdtempSync(path.join(os.tmpdir(), 'bausteine-gegenprobe-'));
+const ziel = path.join(basis, 'bausteine'), zielWerkzeuge = path.join(basis, 'werkzeuge');
 let schlecht = 0;
 for (const [datei, test, suche, ersatz, fehler] of FAELLE) {
   fs.rmSync(ziel, { recursive: true, force: true });
+  fs.rmSync(zielWerkzeuge, { recursive: true, force: true });
   fs.cpSync(ORIGINAL, ziel, { recursive: true });
+  fs.cpSync(WERKZEUGE, zielWerkzeuge, { recursive: true });
   const pfad = path.join(ziel, datei), text = fs.readFileSync(pfad, 'utf8');
   if (!text.includes(suche)) { console.log(`VERALTET ${datei}: Suchtext nicht gefunden (${fehler})`); schlecht++; continue; }
   fs.writeFileSync(pfad, text.replace(suche, ersatz));
   const lauf = spawnSync(process.execPath, [path.join(__dirname, `${test}-test.js`)], {
-    encoding: 'utf8', env: { ...process.env, BAUSTEINE: ziel }, timeout: 240000,
+    encoding: 'utf8', env: { ...process.env, BAUSTEINE: ziel, WERKZEUGE: zielWerkzeuge }, timeout: 240000,
   });
   const rot = (lauf.stdout || '').split('\n').filter((z) => z.startsWith('FEHLER')).length;
   const gut = lauf.status !== 0;
   if (!gut) schlecht++;
   console.log(`${gut ? 'ROT  ' : 'GRÜN!'} ${test}-test bei „${fehler}“ (${rot} Prüfung(en) rot)`);
 }
-fs.rmSync(ziel, { recursive: true, force: true });
+fs.rmSync(basis, { recursive: true, force: true });
 console.log(schlecht ? `\n${schlecht} Gegenprobe(n) blieben grün oder sind veraltet: Diese Tests prüfen den Fehler nicht.` : `\nAlle ${FAELLE.length} Gegenproben rot: Die Tests finden die Fehler.`);
 process.exit(schlecht ? 1 : 0);

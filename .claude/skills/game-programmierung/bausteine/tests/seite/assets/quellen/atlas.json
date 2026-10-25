@@ -1,0 +1,5 @@
+{
+ "grafik": "grafik/grafik.json",
+ "atlanten": [{ "name": "probe", "gruppen": ["figuren"] }],
+ "anker": { "figuren/figur": [106, 245] }
+}

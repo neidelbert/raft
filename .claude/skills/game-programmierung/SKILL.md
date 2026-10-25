@@ -26,10 +26,11 @@ Ziel: Jedes Spiel startet beim ersten Mal ohne Fehler, läuft flüssig auf dem i
 | `wissen/threejs-3d.md` | 3D-Spiele: Three.js laden, Renderer, Zeichenaufrufe, Kamera, Modelle |
 | `wissen/spielgefuehl.md` | alles, was der Spieler sieht und spürt: Rückmeldung, Wackeln, Partikel, Schwierigkeit |
 | `wissen/grafik-und-sound.md` | Bilder vom Zeichner einbinden, Ersatzbilder, Ton per Code |
+| `wissen/assets.md` | Spiele mit Assets: Atlas, Rahmen-Animation, Sound-Dateien, Schriften, 3D-Modelle, Manifest, Ladebildschirm, Budget |
 | `wissen/testen.md` | jeder Auftrag: eigener Test mit `werkzeuge/test-hilfe.js`, Gegenprobe, Messen |
 
 ## Bausteine (geprüft, wiederverwendbar)
-In `bausteine/` liegen zwölf Module aus den Übungen, jedes mit Kopfkommentar (wofür, Schnittstelle, Beispiel) und eigenem Test. **Erst nachsehen, dann bauen:** Was ein Baustein kann, wird nicht neu geschrieben.
+In `bausteine/` liegen vierzehn Module aus den Übungen, jedes mit Kopfkommentar (wofür, Schnittstelle, Beispiel) und eigenem Test. **Erst nachsehen, dann bauen:** Was ein Baustein kann, wird nicht neu geschrieben.
 
 | Baustein | Wann nutzen |
 |---|---|
@@ -45,10 +46,29 @@ In `bausteine/` liegen zwölf Module aus den Übungen, jedes mit Kopfkommentar (
 | `bausteine/ton.js` | Klänge per WebAudio ohne Dateien, erst nach der ersten Berührung |
 | `bausteine/bilder.js` | Bilder aus `grafik/grafik.json` laden, Ersatz bei fehlendem Bild, rot einfärben |
 | `bausteine/zustaende.js` | Spielablauf (Titel → Spiel → Ende) und Verhalten von Gegnern |
+| `bausteine/assets.js` | alles aus `assets/assets.json` laden: Fortschritt für den Ladebalken, Zeitgrenze je Asset, Ersatz, Atlanten, Sounds dekodieren (nach der ersten Berührung), Schriften, Modelle |
+| `bausteine/animation.js` | Rahmen-Animation aus dem Atlas mit Delta-Zeit (Schleife oder einmal mit „fertig“), Zeichnen um den Fußpunkt, gespiegelt |
 
 - **Einbauen:** Datei unverändert ins Spiel kopieren (`spiele/<name>/js/kern/…`, Ordner siehe `wissen/aufbau.md`). Ein Spiel auf GitHub Pages kann nicht aus `.claude/` laden. Den Kopfkommentar behalten.
 - **Ändern:** Braucht ein Spiel mehr, wird der Baustein hier verbessert, sein Test erweitert und `node bausteine/tests/alle.js` grün, dann neu kopiert. Keine stillen Abweichungen in der Kopie.
-- **Tests:** `node .claude/skills/game-programmierung/bausteine/tests/alle.js` (alle, mit Browser-Tests auf den Ports 8880–8889). `node .claude/skills/game-programmierung/bausteine/tests/gegenprobe.js` baut jeden Baustein absichtlich kaputt und zeigt, dass sein Test rot wird.
+- **Tests:** `node .claude/skills/game-programmierung/bausteine/tests/alle.js` (alle, mit Browser-Tests auf den Ports 8880–8889, dazu `werkzeuge-test.js` für die Asset-Werkzeuge). `node .claude/skills/game-programmierung/bausteine/tests/gegenprobe.js` baut jeden Baustein absichtlich kaputt und zeigt, dass sein Test rot wird.
+
+## Asset-Werkzeuge (Quellen → fertige Dateien)
+Im Skill-Ordner unter `werkzeuge/`, mit Node aufzurufen, immer mit dem Spielordner. Jedes hat oben Kopfkommentar und Aufruf-Beispiel. Quellen liegen in `<spiel>/assets/quellen/`, ausgeliefert wird nur, was die Werkzeuge erzeugen (Einzelheiten: `wissen/assets.md`).
+
+| Werkzeug | macht | aus |
+|---|---|---|
+| `atlas.js` | Atlas-PNG + JSON (Rahmen mit Anker, Animationen aus `<name>-<nr>`, 2 px Abstand mit Randverlängerung, ≤ 2048 px) und Einzelbilder | `grafik/` des Zeichners + `assets/quellen/atlas.json` |
+| `sounds.js` | `.m4a` (AAC) und `.mp3` per ffmpeg | Rezepten in `assets/quellen/sounds.json` |
+| `modell.js` | `.glb` (GLTFExporter im kopflosen Chromium) | `assets/quellen/modelle/<name>.js` |
+| `manifest.js` | `assets/assets.json` mit Version (Fingerabdruck) und Größen; meldet das Budget, Rückgabewert 1 bei Überschreitung | allem in `assets/` |
+| `png.js` | PNG lesen und schreiben ohne Pakete (Hilfe für `atlas.js`) | – |
+
+```bash
+W=.claude/skills/game-programmierung/werkzeuge
+node $W/atlas.js spiele/<name> && node $W/sounds.js spiele/<name> && node $W/modell.js spiele/<name> && node $W/manifest.js spiele/<name>
+```
+Vorbild mit Test: `ausbildung/uebungen/stufe-9/` (Ladebildschirm, Atlas, Animation, Sound, Ersatz, Modell).
 
 ## Grundregeln
 - **Technik:** reine ES-Module, kein Build, keine npm-Pakete im Spiel. 2D mit Canvas 2D, 3D mit Three.js `0.170.0` per Import-Map. Andere Bibliotheken sind eine Technik-Entscheidung für Lukas.
@@ -88,6 +108,7 @@ In `bausteine/` liegen zwölf Module aus den Übungen, jedes mit Kopfkommentar (
 - [ ] Tab-Wechsel: Pause, kein Sprung danach, Eingabe gelöst, gespeichert
 - [ ] Pixel-Ratio höchstens 2, Delta-Zeit gedeckelt, keine neuen Objekte in der Hauptschleife
 - [ ] Zahlen in `js/config/`, Spieltexte Deutsch mit „…“
+- [ ] Assets nur über das Manifest; `manifest.js` ohne Budget-Überschreitung; Test mit fehlender und mit hängender Datei (Seite läuft mit Ersatz)
 - [ ] Bildschirmfoto angesehen: sieht es aus wie gewollt?
 - [ ] Gegenprobe gemacht: Test wird gegen absichtlich kaputten Code rot
 - [ ] `bash tests/alle-tests.sh` grün (das Alte läuft weiter)

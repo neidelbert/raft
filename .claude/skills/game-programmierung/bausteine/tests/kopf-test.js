@@ -4,12 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const h = require('./hilfe.js');
 
-const BAUSTEINE = ['schleife', 'bildschirm', 'joystick', 'knopf', 'zufall', 'speicher', 'pool', 'gitter', 'partikel', 'ton', 'bilder', 'zustaende'];
+const BAUSTEINE = ['schleife', 'bildschirm', 'joystick', 'knopf', 'zufall', 'speicher', 'pool', 'gitter', 'partikel', 'ton', 'bilder', 'zustaende', 'assets', 'animation'];
 const SKILL = path.join(__dirname, '..', '..', 'SKILL.md');
 
 (async () => {
   const vorhanden = fs.readdirSync(h.ORDNER).filter((d) => d.endsWith('.js')).map((d) => d.slice(0, -3)).sort();
-  h.pruefe(JSON.stringify(vorhanden) === JSON.stringify([...BAUSTEINE].sort()), `genau die 12 Bausteine vorhanden (${vorhanden.join(', ')})`);
+  h.pruefe(JSON.stringify(vorhanden) === JSON.stringify([...BAUSTEINE].sort()), `genau die ${BAUSTEINE.length} Bausteine vorhanden (${vorhanden.join(', ')})`);
   const skill = fs.readFileSync(SKILL, 'utf8');
   for (const name of BAUSTEINE) {
     const datei = path.join(h.ORDNER, `${name}.js`);

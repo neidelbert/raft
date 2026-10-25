@@ -38,7 +38,7 @@ for (const v of ["figur.svg", "gegner.svg", "gegenstand.svg", "boden.svg"])
   pruefe(/viewBox="/.test(lies(`.claude/skills/zeichnen/vorlagen/${v}`)), `Vorlage ${v} mit viewBox`);
 
 // Verweise auf Dateien
-const quellen = [...Object.keys(AGENTS).map((a) => `.claude/agents/${a}.md`), ...Object.keys(SKILLS).map((s) => `.claude/skills/${s}/SKILL.md`), "TEAM.md", "CLAUDE.md", "ausbildung/AUSBILDUNG.md"];
+const quellen = [...Object.keys(AGENTS).map((a) => `.claude/agents/${a}.md`), ...Object.keys(SKILLS).map((s) => `.claude/skills/${s}/SKILL.md`), "TEAM.md", "CLAUDE.md"];   // AUSBILDUNG.md nicht: Aufträge nennen Dateien, die erst noch entstehen
 for (const q of quellen)
   for (const [, ziel] of lies(q).matchAll(/`((?:\.claude|tests|werkzeuge|ausbildung)\/[^`*<> ]+?\.(?:md|js|json|sh|svg))`/g)) {
     if (/JJJJ|NN|stufe-N|<|…|ausbildung\/uebungen\//.test(ziel)) continue;   // Übungsergebnisse entstehen erst beim Lernen

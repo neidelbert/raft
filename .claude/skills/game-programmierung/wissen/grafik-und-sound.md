@@ -1,5 +1,9 @@
 # Grafik und Sound
 
+Wenige Einzelbilder und Klänge per Code: diese Datei. Spiele mit Rahmen-Animationen, vielen Bildern, Sound-Dateien,
+Schriften oder 3D-Modellen nutzen die Asset-Kette aus `assets.md` (Atlas, Manifest, `bausteine/assets.js`,
+`bausteine/animation.js`).
+
 ## Bilder vom Zeichner (`bausteine/bilder.js`)
 - Der Zeichner liefert `spiele/<name>/grafik/<gruppe>/<name>.png` und eine Liste `grafik/grafik.json`: `[{ "name": "figuren/held", "datei": "grafik/figuren/held.png", "breite": 213, "hoehe": 256 }]`.
 - Die Bilder sind doppelt so groß wie angezeigt, damit sie auf dem iPhone scharf sind. Horst zeichnet mit der Größe aus `config/` (Höhe fest, Breite aus dem Seitenverhältnis des Bildes).
@@ -17,7 +21,7 @@ ton.an = speicher.stand.ton;            // Ton an/aus steht im Spielstand
 ton.verbinde();                         // weckt den Ton bei der ersten Berührung
 ton.spiele('treffer');
 ```
-- Klang = `{ frequenz, dauer, art, laut, gleiten }`. Treffer: kurz, tief, `gleiten` nach unten (180 Hz, −110). Einsammeln: hoch, `gleiten` nach oben (880 Hz, +660). Explosion: Rauschen (Puffer mit Zufallswerten) und Tiefpass (noch kein Baustein).
+- Klang = `{ frequenz, dauer, art, laut, gleiten }`. Treffer: kurz, tief, `gleiten` nach unten (180 Hz, −110). Einsammeln: hoch, `gleiten` nach oben (880 Hz, +660). Explosion: Rauschen mit Tiefpass klingt per Oszillator nicht gut; dafür ein Rezept für das Werkzeug `sounds.js` (Datei, siehe `assets.md`) und abspielen mit `ton.setzePuffer`.
 - `ton.bereit` ist ein eigener Merker („nach Berührung angelegt“). Im Test-Chromium läuft ein AudioContext auch ohne Berührung, `audio.state` sagt dort nichts.
 - Lautstärke zentral in `config/`, Ton an/aus im Spielstand und als Knopf (`bausteine/knopf.js`).
 - Gleicher Ton höchstens etwa 20-mal pro Sekunde (`mindestAbstand` 0,05 s), sonst wird es Lärm und kostet Leistung. Klänge nur bei Ereignissen, nie in jedem Bild.

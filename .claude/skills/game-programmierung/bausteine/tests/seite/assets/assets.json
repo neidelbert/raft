@@ -1,0 +1,42 @@
+{
+ "version": "2f798a2fd4",
+ "atlanten": [
+  {
+   "name": "probe",
+   "bild": "atlas/probe.png",
+   "daten": "atlas/probe.json",
+   "bytes": 21304,
+   "breite": 137,
+   "hoehe": 233
+  }
+ ],
+ "bilder": [],
+ "sounds": [
+  {
+   "name": "piep",
+   "dateien": [
+    "sounds/piep.m4a",
+    "sounds/piep.mp3"
+   ],
+   "laut": 0.5,
+   "bytes": 2520
+  }
+ ],
+ "schriften": [
+  {
+   "name": "Probe",
+   "datei": "schriften/probe.woff2",
+   "bytes": 11316
+  }
+ ],
+ "modelle": [],
+ "spaeter": [],
+ "budget": {
+  "startpaketBytes": 35140,
+  "bildspeicherBytes": 127684,
+  "grenzen": {
+   "startpaketBytes": 2000000,
+   "bildspeicherBytes": 60000000
+  }
+ }
+}

@@ -15,18 +15,25 @@
 //   ton.an: Ton-Einstellung (aus dem Spielstand setzen). ton.wecke(): bei Berührung aufrufen.
 //   ton.verbinde(ziel = window) → trenne(): ruft wecke bei pointerdown, touchend und keydown (Fangphase) auf.
 //     iPhone-Safari zählt je nach Version erst touchend als Erlaubnis, darum alle drei.
-//   ton.spiele(name) → true, wenn der Klang gespielt wurde.
+//   ton.spiele(name) → true, wenn der Klang gespielt wurde. Gibt es für name einen Puffer (Sound-Datei), wird er
+//     gespielt, sonst der Klang aus klaenge (so ist der Code-Klang der Ersatz, wenn die Datei fehlt).
+//   ton.audio: der AudioContext (null bis zur ersten Berührung), z. B. für dekodiereSounds aus bausteine/assets.js.
+//   ton.setzePuffer(name, puffer, laut = 1): dekodierte Sound-Datei (AudioBuffer) unter name ablegen.
+//     Puffer sind schnell und dürfen gleichzeitig mehrfach laufen (je Abspielen ein AudioBufferSourceNode).
 // Beispiel:
 //   import { erstelleTon } from './kern/ton.js';
 //   const ton = erstelleTon(TON, KLAENGE);          // KLAENGE.treffer = { frequenz: 180, dauer: 0.18, art: 'square', laut: 0.25, gleiten: -110 }
 //   ton.an = speicher.stand.ton;
 //   ton.verbinde();
 //   ton.spiele('treffer');
+//   // mit Sound-Datei (bausteine/assets.js), nach dem Wecken:
+//   dekodiereSounds(assets, ton.audio).then(() => ton.setzePuffer('explosion', assets.sounds.explosion.puffer, 0.8));
 
 export function erstelleTon({ lautstaerke = 0.5, mindestAbstand = 0.05 } = {}, klaenge = {}, AudioKlasse = null) {
-  const ton = { bereit: false, an: true, wecke, spiele, verbinde };
+  const ton = { bereit: false, an: true, audio: null, wecke, spiele, verbinde, setzePuffer };
   let audio = null, gesamt = null;
   const zuletzt = {};   // name → audio.currentTime des letzten Klangs
+  const puffer = {};    // name → { puffer: AudioBuffer, laut }
 
   function wecke() {
     if (!audio) {
@@ -36,6 +43,7 @@ export function erstelleTon({ lautstaerke = 0.5, mindestAbstand = 0.05 } = {}, k
       gesamt = audio.createGain();
       gesamt.gain.value = lautstaerke;
       gesamt.connect(audio.destination);
+      ton.audio = audio;
       ton.bereit = true;
     }
     if (audio.state !== 'running') {
@@ -49,11 +57,23 @@ export function erstelleTon({ lautstaerke = 0.5, mindestAbstand = 0.05 } = {}, k
     return () => { for (const art of arten) ziel.removeEventListener(art, wecke, { capture: true }); };
   }
 
+  function setzePuffer(name, p, laut = 1) { if (p) puffer[name] = { puffer: p, laut }; }
+
+  function spielePuffer(eintrag, t) {
+    const quelle = audio.createBufferSource(), verst = audio.createGain();
+    quelle.buffer = eintrag.puffer;
+    verst.gain.value = eintrag.laut;
+    quelle.connect(verst).connect(gesamt);
+    quelle.start(t);
+    return true;
+  }
+
   function spiele(name) {
     if (!ton.bereit || !ton.an) return false;
-    const k = klaenge[name], t = audio.currentTime;
-    if (!k || t - (zuletzt[name] ?? -Infinity) < mindestAbstand) return false;
+    const k = klaenge[name], p = puffer[name], t = audio.currentTime;
+    if ((!k && !p) || t - (zuletzt[name] ?? -Infinity) < mindestAbstand) return false;
     zuletzt[name] = t;
+    if (p) return spielePuffer(p, t);
     const osz = audio.createOscillator(), verst = audio.createGain();
     osz.type = k.art;
     osz.frequency.setValueAtTime(k.frequenz, t);

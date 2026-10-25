@@ -1,0 +1,51 @@
+{
+ "version": "9e56676ca2",
+ "atlanten": [
+  {
+   "name": "spiel",
+   "bild": "atlas/spiel.png",
+   "daten": "atlas/spiel.json",
+   "bytes": 223995,
+   "breite": 248,
+   "hoehe": 1584
+  }
+ ],
+ "bilder": [
+  {
+   "name": "wiese",
+   "datei": "bilder/wiese.png",
+   "ersatz": "#6bbf4a",
+   "bytes": 24740,
+   "breite": 512,
+   "hoehe": 512
+  }
+ ],
+ "sounds": [
+  {
+   "name": "explosion",
+   "dateien": [
+    "sounds/explosion.m4a",
+    "sounds/explosion.mp3"
+   ],
+   "laut": 0.8,
+   "bytes": 9729
+  }
+ ],
+ "schriften": [],
+ "modelle": [
+  {
+   "name": "boot",
+   "datei": "modelle/boot.glb",
+   "bytes": 9676
+  }
+ ],
+ "spaeter": [],
+ "budget": {
+  "startpaketBytes": 268140,
+  "bildspeicherBytes": 2619904,
+  "grenzen": {
+   "startpaketBytes": 2000000,
+   "bildspeicherBytes": 60000000
+  }
+ }
+}

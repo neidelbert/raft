@@ -14,6 +14,7 @@ function erstelleAudioNachbau(zaehler, { startZustand = 'running', wirft = false
     }
     createGain() { return knoten(); }
     createOscillator() { zaehler.oszillatoren++; return { ...knoten(), type: '', frequency: param(), start() {}, stop() {} }; }
+    createBufferSource() { zaehler.quellen = (zaehler.quellen || 0) + 1; return { ...knoten(), buffer: null, start() { zaehler.gestartet = this.buffer; } }; }
     resume() { zaehler.resume++; this.state = 'running'; return Promise.resolve(); }
   };
 }
@@ -35,6 +36,21 @@ async function regeln() {
   h.pruefe(ton.spiele('tief') === false, 'Ton aus → kein Klang');
   ton.an = true;
   h.pruefe(ton.spiele('gibtsnicht') === false, 'unbekannter Klang → nichts, kein Absturz');
+  h.pruefe(ton.audio !== null && typeof ton.audio.createGain === 'function', 'ton.audio ist der AudioContext (für dekodiereSounds)');
+  const puffer = { dauer: 0.5 };
+  ton.setzePuffer('datei', puffer, 0.7);
+  ton.setzePuffer('leer', null);
+  const oszVorher = z.oszillatoren;
+  let gespielt = false;
+  try { gespielt = ton.spiele('datei'); } catch (e) { gespielt = `Absturz: ${e.message}`; }   // rot statt Absturz
+  h.pruefe(gespielt === true && z.quellen === 1 && z.gestartet === puffer && z.oszillatoren === oszVorher, `Puffer (Sound-Datei): spielt über AudioBufferSourceNode, kein Oszillator (${gespielt})`);
+  h.pruefe(ton.spiele('datei') === false && z.quellen === 1, 'Puffer: gleicher Sound sofort wieder → ausgelassen (Abstand gilt auch hier)');
+  h.pruefe(ton.spiele('leer') === false, 'setzePuffer ohne Puffer (Dekodieren fehlgeschlagen) → nichts gespeichert, Stille');
+  ton.an = false;
+  h.pruefe(ton.spiele('datei') === false, 'Puffer: Ton aus → kein Sound');
+  ton.an = true;
+  const stumm = erstelleTon({}, KLAENGE, erstelleAudioNachbau(z));
+  h.pruefe(stumm.audio === null, 'vor wecke(): ton.audio ist null');
 
   const ohne = erstelleTon({}, KLAENGE, null);
   const vorher = globalThis.AudioContext;

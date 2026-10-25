@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Explosion Rahmen 6 von 6: fast leer. Mitte (60, 62), gleiche viewBox in allen Rahmen. -->
+  <defs>
+    <radialGradient id="feuer" cx=".4" cy=".4" r=".7"><stop offset="0" stop-color="#fff6c4"/><stop offset=".35" stop-color="#ffc928"/><stop offset=".75" stop-color="#ff8a2a"/><stop offset="1" stop-color="#d63b2f"/></radialGradient>
+    <radialGradient id="kern" cx=".4" cy=".4" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#fff3a8"/><stop offset="1" stop-color="#ffc928"/></radialGradient>
+    <radialGradient id="rauch" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#b9adbf"/><stop offset=".6" stop-color="#8a7e93"/><stop offset="1" stop-color="#5e5468"/></radialGradient>
+    <radialGradient id="rauchhell" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#d6ccd9"/><stop offset="1" stop-color="#9b90a3"/></radialGradient>
+  </defs>
+  <g opacity=".6"><g fill="#2b1d2e"><circle cx="28.5" cy="32" r="8.8"/><circle cx="39.5" cy="32" r="8.8"/><circle cx="34" cy="28" r="10.2"/></g><g fill="#e2dae5"><circle cx="28.5" cy="32" r="5.2"/><circle cx="39.5" cy="32" r="5.2"/><circle cx="34" cy="28" r="6.8"/></g><g fill="#2b1d2e"><circle cx="78" cy="26.2" r="9.4"/><circle cx="90" cy="26.2" r="9.4"/><circle cx="84" cy="21.8" r="11.1"/></g><g fill="#e2dae5"><circle cx="78" cy="26.2" r="5.9"/><circle cx="90" cy="26.2" r="5.9"/><circle cx="84" cy="21.8" r="7.6"/></g><g fill="#2b1d2e"><circle cx="53.6" cy="13.6" r="7.3"/><circle cx="62.4" cy="13.6" r="7.3"/><circle cx="58" cy="10.4" r="8.6"/></g><g fill="#e2dae5"><circle cx="53.6" cy="13.6" r="3.8"/><circle cx="62.4" cy="13.6" r="3.8"/><circle cx="58" cy="10.4" r="5"/></g></g>
+</svg>

@@ -1,0 +1,5 @@
+{
+ "sounds": {
+  "piep": { "dauer": 0.1, "welle": "dreieck", "frequenz": [880, 1320], "huelle": { "anschlag": 0.002, "kurve": 2 } }
+ }
+}

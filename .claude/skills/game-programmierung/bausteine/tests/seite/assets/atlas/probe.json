@@ -1,0 +1,16 @@
+{
+ "bild": "probe.png",
+ "breite": 137,
+ "hoehe": 233,
+ "rahmen": {
+  "figur": {
+   "x": 1,
+   "y": 1,
+   "b": 135,
+   "h": 231,
+   "ankerX": 67,
+   "ankerY": 227
+  }
+ },
+ "animationen": {}
+}

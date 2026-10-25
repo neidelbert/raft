@@ -1,0 +1,17 @@
+{
+ "grafik": "grafik/grafik.json",
+ "abstand": 2,
+ "groesseMax": 2048,
+ "atlanten": [{ "name": "spiel", "gruppen": ["figuren", "effekte", "gegenstaende", "symbole"] }],
+ "einzeln": ["boden/wiese"],
+ "anker": {
+  "figuren/held-*": [106, 245],
+  "effekte/explosion-*": [64, 66],
+  "gegenstaende/muenze-*": [64, 64]
+ },
+ "animationen": {
+  "held-lauf": { "bps": 10, "schleife": true },
+  "explosion": { "bps": 15, "schleife": false },
+  "muenze": { "bps": 10, "schleife": true }
+ }
+}

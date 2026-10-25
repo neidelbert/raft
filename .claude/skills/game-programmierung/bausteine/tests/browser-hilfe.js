@@ -7,9 +7,9 @@ const path = require('path');
 const t = require('../../../../../werkzeuge/test-hilfe.js');
 const { ORDNER } = require('./hilfe.js');
 
-function starteProbe(teil, port, { zusatz = '', geraet, initSkript } = {}) {
+function starteProbe(teil, port, { zusatz = '', geraet, initSkript, routen } = {}) {
   return t.starte({
-    ordner: ORDNER, port, geraet, initSkript,
+    ordner: ORDNER, port, geraet, initSkript, routen,
     pfad: `tests/seite/index.html?teil=${teil}${zusatz}`,
     warteAuf: 'window.probe && window.probe.bereit',
   });

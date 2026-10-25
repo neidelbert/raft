@@ -1,0 +1,25 @@
+{
+ "rate": 44100,
+ "spitzeDb": -1,
+ "kbps": 96,
+ "sounds": {
+  "explosion": {
+   "dauer": 0.7,
+   "welle": "sinus",
+   "frequenz": [
+    140,
+    38
+   ],
+   "rauschen": 0.75,
+   "tiefpass": [
+    5000,
+    250
+   ],
+   "huelle": {
+    "anschlag": 0.004,
+    "halten": 0.04,
+    "kurve": 2.2
+   }
+  }
+ }
+}

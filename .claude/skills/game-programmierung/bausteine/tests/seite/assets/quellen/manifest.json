@@ -1,0 +1,4 @@
+{
+ "sounds": { "piep": { "laut": 0.5 } },
+ "schriften": { "probe": { "name": "Probe" } }
+}
