@@ -198,6 +198,11 @@ function manifestTests(ordner) {
   const gelesen = JSON.parse(fs.readFileSync(path.join(ordner, 'assets', 'assets.json'), 'utf8'));
   h.pruefe(/^[0-9a-f]{10}$/.test(gelesen.version) && gelesen.version === m.version, `manifest: assets.json mit Version (${m.version})`);
   h.pruefe(m.atlanten[0].bild === 'atlas/spiel.png' && m.atlanten[0].daten === 'atlas/spiel.json' && m.atlanten[0].breite > 0, 'manifest: Atlas mit Bild, Daten und Größe');
+  const atlasDaten = JSON.parse(fs.readFileSync(path.join(ordner, 'assets', 'atlas', 'spiel.json'), 'utf8'));
+  const namen = Object.keys(atlasDaten.rahmen);
+  h.pruefe(namen.length > 1 && namen.every((n) => ['b', 'h', 'ankerX', 'ankerY'].every((k) => m.atlanten[0].rahmen[n]?.[k] === atlasDaten.rahmen[n][k]))
+    && JSON.stringify(m.atlanten[0].animationen) === JSON.stringify(atlasDaten.animationen),
+    `manifest: Atlas-Eintrag kennt alle ${namen.length} Rahmen (Maße, Fußpunkt) und die Animationen (für den Ersatz im Spiel)`);
   h.pruefe(m.bilder[0].name === 'kachel' && m.bilder[0].ersatz === '#00ff00' && m.bilder[0].breite === 8, 'manifest: Bild mit Ersatzfarbe und Maßen');
   h.pruefe(m.sounds[0].dateien.join() === 'sounds/bumm.m4a,sounds/bumm.mp3' && m.sounds[0].laut === 0.6, 'manifest: Sound, m4a vor mp3, Lautstärke');
   h.pruefe(m.schriften[0].name === 'Titel' && m.modelle.map((x) => x.name).join() === 'kiste', 'manifest: Schrift mit Namen, Modell');

@@ -33,7 +33,8 @@ const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.reso
 3. Touch: `t.ziehe(seite, x1, y1, x2, y2, { halteMs })` bewegt, nach dem Loslassen herrscht Stillstand. Auch Abbruch (`touchCancel`), zweiter Finger, Tippen außerhalb des Felds.
 4. Zustandswechsel (Titel → Spiel → Ende), neue Runde setzt alles zurück, Speichern (neu laden, Rekord ist noch da), kaputter Speicherstand und privater Modus.
 5. Tab-Wechsel nachgestellt: `document.hidden` und `visibilityState` per `Object.defineProperty` überschreiben, `visibilitychange` auslösen; dann steht die Spielzeit, und nach der Rückkehr gibt es keinen Sprung (Weg in den ersten Bildern messen).
-6. Bildschirmfoto: Horst sieht es sich mit dem Read-Werkzeug an. Stimmt das Bild?
+6. Bildschirmfoto (`t.foto`, bei Pause): Horst sieht es sich mit dem Read-Werkzeug an. Stimmt das Bild?
+7. Ersatz: Fehlt der Atlas, hat jeder Rahmen (Figur, Gegner, Effekte) und jede Animation einen Ersatz in gleicher Größe (der Gerüst-Test vergleicht mit `assets/atlas/*.json`, neue Rahmen sind damit automatisch dabei).
 
 ## Muster: Figur zum Ziel laufen lassen
 ```js
@@ -65,7 +66,19 @@ t.pruefe(await lies(seite, () => window.spiel.muenzen) >= vorher + 1, 'mindesten
 - **Nichts still überspringen:** Fehlt eine Datei, die ein Test braucht, ist das eine rote Prüfung, kein `if (fs.existsSync(…))`. Ein übersprungener Test fällt niemandem auf (Lernbuch Stufe 10).
 - **Pfade:** Tests übergeben der Test-Hilfe absolute Pfade (`path.resolve(__dirname, '..')`), dann laufen sie aus jedem Ordner und als Kopie.
 - **Vorbild:** der Test jedes Gerüsts aus `neues-spiel.js` (Regeln ohne Browser, Ladebildschirm, Touch, Abbruch, Tab-Wechsel, Speicher, fehlende und hängende Assets, 3D-Zeichenaufrufe).
-- **Testausgaben nie mit `| head` abschneiden**, sondern in eine Datei umleiten: Ein abgebrochener Lauf lässt seinen Server laufen. Wirkt ein Ergebnis zu gut, `pgrep -fa http.server` prüfen. `test-hilfe.js` bricht ab, wenn der Port belegt ist.
+- **Testausgaben nie mit `| head` abschneiden**, sondern in eine Datei umleiten: Ein abgebrochener Lauf lässt seinen Server laufen. Wirkt ein Ergebnis zu gut, nach übrigen Testservern suchen: `pgrep -af "^python3 -m http.server"` (nur Befehlszeilen, die so **anfangen**; beenden genauso mit `pkill -f "^python3 -m http.server <port>"`). Nicht `pgrep -fa http.server`: Das findet auch die Shell, die den Befehl ausführt (ihre Befehlszeile enthält „http.server“), und täuscht einen übrigen Server vor; `pkill -f http.server` beendet dann sogar die eigene Shell. `test-hilfe.js` bricht ab, wenn der Port belegt ist.
+- **Laufen und Stehen Bild für Bild prüfen** (`t.beobachte(seite, lesen, { bilder })` → `[{ dt, wert }]`): Nur Bilder mit `dt > 0` werten (bei `dt = 0` rechnet das Spiel nichts), „läuft“ an der Bewegung selbst ablesen (`x` anders als im Bild davor), nicht an der Zeit seit dem Ziehen. Der Gerüst-Test zeigt es („Daumen gehalten“).
+
+## Tests unter Last und Befehls-Zeitgrenzen
+- **Tests nacheinander laufen lassen, nicht parallel.** Ein Spieltest startet sein eigenes Chromium mit Software-Grafik. Schon zwei, erst recht vier gleichzeitig (z. B. mehrere Gegenproben) machen den Rechner so langsam, dass auch richtiger Code rot wird. Was dann passiert (gemessen in der Probe eines Neuen):
+  - Die Bildrate fällt unter 10 Bilder/s. Die Deckelung (0,1 s je Bild) bremst dann die Spielzeit: Die Figur läuft in einer Sekunde echter Zeit weniger weit, Haltezeiten nach Uhr stimmen nicht mehr.
+  - Ein `t.ziehe` dauert so lange, dass die Figur schon an der Wand steht, bevor die Beobachtung beginnt (dort ist „Stehen“ richtig).
+  - Bilder mit `dt = 0` und große Sprünge kommen häufiger.
+  - Ein Bildschirmfoto dauert Sekunden bis über 30 s (Playwright-Standard 30 s → Abbruch), und das Spiel läuft derweil weiter (Gegner kriechen, Zeit läuft ab).
+  - Seiten brauchen beim Neuladen länger als eine knappe Zeitgrenze (15 s).
+- **Darum so schreiben, dass Last nichts verfälscht:** nach Zustand steuern statt nach Uhr (`t.laufeZu`, `waitForFunction` bis die Figur am Rand ist); Bilder mit `dt > 0` werten (`t.beobachte`); Fotos bei Pause (`t.foto(seite, datei)`: Tab kurz versteckt, das Spiel rechnet nicht, zeichnet aber); Zeitgrenzen großzügig, aber begrenzt: `t.ZEITGRENZE` (30 s, mit `TEST_ZEITGRENZE=<ms>` änderbar) statt fester 3 oder 15 s, nie ohne Grenze (ein kaputtes Spiel soll rot melden, nicht hängen).
+- **Gegenproben nacheinander**, jede mit `ORDNER=<kopie>`. Müssen es doch zwei gleichzeitig sein: je eigener Port (`PORT=…`) und rote Ergebnisse allein wiederholen, bevor man den Code ändert.
+- **Befehls-Zeitgrenze der eigenen Umgebung:** Ein Gerüst-Test dauert 40–60 s, `bausteine/tests/geruest-test.js` etwa 3 Minuten, `alle.js` und `gegenprobe.js` viele Minuten. Viele Agenten-Umgebungen brechen Befehle nach 2 Minuten ab oder schieben sie still in den Hintergrund. Lange Läufe darum immer in eine Datei umleiten (`node tests/<name>-test.js > tests/fotos/lauf.txt 2>&1`), bei Bedarf im Hintergrund starten und erst die fertige Datei lesen (letzte Zeile „Alle Prüfungen bestanden.“). Während ein Hintergrund-Lauf geht, keinen zweiten Browser-Test starten.
 
 ## Reine Rechenregeln ohne Browser
 Was keine Grafik braucht (Schaden, Punkte, Kollision, Zufall, Bewegung), steht in eigenen Modulen ohne DOM und wird mit `node` geprüft: `import(pathToFileURL(datei))` aus einem CommonJS-Test. Das geht schnell und findet Logikfehler genau. Vorbild: die Tests in `bausteine/tests/` (Uhr, Speicher und AudioContext nachgebaut).

@@ -5,7 +5,7 @@ const b = require('./browser-hilfe.js');
 
 const MANIFEST = {
   version: 'v7',
-  atlanten: [{ name: 'figuren', bild: 'atlas/figuren.png', daten: 'atlas/figuren.json' }],
+  atlanten: [{ name: 'figuren', bild: 'atlas/figuren.png', daten: 'atlas/figuren.json' }],   // rahmen, animationen: unten (wie manifest.js)
   bilder: [{ name: 'wiese', datei: 'bilder/wiese.png', ersatz: '#00ff00' }],
   sounds: [{ name: 'bumm', dateien: ['sounds/bumm.m4a', 'sounds/bumm.mp3'], laut: 0.8 }],
   schriften: [{ name: 'Titel', datei: 'schriften/titel.woff2' }],
@@ -15,6 +15,10 @@ const MANIFEST = {
 MANIFEST.sounds.push({ name: 'musik', dateien: ['sounds/musik.mp3'] });
 const ATLAS = { breite: 64, hoehe: 64, rahmen: { 'held-1': { x: 1, y: 1, b: 10, h: 20, ankerX: 5, ankerY: 19 }, 'held-2': { x: 13, y: 1, b: 10, h: 20, ankerX: 5, ankerY: 19 }, steht: { x: 25, y: 1, b: 10, h: 20, ankerX: 5, ankerY: 19 } },
   animationen: { held: { rahmen: ['held-1', 'held-2'], bps: 8, schleife: true } } };
+
+// Wie werkzeuge/manifest.js: Das Manifest kennt Maße und Fußpunkt jedes Rahmens und die Animationen (für den Ersatz).
+MANIFEST.atlanten[0].rahmen = Object.fromEntries(Object.entries(ATLAS.rahmen).map(([n, r]) => [n, { b: r.b, h: r.h, ankerX: r.ankerX, ankerY: r.ankerY }]));
+MANIFEST.atlanten[0].animationen = ATLAS.animationen;
 
 // Nachgebaute Umgebung: dateien = { pfad: { inhalt, ms, status, haengt } }. Schreibt jede Anfrage mit.
 function erstelleUmgebung(dateien, { formate = ['m4a', 'mp3'] } = {}) {
@@ -111,6 +115,23 @@ async function regeln() {
     h.pruefe(ersatzAufrufe === 1 && a.rahmen['held-1'].bild === 'ersatz' && a.animationen.held.rahmen.join() === 'held-1', 'Atlas fehlt: ersatz() einmal, Ersatz-Rahmen und -Animation');
     h.pruefe(a.bilder.wiese.ersatzFarbe === '#00ff00' && a.schriften.Titel === false && a.modelle.boot === null, 'Bild → Ersatzfarbe aus dem Manifest, Schrift → Systemschrift, Modell → null');
     h.pruefe(a.fortschritt === 1, 'Fortschritt erreicht trotzdem 1');
+    // Ersatz für ALLE Rahmen des fehlenden Atlas (Figur, Gegner, Effekte): ersatz(bekannt) bekommt Maße und Fußpunkt
+    // aus dem Manifest, die Animationen aus dem Manifest zeigen auf die Ersatz-Rahmen.
+    d = ALLES();
+    delete d['atlas/figuren.png'];
+    n = erstelleUmgebung(d);
+    let bekannt = null;
+    a = await ladeAssets('assets/assets.json', { zeitgrenze: 500, umgebung: n.umgebung, ersatz: (k) => {
+      bekannt = k;
+      return { rahmen: Object.fromEntries(Object.entries(k.rahmen).map(([name, r]) => [name, { bild: 'ersatz', ...r }])) };
+    } });
+    const alleRahmen = Object.keys(ATLAS.rahmen);
+    h.pruefe(bekannt && sortiert(Object.keys(bekannt.rahmen)) === sortiert(alleRahmen) && bekannt.rahmen['held-2'].ankerY === 19,
+      `Atlas fehlt: ersatz(bekannt) kennt alle Rahmen mit Maßen und Fußpunkt (${bekannt && Object.keys(bekannt.rahmen).join(', ')})`);
+    h.pruefe(alleRahmen.every((r) => a.rahmen[r] && a.rahmen[r].bild === 'ersatz') && sortiert(a.status.ersetzt.filter((x) => alleRahmen.includes(x))) === sortiert(alleRahmen),
+      'Atlas fehlt: jeder Rahmen hat einen Ersatz (ersetzt gemeldet)');
+    h.pruefe(a.animationen.held && a.animationen.held.rahmen.join() === 'held-1,held-2' && a.rahmen[a.animationen.held.rahmen[1]],
+      'Atlas fehlt: Animation aus dem Manifest bleibt, zeigt auf Ersatz-Rahmen');
 
     // Datei hängt (Server antwortet nie)
     d = ALLES();

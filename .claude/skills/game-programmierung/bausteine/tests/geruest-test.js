@@ -2,7 +2,9 @@
 // an und lässt deren eigenen Test laufen (Port 8888, nacheinander). Prüft dazu: alle Dateien aus dem Auftrag da,
 // Bausteine und Test-Hilfe unverändert kopiert, keine Platzhalter übrig, Werkzeug-Pfad in LIESMICH.md stimmt,
 // nichts wird überschrieben, falsche Namen werden abgelehnt, Port ohne --port = nächster freier Zehnerblock ab 9000,
-// Beispiel-Bild als Platzhalter mit Fußpunkt markiert, Sound-Datei der Vorlage passt zum Rezept. node geruest-test.js
+// Beispiel-Bild als Platzhalter mit Fußpunkt markiert, Sound-Datei der Vorlage passt zum Rezept. Das 2D-Gerüst läuft
+// ein zweites Mal mit Assets wie vom Zeichner (Figur 256 px mit Lauf-Rahmen, Gegner, Effekt): Grenzen und Ersatz
+// dürfen nicht nur zum Platzhalter passen (Lernbuch Stufe 10). Dauer etwa 3 Minuten: in eine Datei umleiten. node geruest-test.js
 // WERKZEUGE=<ordner> testet eine Kopie (Gegenprobe, siehe gegenprobe.js); GERUEST_ARTEN=2d nur eine Art.
 const fs = require('fs');
 const os = require('os');
@@ -16,7 +18,7 @@ const PORT = 8888;
 const DATEIEN = ['index.html', 'stil.css', 'js/main.js', 'js/config/spiel.js', 'js/config/steuerung.js', 'js/config/welt.js',
   'js/regeln/spieler.js', 'js/regeln/runde.js', 'js/welt/darstellung.js', 'js/oberflaeche/anzeige.js', 'js/oberflaeche/joystick-anzeige.js',
   'js/test-schnittstelle.js', 'assets/assets.json', 'assets/quellen/atlas.json', 'assets/quellen/manifest.json', 'assets/quellen/sounds.json',
-  'grafik/grafik.json', 'tests/test-hilfe.js', 'SCHULDEN.md', 'LIESMICH.md', 'assets/sounds/start.m4a', 'assets/sounds/start.mp3'];
+  'grafik/grafik.json', 'tests/test-hilfe.js', 'tests/fotos/.gitignore', 'SCHULDEN.md', 'LIESMICH.md', 'assets/sounds/start.m4a', 'assets/sounds/start.mp3'];
 
 const neuesSpiel = (argumente, cwd) => spawnSync(process.execPath, [path.join(WERKZEUGE, 'neues-spiel.js'), ...argumente], { cwd, encoding: 'utf8' });
 const alleDateien = (ordner, unter = '') => fs.readdirSync(path.join(ordner, unter), { withFileTypes: true })
@@ -45,6 +47,41 @@ function pruefeDateien(ziel, name, art) {
   h.pruefe(!Object.keys(quelle.anker || {}).length, `${art}: atlas.json ohne festen Anker (Fußpunkt kommt aus grafik.json)`);
 }
 
+// Assets wie ein echtes Paket des Zeichners: Figur 192 × 256 px (128 Punkte hoch) mit vier Lauf-Rahmen (Körper hebt
+// sich um 16 px, Arme weiter außen: größerer Ausschlag als das Stand-Bild), Gegner mit zwei Rahmen, Explosion mit vier
+// Rahmen (Fußpunkt in der Mitte). Dann atlas.js und manifest.js wie im Handbuch.
+function echteAssets(ziel) {
+  const { schreibePng, leeresBild } = require(path.join(WERKZEUGE, 'png.js'));
+  const oval = (b, hoehe, cx, cy, rx, ry, farbe) => {
+    const bild = leeresBild(b, hoehe);
+    for (let y = 0; y < hoehe; y++) for (let x = 0; x < b; x++) {
+      if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 > 1) continue;
+      bild.daten.set([...farbe, 255], (y * b + x) * 4);
+    }
+    return bild;
+  };
+  const liste = [];
+  const lege = (name, bild, anker) => {
+    fs.mkdirSync(path.dirname(path.join(ziel, 'grafik', name)), { recursive: true });
+    fs.writeFileSync(path.join(ziel, 'grafik', `${name}.png`), schreibePng(bild));
+    liste.push({ name, datei: `grafik/${name}.png`, breite: bild.breite, hoehe: bild.hoehe, anker });
+  };
+  lege('figuren/figur', oval(192, 256, 96, 140, 70, 110, [240, 160, 60]), [96, 250]);
+  for (let i = 1; i <= 4; i++) lege(`figuren/figur-lauf-${i}`, oval(192, 256, 96, 140 - (i % 2 ? 0 : 16), i % 2 ? 90 : 80, 110, [240, 160, 60]), [96, 250]);
+  for (let i = 1; i <= 2; i++) lege(`gegner/schleim-${i}`, oval(176, 132, 88, 70, 80 - i * 4, 56 + i * 4, [90, 200, 90]), [88, 128]);
+  for (let i = 1; i <= 4; i++) lege(`effekte/explosion-${i}`, oval(192, 192, 96, 96, 20 * i, 20 * i, [250, 200, 80]), [96, 96]);
+  fs.writeFileSync(path.join(ziel, 'grafik', 'grafik.json'), `${JSON.stringify(liste, null, 1)}\n`);
+  fs.writeFileSync(path.join(ziel, 'assets', 'quellen', 'atlas.json'), JSON.stringify({
+    grafik: 'grafik/grafik.json', abstand: 2, groesseMax: 2048, atlanten: [{ name: 'spiel', gruppen: ['figuren', 'gegner', 'effekte'] }],
+    einzeln: [], anker: {}, animationen: { 'figur-lauf': { bps: 10, schleife: true }, schleim: { bps: 4, schleife: true }, explosion: { bps: 12, schleife: false } },
+  }, null, 1));
+  for (const w of ['atlas.js', 'manifest.js']) {
+    const lauf = spawnSync(process.execPath, [path.join(WERKZEUGE, w), ziel], { encoding: 'utf8' });
+    if (lauf.status !== 0) throw new Error(`${w}: ${lauf.stderr || lauf.stdout}`);
+  }
+  return liste.length;
+}
+
 function laufeGeruestTest(ziel, name, art) {
   const lauf = spawnSync(process.execPath, [path.join(ziel, 'tests', `${name}-test.js`)], {
     cwd: os.tmpdir(), encoding: 'utf8', timeout: 200000, env: { ...process.env, PORT: String(PORT), FOTO: path.join(os.tmpdir(), `baustein-geruest-${art}.png`) },
@@ -52,7 +89,8 @@ function laufeGeruestTest(ziel, name, art) {
   const zeilen = `${lauf.stdout || ''}${lauf.stderr || ''}`.split('\n');
   const ok = zeilen.filter((z) => z.startsWith('OK')).length, rot = zeilen.filter((z) => z.startsWith('FEHLER') || /Error|abgebrochen/.test(z));
   for (const z of rot.slice(0, 6)) console.log(`       ${art}: ${z}`);
-  h.pruefe(lauf.status === 0 && zeilen.includes('Alle Prüfungen bestanden.') && ok >= 44, `${art}: eigener Test des Gerüsts grün (${ok} Prüfungen)`);
+  h.pruefe(lauf.status === 0 && zeilen.includes('Alle Prüfungen bestanden.') && ok >= (art.startsWith('2d') ? 55 : 50), `${art}: eigener Test des Gerüsts grün (${ok} Prüfungen)`);
+  return zeilen;
 }
 
 const basis = fs.mkdtempSync(path.join(os.tmpdir(), 'geruest-test-'));
@@ -63,6 +101,15 @@ try {
     if (!h.pruefe(anlegen.status === 0, `${art}: neues-spiel.js legt das Gerüst an ${anlegen.stderr.trim()}`)) continue;
     pruefeDateien(ziel, name, art);
     laufeGeruestTest(ziel, name, art);
+    if (art !== '2d') continue;
+    // Zweiter Lauf mit Assets wie vom Zeichner: Ersatz muss alle Rahmen und Animationen abdecken (Gegner, Effekt),
+    // der Kopf auch im Lauf-Rahmen (höher als das Stand-Bild) unter Leiste und Ton-Knopf bleiben.
+    const bilder = echteAssets(ziel);
+    const zeilen = laufeGeruestTest(ziel, name, '2d mit Zeichner-Assets');
+    const ersatz = zeilen.find((z) => /Ersatz für alle \d+ Rahmen/.test(z)) || '';
+    const [, rahmen = 0, animationen = 0] = ersatz.match(/alle (\d+) Rahmen und (\d+) Animationen/) || [];
+    h.pruefe(ersatz.startsWith('OK') && Number(rahmen) === bilder && Number(animationen) === 3,
+      `2d mit Zeichner-Assets: Ersatz für alle ${rahmen} Rahmen (${bilder} Bilder) und ${animationen} Animationen geprüft`);
   }
   const vorher = fs.readFileSync(path.join(basis, `probe-${ARTEN[0]}`, 'js', 'main.js'), 'utf8');
   const nochmal = neuesSpiel([`probe-${ARTEN[0]}`], basis);

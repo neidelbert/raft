@@ -86,6 +86,8 @@ requestAnimationFrame(() => { window.spiel.bereit = true; });  // erst nach dem 
 - Reihenfolge in `aktualisiere`: Eingabe → Spieler → Gegner → Kollision → Effekte → Kamera → Oberfläche.
 - Warum der Baustein so ist (nicht selbst nachbauen): `dt = min(max(0, jetzt − letzte), deltaMax)` und `letzte = max(letzte, jetzt)`, weil nach einem Tab-Wechsel noch ein Bild mit altem Zeitstempel kommt; das nächste Bild wird zuerst angefordert, damit ein Fehler die Schleife nicht stoppt.
 - Was werfen kann (Speichern), wird abgefangen: Ein Fehler in einem Bild darf das Spiel nicht anhalten.
+- **`dt = 0` kommt vor** (verspätetes Bild nach dem Tab-Wechsel, unter Last öfter). Jede Regel muss es aushalten: Bei `dt <= 0` nichts ändern, auch keine Merker wie „hat sich bewegt“ (`spieler.laeuft`). Sonst kippt die Figur ein Bild lang auf „steht“, und die Lauf-Animation beginnt von vorn. Das Gerüst macht es vor (`bewegeSpieler` in `js/regeln/spieler.js`, Test „dt = 0 ändert nichts“). Teilen durch `dt` (Tempo messen) nur bei `dt > 0`.
+- **Animation der Figur:** Die Regel entscheidet, was die Figur tut (`spieler.laeuft`, `spieler.blick` in `js/regeln/`), die Darstellung wählt daraus nur die Animation (`SPIELER.rahmen` stehen, `SPIELER.lauf` laufen; `darstellung.aktualisiere`) und spielt sie mit `dt` ab. Auf der Ende-Tafel `laeuft = false` setzen (dort läuft `bewegeSpieler` nicht).
 - Physik, die exakt sein muss (z. B. Springen auf Plattformen): fester Zeitschritt mit Sammler:
   ```js
   sammler += dt; while (sammler >= SCHRITT) { physik(SCHRITT); sammler -= SCHRITT; }

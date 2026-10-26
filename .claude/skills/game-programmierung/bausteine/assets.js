@@ -12,9 +12,12 @@
 //     optionen: zeitgrenze (ms je Asset, auch fürs Manifest; Standard 8000), beiFortschritt(anteil 0…1),
 //       ladeModell(adresse) → Promise<Modell> (z. B. GLTFLoader.loadAsync; ohne: Modelle werden übersprungen),
 //       arten: nur diese Arten laden, z. B. ['modelle'] für eine 3D-Seite (Standard: alle),
-//       ersatz() → { rahmen: { name: rahmen }, animationen: { name: animation } }: nur aufgerufen, wenn ein Atlas
-//         (oder das Manifest) fehlt; füllt nur Namen, die dann noch fehlen. umgebung: nur für Tests (fetch, ladeBild, kannAbspielen,
-//         ladeSchrift, erstelleLeinwand, warte).
+//       ersatz(bekannt) → { rahmen: { name: rahmen }, animationen: { name: animation } }: nur aufgerufen, wenn ein Atlas
+//         (oder das Manifest) fehlt; füllt nur Namen, die dann noch fehlen. bekannt = { rahmen: { name: { b, h, ankerX,
+//         ankerY } }, animationen } listet alles aus den fehlenden Atlanten (aus dem Manifest, werkzeuge/manifest.js;
+//         leer, wenn das Manifest fehlt): So bekommt jeder Rahmen (Figur, Gegner, Effekte) einen Ersatz in seiner Größe
+//         mit seinem Fußpunkt, und die Animationen aus dem Manifest gelten weiter (sie zeigen dann auf die Ersatz-Rahmen).
+//         umgebung: nur für Tests (fetch, ladeBild, kannAbspielen, ladeSchrift, erstelleLeinwand, warte).
 //   assets = {
 //     version, fortschritt (0…1, steigt nur), status: { geladen: [], ersetzt: [], fehlend: [] },
 //       fehlend: Einträge, deren Datei nicht kam (404, Netz, Zeitgrenze, kaputt);
@@ -159,6 +162,7 @@ export async function ladeAssets(adresse = 'assets/assets.json', { zeitgrenze = 
       for (const e of Array.isArray(m[art]) ? m[art] : []) if (auswahl(e)) aufgaben.push([art, e]);
     }
     let fertig = 0, atlasFehlt = !manifest;
+    const fehlendeAtlanten = [];
     await Promise.all(aufgaben.map(async ([art, e]) => {
       try {
         await mitZeitgrenze(u, zeitgrenze, (signal) => LADER[art](e, signal));
@@ -166,24 +170,30 @@ export async function ladeAssets(adresse = 'assets/assets.json', { zeitgrenze = 
       } catch (f) {
         console.warn(`Asset „${e.name}“ fehlt (${f.message}), Ersatz wird benutzt`);
         assets.status.fehlend.push(e.name);
-        if (art === 'atlanten') atlasFehlt = true;
+        if (art === 'atlanten') { atlasFehlt = true; fehlendeAtlanten.push(e); }
         else ERSATZ[art](e);
       }
       fertig++;
       if (mitFortschritt) melde(fertig / aufgaben.length);
     }));
     // Ersatz-Rahmen nur zeichnen lassen, wenn ein Atlas fehlt: Ersatz-Zeichnungen kosten Zeit und Speicher.
-    if (ersatz && atlasFehlt) ergaenzeErsatz();
+    if (ersatz && atlasFehlt) ergaenzeErsatz(fehlendeAtlanten);
   }
 
-  function ergaenzeErsatz() {
-    const { rahmen = {}, animationen = {} } = ersatz() || {};
+  function ergaenzeErsatz(fehlende) {
+    const bekannt = { rahmen: {}, animationen: {} };
+    for (const e of fehlende) {
+      if (e.rahmen && typeof e.rahmen === 'object') Object.assign(bekannt.rahmen, e.rahmen);
+      if (e.animationen && typeof e.animationen === 'object') Object.assign(bekannt.animationen, e.animationen);
+    }
+    const { rahmen = {}, animationen = {} } = ersatz(bekannt) || {};
     for (const [name, r] of Object.entries(rahmen)) {
       if (assets.rahmen[name]) continue;
       assets.rahmen[name] = r;
       assets.status.ersetzt.push(name);
     }
-    for (const [name, a] of Object.entries(animationen)) if (!assets.animationen[name]) assets.animationen[name] = a;
+    // Animationen aus dem Manifest gelten weiter (zeigen auf die Ersatz-Rahmen); eigene aus ersatz() gehen vor.
+    for (const [name, a] of Object.entries({ ...bekannt.animationen, ...animationen })) if (!assets.animationen[name]) assets.animationen[name] = a;
   }
 
   const spaeter = new Set(m.spaeter);

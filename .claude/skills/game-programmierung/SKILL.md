@@ -23,7 +23,7 @@ Alles, was dieses Handbuch braucht, liegt in seinem Ordner. Im Folgenden heißt 
    **Port:** je Spiel ein Zehnerblock ab 9000. Ohne `--port` nimmt das Werkzeug den ersten Block, den kein Spiel im selben Ordner schon nutzt (es meldet ihn). Hat das Projekt eine Port-Liste (z. B. `TEAM.md`), dort den Block eintragen; ohne Liste reicht die Meldung. Die Bausteine nutzen 8880–8889.
 2. **Assets:** Bilder des Zeichners nach `<spiel>/grafik/` (mit `grafik.json`, darin der Fußpunkt `anker` in PNG-Pixeln, von `render.js` aus dem SVG umgerechnet), eintragen in `assets/quellen/atlas.json` (Gruppen, Animationen; `anker` dort nur zum Überschreiben), Klänge in `sounds.json`, 3D-Modelle in `modelle/`; dann Werkzeuge atlas → sounds → modell → manifest (Kapitel „Assets“ unten). Das Spiel lädt nur, was im Manifest steht.
 3. **Spielregeln:** in `js/regeln/` ohne DOM (mit Node testbar), jede Zahl in `js/config/` mit Kommentar, Zeichnen in `js/welt/darstellung.js`. Erst in den Bausteinen nachsehen (Tabelle unten, Kopien in `js/kern/`). Eine Regel nach der anderen, jede mit Test.
-4. **Test:** `<spiel>/tests/<name>-test.js` um jede Zeile aus „Fertig, wenn“ erweitern (`wissen/testen.md`), Gegenprobe mit kaputter Kopie (`ORDNER=<kopie>` muss rot werden), Bildschirmfoto ansehen, Fertig-Checkliste abhaken.
+4. **Test:** `<spiel>/tests/<name>-test.js` um jede Zeile aus „Fertig, wenn“ erweitern (`wissen/testen.md`), Gegenprobe mit kaputter Kopie (`ORDNER=<kopie>` muss rot werden), Bildschirmfoto ansehen, Fertig-Checkliste abhaken. Ein Lauf dauert 40–60 s: Ausgabe in eine Datei umleiten (`> <spiel>/tests/fotos/lauf.txt 2>&1`), Tests und Gegenproben **nacheinander**, nie parallel (unter Last wird auch richtiger Code rot; „Tests unter Last“ in `wissen/testen.md`).
 5. **Bericht:** Übergabebericht (Aufbau unten), Schulden in `<spiel>/SCHULDEN.md`, Gelerntes ins Lernbuch (in einer Probe ohne eigenes Projekt: in den Bericht, das Lernbuch pflegt der Besitzer des Skills). Melden: „bereit zum Testen“.
 
 **Bilder: ein Weg.** Im Spiel kommen Bilder immer über das Manifest: `grafik/` → `atlas.js` → Atlas → `ladeAssets` (`bausteine/assets.js`) → `zeichneRahmen` (`bausteine/animation.js`). `grafik/grafik.json` ist nur die Eingabe für `atlas.js`, das Spiel liest sie nie. Aus `bausteine/bilder.js` braucht ein Spiel nur `ersatzBild` (Ersatz-Zeichnung) und `faerbeEin` (Aufblitzen); `ladeBilder` ist für Versuche ohne Asset-Kette.
@@ -66,7 +66,7 @@ Alle im Ordner `werkzeuge/` dieses Skills, mit Node aufzurufen, die Asset-Werkze
 | `test-hilfe.js` | Server + Chromium in iPhone-Ansicht, Touch (`ziehe`, `tippe`, `laufeZu`: Figur per Joystick zum Ziel), Konsolenfehler, Three.js lokal; jedes Gerüst hat eine Kopie in `tests/` | – |
 | `paket.js` | `dist/game-programmierung.zip`, `dist/zeichnen.zip` (Zeichner-Skill daneben) und `dist/INSTALLIEREN.md` zum Weitergeben | diesem Skill-Ordner |
 
-**Gerüst verbessern:** in `vorlage/` (`gemeinsam/` für beide Arten, `2d/`, `3d/`; Platzhalter `__NAME__`, `__TITEL__`, `__PORT__`), dann `node <skill>/bausteine/tests/geruest-test.js` grün. Einmal auch mit einem echten Bild des Zeichners (256 px, `render.js`) ausprobieren: Grenzen dürfen nicht nur zum Platzhalter passen (Lernbuch Stufe 10). Spiele, die schon angelegt sind, ändern sich dadurch nicht.
+**Gerüst verbessern:** in `vorlage/` (`gemeinsam/` für beide Arten, `2d/`, `3d/`; Platzhalter `__NAME__`, `__TITEL__`, `__PORT__`), dann `node <skill>/bausteine/tests/geruest-test.js` grün (etwa 3 Minuten, in eine Datei umleiten). Er lässt das 2D-Gerüst ein zweites Mal mit Assets wie vom Zeichner laufen (Figur 256 px mit Lauf-Rahmen, Gegner, Effekt): Grenzen und Ersatz dürfen nicht nur zum Platzhalter passen (Lernbuch Stufe 10). Neues Bedienelement oben: `data-oben`. Spiele, die schon angelegt sind, ändern sich dadurch nicht.
 
 Brauchen: Node 18+, Playwright mit Chromium (`require('playwright')`), python3 (Testserver); ffmpeg nur für `sounds.js`; für 3D-Tests einmal npm mit Netz (holt Three.js 0.170.0 in den Temp-Ordner, weil das CDN im Test umgeleitet wird).
 
@@ -78,7 +78,7 @@ Einzelheiten und Gründe: `wissen/assets.md`. Kurz:
   node $W/atlas.js <spiel> && node $W/sounds.js <spiel> && node $W/modell.js <spiel> && node $W/manifest.js <spiel>
   ```
   `sounds.js` braucht ffmpeg (ohne Sound-Rezepte weglassen), `modell.js` meldet in 2D „nichts zu tun“.
-- **Laden:** `ladeAssets` (`bausteine/assets.js`) mit Ladebalken, Zeitgrenze je Asset (Gerüst 4 s: Manifest + Asset höchstens 8 s), Ersatz für alles (Bild → Farbe, Atlas → Code-Zeichnung über `ersatz()`, Sound → Code-Klang gleichen Namens, Schrift → Systemschrift, Modell → Box). Ton und Sounds erst nach „Tippen zum Starten“.
+- **Laden:** `ladeAssets` (`bausteine/assets.js`) mit Ladebalken, Zeitgrenze je Asset (Gerüst 4 s: Manifest + Asset höchstens 8 s), Ersatz für alles (Bild → Farbe, Atlas → Code-Zeichnung über `ersatz(bekannt)` für jeden Rahmen in seiner Größe, auch Gegner und Effekte, Sound → Code-Klang gleichen Namens, Schrift → Systemschrift, Modell → Box). Ton und Sounds erst nach „Tippen zum Starten“.
 - **Bilder:** doppelt aufgelöst (Skala 0,5), PNG für Figuren, WebP für große Flächen, Atlas ≤ 2048 px, Bildspeicher (Breite × Höhe × 4) unter 60 MB, Startpaket unter 2 MB. Rahmen-Animation mit `bausteine/animation.js` nach Zeit, um den Fußpunkt.
 - **Prüfen:** Test mit fehlender Datei (404), hängender Datei und hängendem Manifest: Seite läuft mit Ersatz. Der Gerüst-Test zeigt, wie.
 
@@ -144,7 +144,7 @@ In `bausteine/` liegen vierzehn Module aus den Übungen, jedes mit Kopfkommentar
 - [ ] Tab-Wechsel: Pause, kein Sprung danach, Eingabe gelöst, gespeichert
 - [ ] Pixel-Ratio höchstens 2, Delta-Zeit gedeckelt, keine neuen Objekte in der Hauptschleife
 - [ ] Zahlen in `js/config/`, Spieltexte Deutsch mit „…“
-- [ ] Assets nur über das Manifest; `manifest.js` ohne Budget-Überschreitung; Test mit fehlender und mit hängender Datei, je für Bild, Sound (und 3D Modell) (Seite läuft mit Ersatz)
+- [ ] Assets nur über das Manifest; `manifest.js` ohne Budget-Überschreitung; Test mit fehlender und mit hängender Datei, je für Bild, Sound (und 3D Modell) (Seite läuft mit Ersatz, jeder Rahmen und jede Animation hat einen Ersatz)
 - [ ] Bildschirmfoto angesehen: sieht es aus wie gewollt?
 - [ ] Gegenprobe gemacht: Test wird gegen absichtlich kaputten Code rot
 - [ ] Alle Tests des Projekts grün (das Alte läuft weiter; gibt es einen Gesamttest, den)

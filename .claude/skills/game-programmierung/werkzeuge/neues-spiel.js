@@ -133,6 +133,7 @@ function legeSpielAn(zielordner, { drei = false, port = null, titel = null, stil
     dateien.add(path.join(ziel, 'js', 'kern', d));
   }
   schreibe(path.join(ziel, 'tests', 'test-hilfe.js'), fs.readFileSync(path.join(__dirname, 'test-hilfe.js')));
+  schreibe(path.join(ziel, 'tests', 'fotos', '.gitignore'), '*\n');   // Fotos und Testausgaben (lauf.txt), nicht für Git
 
   // Beispiel-Bild wie vom Zeichner: PNG + grafik.json, dann durch die Asset-Kette.
   const [gruppeName, bild] = drei ? ['boden/kachel', maleKachel()] : ['figuren/figur', maleFigur()];

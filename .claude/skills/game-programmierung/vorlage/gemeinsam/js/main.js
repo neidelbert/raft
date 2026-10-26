@@ -68,6 +68,7 @@ const automat = erstelleAutomat({
   ende: {
     betreten() {
       joystick.loese();
+      welt.spieler.laeuft = false;   // auf der Ende-Tafel steht die Figur (bewegeSpieler läuft dort nicht mehr)
       merkeRekord();
       anzeige.zeigeEnde(welt.runde.punkte, speicher.stand.rekord);
       spieleKlang('ende');

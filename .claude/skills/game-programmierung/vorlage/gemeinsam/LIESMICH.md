@@ -6,8 +6,9 @@ Ladebildschirm → Titel („Tippen zum Starten“) → Spiel (Daumen links läs
 ## Ausprobieren
 ```bash
 python3 -m http.server 8000      # in diesem Ordner, dann im Browser: http://localhost:8000/
-node tests/__NAME__-test.js      # eigener Test (Playwright), muss „Alle Prüfungen bestanden.“ melden
+node tests/__NAME__-test.js > tests/fotos/lauf.txt 2>&1   # eigener Test (Playwright, 40–60 s), letzte Zeile: „Alle Prüfungen bestanden.“
 ```
+Tests allein laufen lassen, nicht parallel zu anderen Browser-Tests (unter Last wird auch richtiger Code rot, `wissen/testen.md` im Skill).
 Test-Port: __PORT__ (Zehnerblock __PORT__ und folgende; hat das Projekt eine Port-Liste, dort eintragen). Bildschirmfoto des Tests: `tests/fotos/__NAME__.png` (nicht im Repo).
 Am iPhone: Ordner auf GitHub Pages legen (kein Build-Schritt nötig) und die Adresse in Safari öffnen.
 
@@ -30,7 +31,7 @@ Am iPhone: Ordner auf GitHub Pages legen (kein Build-Schritt nötig) und die Adr
 
 ## Nächste Schritte
 1. **Spielidee festhalten:** Was ist das Ziel, was macht der Daumen, wann ist die Runde vorbei? Nur bauen, was im Auftrag steht. Steht etwas nicht im Auftrag, hat das Gerüst einen Einstellwert mit „Frage an Lukas“: `RUNDE.dauer` (Zeit, Ziel oder beides; `null` = ohne Zeit) in `js/config/spiel.js`, `BERUEHRUNG` (Wann berührt die Figur etwas? `beruehrt()` in `js/regeln/spieler.js`) und in 2D `SPIELER.skala` (Größe der Figur) in `js/config/welt.js`. Wert lassen, Frage in den Bericht und in `SCHULDEN.md`.
-2. **Assets:** Bilder des Zeichners nach `grafik/` (er liefert `grafik.json` mit, darin der Fußpunkt `anker` in Pixeln). Neue Gruppen und Animationen in `assets/quellen/atlas.json` eintragen (`anker` dort nur, um den Fußpunkt des Zeichners zu überschreiben). Heißt die Figur nicht `figur`, `SPIELER.rahmen` in `js/config/welt.js` umstellen. Dann die Werkzeuge in dieser Reihenfolge:
+2. **Assets:** Bilder des Zeichners nach `grafik/` (er liefert `grafik.json` mit, darin der Fußpunkt `anker` in Pixeln). Neue Gruppen und Animationen in `assets/quellen/atlas.json` eintragen (`anker` dort nur, um den Fußpunkt des Zeichners zu überschreiben). Heißt die Figur nicht `figur`, `SPIELER.rahmen` in `js/config/welt.js` umstellen. 2D: Lauf-Bilder `figuren/figur-lauf-1` … werden von selbst die Animation `SPIELER.lauf` (Tempo in `atlas.json`), die Regel (`spieler.laeuft`) schaltet zwischen Stehen und Laufen. Fehlt der Atlas, zeichnet das Gerüst für **jeden** Rahmen (auch Gegner, Effekte) eine Ersatz-Form in derselben Größe; Form und Farbe je Name in `ERSATZ.formen` (`js/config/welt.js`). Effekte an die Körpermitte setzen (ihr Fußpunkt ist die Mitte). Dann die Werkzeuge in dieser Reihenfolge:
    ```bash
    W=__WERKZEUGE__        # Werkzeug-Ordner des Skills, von hier aus gesehen
    node $W/atlas.js .     # Atlas und Einzelbilder aus grafik/
@@ -39,7 +40,7 @@ Am iPhone: Ordner auf GitHub Pages legen (kein Build-Schritt nötig) und die Adr
    node $W/manifest.js .  # immer zuletzt: assets/assets.json, Version, Budget
    ```
    `sounds.js` braucht ffmpeg und macht aus `assets/quellen/sounds.json` die Datei `assets/sounds/start.m4a` (und `.mp3`); dann spielt das Spiel sie statt des Code-Klangs `KLAENGE.start`. 3D: `modell.js` macht aus `assets/quellen/modelle/spieler.js` die Datei `spieler.glb`; dann steht das Modell statt der Ersatz-Box da. `manifest.js` meldet das Budget (Startpaket unter 2 MB).
-3. **Spielregeln:** neue Regeln in `js/regeln/` (ohne Browser, mit Node testbar), Zahlen in `js/config/`, Zeichnen in `js/welt/`. `js/regeln/runde.js` ersetzen.
+3. **Spielregeln:** neue Regeln in `js/regeln/` (ohne Browser, mit Node testbar), Zahlen in `js/config/`, Zeichnen in `js/welt/`. `js/regeln/runde.js` ersetzen. Jede Regel hält `dt = 0` aus (nichts ändern, Vorbild `bewegeSpieler`). Neuer Wert in der Leiste (z. B. Leben): `<span id="leiste-leben">` in `index.html`, setzen in `js/oberflaeche/anzeige.js`; drei Werte passen in eine Zeile, mehr bricht um, das Spielfeld rückt nach. Neuer Knopf oben (z. B. Pause): Attribut `data-oben`, dann hält die Figur auch zu ihm Abstand.
 4. **Test:** `tests/__NAME__-test.js` für jede neue Regel erweitern (Einsammeln mit festen Orten im Regel-Teil; im Browser mit `t.laufeZu` zum Ziel laufen und „mindestens“ prüfen, siehe `wissen/testen.md` im Skill), dann eine Gegenprobe (absichtlich kaputte Kopie, `ORDNER=<kopie> node tests/__NAME__-test.js` muss rot werden). Bildschirmfoto ansehen.
 5. **Bericht:** Was gebaut wurde, Testergebnis, Startwerte zum Ausprobieren, was am echten iPhone zu prüfen ist, offene Fragen. Schulden in `SCHULDEN.md`.
 

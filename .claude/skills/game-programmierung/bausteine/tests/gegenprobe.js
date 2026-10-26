@@ -4,7 +4,8 @@
 // Passt ein Suchtext nicht mehr (Baustein geändert), meldet die Gegenprobe das, statt still nichts zu prüfen.
 // Fälle mit „../werkzeuge/…“ oder „../vorlage/…“ machen ein Werkzeug oder die Gerüst-Vorlage kaputt (der ganze Skill
 // wird kopiert, Tests bekommen BAUSTEINE=… und WERKZEUGE=…). Sechstes Feld: zusätzliche Umgebung (z. B. nur 2D).
-// NUR=<Text> prüft nur die Fälle, deren Beschreibung den Text enthält (z. B. NUR=Gerüst).
+// NUR=<Text> prüft nur die Fälle, deren Beschreibung den Text enthält (z. B. NUR=Gerüst; mehrere mit |: NUR="dt = 0|Ton-Knopf").
+// Dauer: alle Fälle etwa 40 Minuten (jeder Gerüst-Fall 2 Minuten): im Hintergrund, Ausgabe in eine Datei.
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -58,8 +59,16 @@ const FAELLE = [
   ['../vorlage/3d/js/welt/darstellung.js', 'geruest', 'renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SPIEL.pixelRatioMax));', 'renderer.setPixelRatio(window.devicePixelRatio || 1);', 'Gerüst 3D: Pixel-Ratio nicht begrenzt', { GERUEST_ARTEN: '3d' }],
   ['../werkzeuge/neues-spiel.js', 'geruest', "  schreibe(path.join(ziel, 'tests', 'test-hilfe.js'), fs.readFileSync(path.join(__dirname, 'test-hilfe.js')));\n", '', 'Gerüst ohne Test-Hilfe', { GERUEST_ARTEN: '2d' }],
   ['../werkzeuge/atlas.js', 'werkzeuge', '  if (Array.isArray(eintrag.anker) && eintrag.anker.length === 2) return eintrag.anker;\n', '', 'Fußpunkt aus grafik.json wird nicht übernommen'],
-  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '    f.minY = oben + a.oben + luft;', '    f.minY = luft * 10;', 'Gerüst 2D: oberer Rand fest statt aus Figurgröße und Leiste', { GERUEST_ARTEN: '2d' }],
-  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '        rahmen = baueErsatz().rahmen[SPIELER.rahmen];\n', '', 'Gerüst 2D: fehlender Rahmen → unsichtbare Figur', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '    f.minY = oben + masse.oben + luft;', '    f.minY = luft * 10;', 'Gerüst 2D: oberer Rand fest statt aus Figurgröße und Leiste', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '        alleRahmen[SPIELER.rahmen] = baueErsatz().rahmen[SPIELER.rahmen];\n', '', 'Gerüst 2D: fehlender Rahmen → unsichtbare Figur', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/index.html', 'geruest', '<button id="knopf-ton" data-oben type="button"', '<button id="knopf-ton" type="button"', 'Gerüst 2D: Ton-Knopf zählt nicht zum oberen Rand (Kopf darunter)', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '    for (const e of obenElemente) beobachter.observe(e);\n', '', 'Gerüst 2D: Leiste wächst, Spielfeld rückt nicht nach', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/stil.css', 'geruest', '  right: calc(96px + env(safe-area-inset-right)); display: flex;', '  display: flex;', 'Gerüst: Leiste ohne Grenze vor dem Ton-Knopf (läuft darunter)', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/js/regeln/spieler.js', 'geruest', '  if (!(dt > 0)) return;\n', '', 'Gerüst: dt = 0 kippt „läuft“', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '  for (const [name, r] of Object.entries(bekannt.rahmen || {})) rahmen[name] = ersatzRahmen(name, r.b, r.h, r.ankerX, r.ankerY);\n', '', 'Gerüst 2D: Ersatz nur für die Figur (Gegner, Effekte unsichtbar)', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '    if (!gehoertZurFigur(name)) continue;', '    if (name !== SPIELER.rahmen) continue;', 'Gerüst 2D: Feldgrenzen nur aus dem Stand-Bild (Lauf-Rahmen höher)', { GERUEST_ARTEN: '2d' }],
+  ['assets.js', 'assets', "        if (art === 'atlanten') { atlasFehlt = true; fehlendeAtlanten.push(e); }", "        if (art === 'atlanten') atlasFehlt = true;", 'Ersatz kennt die Rahmen des fehlenden Atlas nicht'],
+  ['../werkzeuge/manifest.js', 'werkzeuge', '      rahmen, animationen: daten.animationen || {} };', '      animationen: daten.animationen || {} };', 'Manifest ohne Rahmen-Maße (kein Ersatz für Gegner, Effekte)'],
   ['../vorlage/gemeinsam/tests/__NAME__-test.js', 'geruest', 'const lies = (seite, ausdruck, arg) => seite.evaluate(ausdruck, arg);', 'const lies = (seite, ausdruck) => seite.evaluate(ausdruck);', 'Gerüst-Test: lies gibt das Argument nicht weiter', { GERUEST_ARTEN: '2d' }],
   ['../vorlage/gemeinsam/js/main.js', 'geruest', '    for (const [name, s] of Object.entries(welt.assets.sounds)) if (s.puffer) ton.setzePuffer(name, s.puffer, s.laut);', '', 'Gerüst: Sound-Datei wird nie gespielt (nur Code-Klang)', { GERUEST_ARTEN: '2d' }],
   ['../vorlage/gemeinsam/js/config/steuerung.js', 'geruest', "  start: { frequenz: 440,", "  ohne: { frequenz: 440,", 'Gerüst: kein Code-Klang als Ersatz für fehlenden Sound', { GERUEST_ARTEN: '2d' }],
@@ -75,7 +84,7 @@ const basis = fs.mkdtempSync(path.join(os.tmpdir(), 'bausteine-gegenprobe-'));
 const kopie = path.join(basis, 'game-programmierung');   // ganzer Skill: Gerüst und Paket brauchen Vorlagen und Handbuch
 const ziel = path.join(kopie, 'bausteine'), zielWerkzeuge = path.join(kopie, 'werkzeuge');
 let schlecht = 0;
-const auswahl = FAELLE.filter((f) => !process.env.NUR || f[4].includes(process.env.NUR));
+const auswahl = FAELLE.filter((f) => !process.env.NUR || process.env.NUR.split('|').some((teil) => f[4].includes(teil)));
 for (const [datei, test, suche, ersatz, fehler, umgebung = {}] of auswahl) {
   fs.rmSync(kopie, { recursive: true, force: true });
   fs.cpSync(path.dirname(ORIGINAL), kopie, { recursive: true });

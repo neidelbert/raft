@@ -7,7 +7,16 @@
    "daten": "atlas/probe.json",
    "bytes": 21304,
    "breite": 137,
-   "hoehe": 233
+   "hoehe": 233,
+   "rahmen": {
+    "figur": {
+     "b": 135,
+     "h": 231,
+     "ankerX": 67,
+     "ankerY": 227
+    }
+   },
+   "animationen": {}
   }
  ],
  "bilder": [],

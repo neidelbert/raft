@@ -12,6 +12,8 @@ Ein virtuelles Team, das Handyspiele auf hohem Niveau selbst programmiert. Kern 
 - Zeichner-Handbuch mit Stil, SVG-Techniken, Vorlagen und Werkzeug `werkzeuge/zeichner/render.js` (SVG → PNG und Kontaktbogen).
 - Horsts Ausbildung: **abgeschlossen**, alle 8 Stufen bestanden (`ausbildung/ZEUGNIS.md`). Ergebnis ist sein Skill mit 12 geprüften Bausteinen (`.claude/skills/game-programmierung/bausteine/`) und überarbeitetem Handbuch.
 - Zeichner und Tester haben ihre Testaufgaben bestanden.
+- Aufbaukurs (Ziel: Skill, der Spiele mit Assets bauen kann): Stufe 9 (Assets) und 10 (eigenständiger Skill) bestanden. Zwei Praxistests mit frischen Programmierern, die nur das Paket hatten: beide erfolgreich, gefundene Schwächen behoben.
+- **Installierbare Pakete:** `dist/game-programmierung.zip` (Horsts Skill) und `dist/zeichnen.zip` (Zeichner), Anleitung `dist/INSTALLIEREN.md`.
 
 ## Entscheidungen von Lukas
 - Team baut Handy-Browserspiele (2D und 3D, iPhone-Safari).
@@ -28,10 +30,11 @@ Ein virtuelles Team, das Handyspiele auf hohem Niveau selbst programmiert. Kern 
 - Boot/Figur nach dem Loslassen kurz nachgleiten lassen?
 
 ## Nächste Schritte
-1. Lukas sieht sich Zeugnis (`ausbildung/ZEUGNIS.md`) und Horsts Bericht (`ausbildung/uebungen/stufe-8/BERICHT.md`) an.
-2. Lücken aus Horsts Bericht: Safari am echten iPhone prüfen; 3D-Baustein, 2D-Kamera usw. erst, wenn ein Spiel sie braucht.
-3. Erst wenn Lukas es sagt: erstes echtes Spiel.
+1. Lukas: Pakete ansehen oder installieren (`dist/INSTALLIEREN.md`), Fragen zum Spielgefühl beantworten.
+2. Offen: alles nur in Chrome geprüft, Safari am echten iPhone noch nie.
+3. Erst wenn Lukas es sagt: erstes echtes Spiel mit dem Skill.
 
 ## Änderungsprotokoll
 - 25.10.2026: Raft 3D gelöscht, Game-Team mit Horst, Zeichner, Tester und Spiel-Leiter aufgebaut, Ausbildung begonnen.
 - 25.10.2026: Horsts Ausbildung abgeschlossen (Stufe 1–8), Zeichner- und Tester-Test bestanden. Baustein-Tests laufen in `tests/alle-tests.sh` mit. Testhilfe räumt verwaiste Server auf.
+- 26.10.2026: Aufbaukurs Assets (Stufe 9) und eigenständiger Skill (Stufe 10) bestanden, zwei Praxistests mit frischen Programmierern, zwei Nachbesserungsrunden. Pakete in `dist/`.

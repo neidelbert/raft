@@ -58,7 +58,12 @@ function erstelleManifest(spielordner) {
     const daten = JSON.parse(fs.readFileSync(path.join(assets, 'atlas', d), 'utf8'));
     const bild = `atlas/${daten.bild}`, json = `atlas/${d}`;
     merke(json); merke(bild);
-    return { name: ohneEndung(d), bild, daten: json, bytes: groesse(bild) + groesse(json), breite: daten.breite, hoehe: daten.hoehe };
+    // Maße und Fußpunkt jedes Rahmens und die Animationen stehen auch hier: Fehlt der Atlas im Spiel, zeichnet es für
+    // jeden Rahmen einen Ersatz in derselben Größe (bausteine/assets.js → ersatz(bekannt)), auch für Gegner und Effekte.
+    const rahmen = {};
+    for (const [n, r] of Object.entries(daten.rahmen || {})) rahmen[n] = { b: r.b, h: r.h, ankerX: r.ankerX, ankerY: r.ankerY };
+    return { name: ohneEndung(d), bild, daten: json, bytes: groesse(bild) + groesse(json), breite: daten.breite, hoehe: daten.hoehe,
+      rahmen, animationen: daten.animationen || {} };
   });
   const bilder = dateienIn(path.join(assets, 'bilder'), ['.png', '.webp', '.jpg', '.jpeg']).map((d) => {
     const datei = `bilder/${d}`, name = ohneEndung(d);

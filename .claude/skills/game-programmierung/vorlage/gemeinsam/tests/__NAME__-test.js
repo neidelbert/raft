@@ -2,9 +2,13 @@
 // Prüft: Regeln ohne Browser; Start ohne Konsolenfehler mit und ohne ?test=1; Ladebildschirm → Titel; Ton-Knopf;
 //   Tippen → Spiel; Joystick bewegt, Loslassen und Abbruch stoppen; Tab-Wechsel (Pause, kein Sprung, Joystick gelöst);
 //   Runde endet → Rekord gespeichert, nach Neuladen noch da; kaputter Speicherstand und privater Modus;
-//   Figur läuft per Joystick zu einem Ziel; 2D: Kopf bleibt unter der Leiste; Sound-Datei spielt;
-//   fehlende und hängende Assets (Ersatz, auch Sound); Pixel-Ratio ≤ 2; 3D: Zeichenaufrufe.
-//   Bildschirmfoto: FOTO=<datei> (Standard tests/fotos/__NAME__.png, nicht für Git: tests/fotos/.gitignore).
+//   Figur läuft per Joystick zu einem Ziel; dt = 0 ändert nichts; 2D: Lauf-/Stand-Animation, Kopf bleibt unter allen
+//   Bedienelementen oben (Leiste, Ton-Knopf), Platz für einen dritten Wert in der Leiste; Sound-Datei spielt;
+//   fehlende und hängende Assets (Ersatz für jeden Rahmen und jede Animation, auch Sound); Pixel-Ratio ≤ 2;
+//   3D: Zeichenaufrufe. Bildschirmfoto bei Pause (t.foto): FOTO=<datei> (Standard tests/fotos/__NAME__.png, nicht für
+//   Git: tests/fotos/.gitignore).
+// Dauer etwa 40–60 s. Allein laufen lassen, nicht parallel zu anderen Browser-Tests (wissen/testen.md, „Tests unter
+//   Last“); Ausgabe in eine Datei umleiten: node tests/__NAME__-test.js > tests/fotos/lauf.txt 2>&1
 // Umgebung: PORT=<zahl> (Standard __PORT__), ORDNER=<Kopie> für die Gegenprobe (kaputte Kopie muss rot werden).
 // Braucht Node, Playwright mit Chromium, python3; 3D einmal npm (test-hilfe.js holt Three.js in den Temp-Ordner).
 const fs = require('fs');
@@ -25,6 +29,18 @@ const nurLadefehler = (fehler) => fehler.every((f) => /Failed to load resource/.
 const lies = (seite, ausdruck, arg) => seite.evaluate(ausdruck, arg);
 // Zählt abgespielte Sound-Dateien (AudioBufferSourceNode.start), unabhängig vom Spielcode; Code-Klänge zählen nicht.
 const ZAEHLE_PUFFER = { content: 'window.__puffer = 0; const s = AudioBufferSourceNode.prototype.start; AudioBufferSourceNode.prototype.start = function (...a) { window.__puffer++; return s.apply(this, a); };' };
+
+// Alle Atlanten auf der Platte (assets/atlas/*.json) zusammen: { rahmen, animationen }. Was das Spiel laden soll.
+function atlasAufDerPlatte() {
+  const ordner = path.join(ORDNER, 'assets', 'atlas'), alle = { rahmen: {}, animationen: {} };
+  if (!fs.existsSync(ordner)) return alle;
+  for (const d of fs.readdirSync(ordner).filter((x) => x.endsWith('.json'))) {
+    const daten = JSON.parse(fs.readFileSync(path.join(ordner, d), 'utf8'));
+    Object.assign(alle.rahmen, daten.rahmen);
+    Object.assign(alle.animationen, daten.animationen);
+  }
+  return alle;
+}
 
 // n Bilder in der Seite abwarten (requestAnimationFrame).
 const bilder = (seite, n) => seite.evaluate((anzahl) => new Promise((fertig) => {
@@ -55,6 +71,17 @@ async function regeln() {
   setzeSpieler(s, 990, 0);
   bewegeSpieler(s, { x: 1, y: 0 }, 1, 100, feld);
   t.pruefe(s.x === 1000 && Math.abs(s.weg - 10) < 1e-9, 'Regel: Rand hält die Figur, Weg zählt nur bis zum Rand');
+  bewegeSpieler(s, { x: 1, y: 0 }, 0.05, 100, feld);
+  t.pruefe(!s.laeuft && s.x === 1000, 'Regel: an der Wand läuft die Figur nicht (laeuft false)');
+  // dt = 0 (die Schleife liefert es nach einem verspäteten Bild): nichts ändert sich, auch laeuft und blick nicht.
+  setzeSpieler(s, 0, 0);
+  bewegeSpieler(s, { x: -1, y: 0 }, 0.05, 100, feld);
+  const nachLauf = { x: s.x, weg: s.weg, laeuft: s.laeuft, blick: s.blick };
+  bewegeSpieler(s, { x: 1, y: 0 }, 0, 100, feld);
+  t.pruefe(nachLauf.laeuft && nachLauf.blick === -1 && s.laeuft && s.blick === -1 && s.x === nachLauf.x && s.weg === nachLauf.weg,
+    `Regel: dt = 0 ändert nichts (läuft weiter, Blick bleibt links: ${s.laeuft}, ${s.blick})`);
+  bewegeSpieler(s, { x: 0, y: 0 }, 0.05, 100, feld);
+  t.pruefe(!s.laeuft && s.blick === -1, 'Regel: Daumen weg → steht, Blick bleibt');
   const r = erstelleRunde();
   starteRunde(r, RUNDE.dauer);
   let vorbei = false, schritte = 0;
@@ -88,6 +115,8 @@ async function ohneTestModus() {
 }
 
 async function ablauf(SPIELER) {
+  const atlas = atlasAufDerPlatte();   // Stand- und Lauf-Rahmen der Figur: Name gleich SPIELER.rahmen oder fängt so an
+  const figurRahmen = () => Object.entries(atlas.rahmen).filter(([n]) => n === SPIELER.rahmen || n.startsWith(`${SPIELER.rahmen}-`)).map(([, r]) => r);
   // Manifest kurz verzögern, damit der Ladebildschirm sicher zu sehen ist.
   const lauf = await t.starte({
     ordner: ORDNER, port: PORT, pfad: 'index.html?test=1&seed=42', initSkript: ZAEHLE_PUFFER,
@@ -126,10 +155,26 @@ async function ablauf(SPIELER) {
     t.pruefe(start.ton && start.klaenge >= 1, `Ton nach dem Tippen bereit, Start-Klang gespielt (${start.klaenge})`);
     await s.evaluate(() => window.spiel.test.setzeZeit(600));   // Zeit genug für alle Prüfungen, auch bei langsamer Grafik
 
+    // Laufen und Stehen Bild für Bild (t.beobachte): Nur Bilder mit dt > 0 zählen, „läuft“ heißt „hat sich bewegt“.
+    // So bleibt der Test unter Last richtig (dann steht die Figur womöglich schon an der Wand, und dort ist Stehen richtig).
+    const lesen = () => ({ x: window.spiel.spieler.x, laeuft: window.spiel.spieler.laeuft, blick: window.spiel.spieler.blick, animation: window.spiel.animation });
+    const finger = await t.ziehe(s, g.b * 0.2, g.h * 0.6, g.b * 0.2 - 60, g.h * 0.6, { loslassen: false });
+    const gehalten = await t.beobachte(s, lesen, { bilder: 12 });
+    await finger.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    const danach = await t.beobachte(s, lesen, { bilder: 6 });
+    const mitZeit = (liste) => liste.flatMap((b, i) => (i > 0 && b.dt > 0 ? [{ ...b.wert, bewegt: b.wert.x !== liste[i - 1].wert.x }] : []));
+    const g1 = mitZeit(gehalten), bewegt = g1.filter((b) => b.bewegt);
+    t.pruefe(bewegt.length >= 1 && g1.every((b) => b.laeuft === b.bewegt) && bewegt.every((b) => b.blick === -1 && (art !== '2d' || b.animation === 'lauf')),
+      `Daumen gehalten: „läuft“ genau in den Bildern mit Bewegung, Blick links${art === '2d' ? ', Lauf-Animation' : ''} (${bewegt.length} von ${g1.length} Bildern bewegt)`);
+    const d1 = mitZeit(danach).slice(1);   // erstes Bild nach dem Loslassen darf noch den letzten Schritt zeigen
+    t.pruefe(d1.length >= 1 && d1.every((b) => !b.laeuft && !b.bewegt && b.blick === -1 && (art !== '2d' || b.animation === 'stand')),
+      `Daumen weg: steht${art === '2d' ? ', Stand-Animation' : ''}, Blick bleibt (${d1.length} Bilder)`);
+
     // Joystick: rechts ziehen → x wächst, Loslassen → Stillstand.
+    const vorRechts = await lies(s, () => window.spiel.spieler.x);
     await t.ziehe(s, g.b * 0.2, g.h * 0.6, g.b * 0.2 + 60, g.h * 0.6, { halteMs: 500 });
     const nachRechts = await lies(s, () => window.spiel.spieler.x);
-    t.pruefe(nachRechts > start.x, `Joystick rechts → Figur nach rechts (${start.x.toFixed(2)} → ${nachRechts.toFixed(2)})`);
+    t.pruefe(nachRechts > vorRechts, `Joystick rechts → Figur nach rechts (${vorRechts.toFixed(2)} → ${nachRechts.toFixed(2)})`);
     await bilder(s, 2);
     const los1 = await lies(s, () => window.spiel.spieler.x);
     await bilder(s, 15);
@@ -151,12 +196,48 @@ async function ablauf(SPIELER) {
     const gelaufen = await t.laufeZu(s, ziel, { position: () => ({ x: window.spiel.spieler.x, y: window.spiel.spieler.y }), tempo: SPIELER.tempo, naehe: SPIELER.tempo * 0.1 });   // 0,1 s Weg: 2D 22 Punkte, 3D 0,5 m
     t.pruefe(gelaufen.angekommen, `Figur läuft per Joystick zum Ziel (${gelaufen.anlaeufe} Anläufe, Abstand ${gelaufen.abstand.toFixed(2)})`);
     if (art === '2d') {
-      // Ganz nach oben laufen: Der Kopf der Figur bleibt unter der Leiste (Grenze aus Rahmenhöhe, nicht fest).
-      await t.ziehe(s, g.b * 0.2, g.h * 0.75, g.b * 0.2, g.h * 0.75 - 60, { halteMs: (g.h / SPIELER.tempo) * 1000 + 300 });
-      const atlas = JSON.parse(fs.readFileSync(path.join(ORDNER, 'assets', 'atlas', 'spiel.json'), 'utf8'));
-      const r = atlas.rahmen[SPIELER.rahmen];
-      const oben = await lies(s, (kopf) => ({ kopf: window.spiel.spieler.y - kopf, leiste: document.getElementById('leiste').getBoundingClientRect().bottom }), r.ankerY * SPIELER.skala);
-      t.pruefe(oben.leiste > 0 && oben.kopf >= oben.leiste, `2D: Kopf der Figur (${oben.kopf.toFixed(1)}) bleibt unter der Leiste (${oben.leiste.toFixed(1)})`);
+      // Ganz nach oben laufen (Finger halten, bis die Figur am oberen Rand steht; nicht nach Zeit, unter Last ist das
+      // Spiel langsamer): Der Kopf bleibt unter ALLEN Bedienelementen oben (Leiste und Ton-Knopf), auch im Lauf-Rahmen.
+      const hoch = await t.ziehe(s, g.b * 0.2, g.h * 0.75, g.b * 0.2, g.h * 0.75 - 60, { loslassen: false });
+      await s.waitForFunction(() => window.spiel.spieler.y <= window.spiel.feld.minY + 0.5, null, { timeout: t.ZEITGRENZE });
+      await hoch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      const kopfHoehe = Math.max(...figurRahmen().map((r) => r.ankerY)) * SPIELER.skala;   // größter Ausschlag aller Rahmen
+      const oben = await lies(s, (kopf) => {
+        const unten = (id) => document.getElementById(id).getBoundingClientRect().bottom;
+        return { kopf: window.spiel.spieler.y - kopf, leiste: unten('leiste'), knopf: unten('knopf-ton'), feldOben: window.spiel.feldOben };
+      }, kopfHoehe);
+      t.pruefe(oben.leiste > 0 && oben.knopf > 0 && oben.kopf >= oben.leiste && oben.kopf >= oben.knopf,
+        `2D: Kopf der Figur (${oben.kopf.toFixed(1)}) bleibt unter Leiste (${oben.leiste.toFixed(1)}) und Ton-Knopf (${oben.knopf.toFixed(1)})`);
+      // Jedes sichtbare Bedienelement im oberen Viertel muss data-oben haben, sonst rechnet das Spielfeld es nicht mit.
+      const ohneMarke = await lies(s, () => [...document.querySelectorAll('#oberflaeche > *')].filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.bottom < innerHeight / 4 && getComputedStyle(e).display !== 'none' && !e.hasAttribute('data-oben');
+      }).map((e) => e.id || e.tagName));
+      t.pruefe(!ohneMarke.length, `2D: alle Bedienelemente oben tragen data-oben ${ohneMarke.join(', ')}`);
+      // Platz für einen dritten Wert in der Leiste (z. B. Leben): eine Zeile, kein Überlappen mit dem Ton-Knopf.
+      // Wächst die Leiste (zu viel Text → zweite Zeile), rückt das Spielfeld nach.
+      const leiste = await lies(s, () => {
+        const l = document.getElementById('leiste'), k = document.getElementById('knopf-ton').getBoundingClientRect();
+        const neu = document.createElement('span');
+        neu.textContent = 'Leben 3';
+        l.append(neu);
+        document.getElementById('leiste-punkte').textContent = 'Punkte 999';   // dreistellige Werte: ehrlicher Platzbedarf
+        document.getElementById('leiste-zeit').textContent = 'Zeit 120';
+        const teile = [...l.children].map((e) => e.getBoundingClientRect());
+        const ueberlappt = teile.some((r) => r.right > k.left && r.left < k.right && r.bottom > k.top && r.top < k.bottom);
+        return { ueberlappt, zeilen: new Set(teile.map((r) => Math.round(r.top))).size, tops: teile.map((r) => `${Math.round(r.left)}/${Math.round(r.top)}`).join(' '), rechts: Math.max(...teile.map((r) => r.right)), knopfLinks: k.left };
+      });
+      t.pruefe(!leiste.ueberlappt && leiste.zeilen === 1, `2D: Leiste mit drei Werten in einer Zeile, frei vom Ton-Knopf (${leiste.tops}; rechts ${leiste.rechts.toFixed(0)}, Knopf ab ${leiste.knopfLinks.toFixed(0)})`);
+      const vorher = await lies(s, () => window.spiel.feld.minY);
+      await s.evaluate(() => { const neu = document.createElement('span'); neu.id = 'test-lang'; neu.textContent = 'Münzen 999'; document.getElementById('leiste').append(neu); });
+      await s.waitForFunction((alt) => window.spiel.feld.minY > alt, vorher, { timeout: t.ZEITGRENZE }).catch(() => {});
+      const gewachsen = await lies(s, () => {
+        const l = document.getElementById('leiste').getBoundingClientRect();
+        return { minY: window.spiel.feld.minY, leiste: l.bottom, rechts: l.right, knopfLinks: document.getElementById('knopf-ton').getBoundingClientRect().left, feldOben: window.spiel.feldOben };
+      });
+      t.pruefe(gewachsen.minY > vorher && gewachsen.feldOben >= gewachsen.leiste - 0.5 && gewachsen.rechts <= gewachsen.knopfLinks,
+        `2D: Leiste wächst auf zwei Zeilen statt unter den Ton-Knopf (endet bei ${gewachsen.rechts.toFixed(0)}, Knopf ab ${gewachsen.knopfLinks.toFixed(0)}) → Spielfeld rückt nach (oben ${vorher.toFixed(1)} → ${gewachsen.minY.toFixed(1)})`);
+      await s.evaluate(() => { const l = document.getElementById('leiste'); while (l.children.length > 2) l.lastChild.remove(); });
     }
     const p = await lies(s, () => ({ punkte: window.spiel.punkte, weg: window.spiel.spieler.weg }));
     t.pruefe(p.weg > 0 && p.punkte === Math.floor(p.weg / SPIELER.wegProPunkt), `Punkte aus dem Weg (${p.punkte} für ${p.weg.toFixed(1)})`);
@@ -183,13 +264,13 @@ async function ablauf(SPIELER) {
       }));
       t.pruefe(hoechstens > 0 && hoechstens <= DREI.zeichenaufrufeMax, `3D: höchstens ${hoechstens} Zeichenaufrufe pro Bild (Grenze ${DREI.zeichenaufrufeMax})`);
     }
-    await s.screenshot({ path: FOTO });
+    await t.foto(s, FOTO);   // bei Pause: Ein langsames Foto lässt die Zeit nicht weiterlaufen
     console.log(`       Bildschirmfoto: ${FOTO}`);
 
     // Runde endet auf dem normalen Weg → Ende, Rekord gespeichert; Tippen → neue Runde.
     const punkte = await lies(s, () => window.spiel.punkte);
     await s.evaluate(() => window.spiel.test.setzeZeit(0.05));
-    await s.waitForFunction(() => window.spiel.zustand === 'ende', null, { timeout: 3000 });
+    await s.waitForFunction(() => window.spiel.zustand === 'ende', null, { timeout: t.ZEITGRENZE });
     const ende = await lies(s, () => ({ rekord: window.spiel.rekord, tafel: !document.getElementById('ende').hidden, text: document.getElementById('ende-punkte').textContent }));
     t.pruefe(punkte > 0 && ende.tafel && ende.text === `Punkte: ${punkte}` && ende.rekord === punkte, `Ende-Tafel mit Punkten, Rekord ${ende.rekord}`);
     const { SPEICHER } = await lade('js/config/spiel.js');
@@ -203,7 +284,7 @@ async function ablauf(SPIELER) {
     t.pruefe(await lies(s, () => window.__puffer) >= 1, `Start-Klang aus der Sound-Datei gespielt (${await lies(s, () => window.__puffer)} Mal)`);
 
     await s.reload();
-    await s.waitForFunction(IM_TITEL, null, { timeout: 15000 });
+    await s.waitForFunction(IM_TITEL, null, { timeout: t.ZEITGRENZE });
     t.pruefe(await lies(s, () => window.spiel.rekord) === punkte, 'Nach dem Neuladen ist der Rekord noch da');
     t.pruefe(await lies(s, () => document.getElementById('titel-rekord').textContent) === `Rekord: ${punkte}`, 'Titel zeigt den Rekord');
     t.pruefe(lauf.fehler.length === 0, `mit ?test=1: keine Konsolenfehler ${lauf.fehler.join(' | ')}`);
@@ -244,8 +325,18 @@ async function ersatzFaelle() {
     const a = await lies(fehlt.seite, () => window.spiel.assets);
     t.pruefe(a.fehlend.length > 0 && a.ersetzt.length > 0, `Bild fehlt → Ersatz (${a.ersetzt.join(', ')})`);
     t.pruefe(nurLadefehler(fehlt.fehler), `Bild fehlt: nur Ladefehler des Browsers ${fehlt.fehler.join(' | ')}`);
-    if (await lies(fehlt.seite, () => window.spiel.darstellung) === '2d') t.pruefe(await lies(fehlt.seite, () => window.spiel.figur) === 'ersatz', '2D: Atlas fehlt → Ersatz-Figur');
-    await fehlt.seite.screenshot({ path: FOTO.replace(/\.png$/, '-ersatz.png') });
+    if (await lies(fehlt.seite, () => window.spiel.darstellung) === '2d') {
+      t.pruefe(await lies(fehlt.seite, () => window.spiel.figur) === 'ersatz', '2D: Atlas fehlt → Ersatz-Figur');
+      // Jeder Rahmen des Atlas (Figur, Gegner, Effekte) und jede Animation hat einen Ersatz in derselben Größe mit
+      // demselben Fußpunkt, sonst ist bei fehlendem Atlas etwas unsichtbar. Neue Rahmen brauchen nichts Neues im Test.
+      const soll = atlasAufDerPlatte(), ist = await lies(fehlt.seite, () => ({ rahmen: window.spiel.rahmen, animationen: window.spiel.animationen }));
+      const ohne = Object.entries(soll.rahmen).filter(([n, r]) => !ist.rahmen[n] || !ist.rahmen[n].ersatz
+        || ['b', 'h', 'ankerX', 'ankerY'].some((k) => Math.abs(ist.rahmen[n][k] - r[k]) > 1)).map(([n]) => n);
+      const ohneAnimation = Object.keys(soll.animationen).filter((n) => !ist.animationen.includes(n));
+      t.pruefe(Object.keys(soll.rahmen).length > 0 && !ohne.length && !ohneAnimation.length,
+        `2D: Atlas fehlt → Ersatz für alle ${Object.keys(soll.rahmen).length} Rahmen und ${Object.keys(soll.animationen).length} Animationen (gleiche Größe, gleicher Fußpunkt)${ohne.length || ohneAnimation.length ? ` – fehlt: ${[...ohne, ...ohneAnimation].join(', ')}` : ''}`);
+    }
+    await t.foto(fehlt.seite, FOTO.replace(/\.png$/, '-ersatz.png'));
   } catch (e) { t.pruefe(false, `Bild fehlt: ${e.message}`); }
   await fehlt.ende();
   const { LADEN } = await lade('js/config/spiel.js');
@@ -278,7 +369,7 @@ async function ersatzFaelle() {
     });
     try {
       const s = lauf.seite;
-      await s.waitForFunction(IM_TITEL, null, { timeout: LADEN.zeitgrenze + 6000 });
+      await s.waitForFunction(IM_TITEL, null, { timeout: LADEN.zeitgrenze * 2 + t.ZEITGRENZE / 2 });
       const dauer = (Date.now() - beginn) / 1000;
       const a = await lies(s, () => window.spiel.assets);
       t.pruefe(a.ersetzt.includes('start'), `Sound ${fall} → nach ${dauer.toFixed(1)} s Titel, „start“ ersetzt (${a.ersetzt.join(', ')})`);
@@ -297,7 +388,7 @@ async function ersatzFaelle() {
   });
   try {
     const s = haengt.seite;
-    await s.waitForFunction(IM_TITEL, null, { timeout: LADEN.zeitgrenze + 6000 });
+    await s.waitForFunction(IM_TITEL, null, { timeout: LADEN.zeitgrenze * 2 + t.ZEITGRENZE / 2 });
     const dauer = Date.now() - beginn;
     await t.tippe(s, 300, 300);
     await bilder(s, 2);

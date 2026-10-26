@@ -43,4 +43,4 @@ Laden über das Manifest als Atlas (`bausteine/assets.js`), zeichnen um den Fuß
 - Schräg nicht schneller: Richtung normalisieren (`l = Math.sqrt(x*x + y*y); if (l > 1) { x /= l; y /= l; }`). Der Joystick liefert schon Länge ≤ 1.
 - Weiche Beschleunigung statt sofortigem Start: `v += (ziel - v) * (1 - Math.exp(-traegheit * dt))`.
 - Gegner zum Spieler: Richtung = Spieler − Gegner, normalisieren, mal Tempo. Tempo leicht streuen gegen Klumpen.
-- Im Bild halten: nach jeder Bewegung und nach Größenänderung auf das Feld begrenzen. Das Feld folgt aus Fußpunkt und Größe des Rahmens und aus der Leiste oben (`setzeFeld` im 2D-Gerüst), nie aus einer festen Zahl.
+- Im Bild halten: nach jeder Bewegung und nach Größenänderung auf das Feld begrenzen. Das Feld folgt aus Fußpunkt und Größe aller Rahmen der Figur (größter Ausschlag) und aus dem gemessenen unteren Rand aller Bedienelemente oben (`data-oben`: Leiste, Ton-Knopf; `setzeFeld` im 2D-Gerüst), nie aus einer festen Zahl.

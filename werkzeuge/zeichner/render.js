@@ -1,6 +1,7 @@
 // Macht aus SVG-Zeichnungen PNG-Bilder für das Spiel: node werkzeuge/zeichner/render.js <spielordner>
 // Quelle:  <spielordner>/grafik/quellen/<gruppe>/<name>.svg
-// Ziel:    <spielordner>/grafik/<gruppe>/<name>.png (transparent, Größe aus grafik/groessen.json)
+// Ziel:    <spielordner>/grafik/<gruppe>/<name>.png (transparent, längste Kante aus grafik/groessen.json, Schlüssel: Bild
+//          „gegner/schleim-1“, Animation „gegner/schleim“ (alle Rahmen) oder Gruppe „gegner“; sonst Standard der Gruppe)
 //          <spielordner>/grafik/kontaktbogen.png (alle Bilder auf einen Blick, Fußpunkt als rotes Kreuz)
 //          <spielordner>/grafik/grafik.json (Liste: Name, Datei, Breite, Höhe, Fußpunkt „anker“ in PNG-Pixeln)
 // Fußpunkt: im SVG-Kopf markieren, in viewBox-Einheiten: <svg viewBox="0 0 200 240" data-anker="100 230">.
@@ -33,6 +34,13 @@ function allePng(dir, quellen) {
 }
 
 // viewBox (x, y, Breite, Höhe) und Fußpunkt aus dem Kopf des SVG. anker: [x, y] in viewBox-Einheiten oder null.
+// Längste Kante in Pixeln: groessen.json mit Bildname („gegner/schleim-1“), Animationsname ohne Nummer („gegner/schleim“:
+// gilt für alle Rahmen, so sind sie sicher gleich groß) oder Gruppe („gegner“); sonst Standard der Gruppe, sonst 256.
+function kanteFuer(name, eigene) {
+  const gruppe = name.split("/")[0], animation = name.replace(/-\d+$/, "");
+  return eigene[name] || eigene[animation] || eigene[gruppe] || STANDARD[gruppe] || 256;
+}
+
 function leseMasse(svg) {
   const kopf = (svg.match(/<svg\b[^>]*>/) || [""])[0];
   const zahl = "(-?[\\d.]+)";
@@ -76,7 +84,7 @@ async function rendere(ordner) {
     try {
       const svg = fs.readFileSync(datei, "utf8");
       const masse = leseMasse(svg);
-      const kante = eigene[name] || eigene[gruppe] || STANDARD[gruppe] || 256;
+      const kante = kanteFuer(name, eigene);
       const faktor = kante / Math.max(masse.w, masse.h);
       const bw = Math.round(masse.w * faktor), bh = Math.round(masse.h * faktor);
       await seite.setViewportSize({ width: bw, height: bh });
@@ -139,4 +147,4 @@ if (require.main === module) {
     .catch((e) => { console.error(e.message); process.exit(1); });
 }
 
-module.exports = { leseMasse, ankerInPixeln, rendere, STANDARD };
+module.exports = { leseMasse, ankerInPixeln, kanteFuer, rendere, STANDARD };

@@ -26,7 +26,7 @@ const VERSCHOBEN = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -200 2
 const MUENZE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="#f5c534"/></svg>';
 
 function reineRechnung(datei) {
-  const { leseMasse, ankerInPixeln } = require(datei);
+  const { leseMasse, ankerInPixeln, kanteFuer } = require(datei);
   const kurz = path.relative(REPO, datei);
   const m = leseMasse(HELD);
   pruefe(m.w === 200 && m.h === 240 && m.anker.join() === "100,230", `${kurz}: viewBox und data-anker gelesen`);
@@ -37,6 +37,10 @@ function reineRechnung(datei) {
   const fehler = (svg) => { try { leseMasse(svg); return ""; } catch (e) { return e.message; } };
   pruefe(/zwei Zahlen/.test(fehler('<svg viewBox="0 0 10 10" data-anker="5">')), `${kurz}: data-anker mit nur einer Zahl → klare Meldung`);
   pruefe(/außerhalb/.test(fehler('<svg viewBox="0 0 10 10" data-anker="5 20">')), `${kurz}: data-anker außerhalb der viewBox → klare Meldung`);
+  const eigene = { "gegner/schleim": 176, gegner: 200, "gegner/boss-2": 300 };
+  pruefe(kanteFuer("gegner/schleim-1", eigene) === 176 && kanteFuer("gegner/schleim-4", eigene) === 176 && kanteFuer("gegner/boss-1", eigene) === 200
+    && kanteFuer("gegner/boss-2", eigene) === 300 && kanteFuer("effekte/funke", {}) === 128 && kanteFuer("neu/x", {}) === 256,
+    `${kurz}: groessen.json nach Bild, Animation (ohne Nummer), Gruppe, sonst Standard`);
 }
 
 function ganzerLauf(datei, basis) {

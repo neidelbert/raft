@@ -24,3 +24,9 @@
 | Testaufgabe | Ergebnis | Bemerkung |
 |---|---|---|
 | Pilzsammler gründlich prüfen (ohne Hinweis auf die Fehler) | bestanden | Alle 4 versteckten Fehler gefunden, jeder mit Ursache (Zeile) und eigenem Nachweis. Dazu einen 5. echten Fehler (Pilze außerhalb des Bildes nach dem Drehen) und 3 kleinere Befunde. Ehrlich benannt, was nur am echten iPhone prüfbar ist. Bericht: `ausbildung/pruefungen/tester-bericht-pilzsammler.md` (bei den Prüfungen, damit er für Horsts Stufe 5 keine Lösung ist). |
+
+## Praxistest mit frischen Programmierern (nur das Paket, ohne Horsts Vorwissen)
+| Runde | Aufgabe (Probe-Szene, danach gelöscht) | Ergebnis | Gefundene Schwächen → behoben |
+|---|---|---|---|
+| 1 | Figur sammelt Münzen, Sound aus Datei | geklappt, Test 45/45 | 8 Schwächen (Fußpunkt-Koordinaten, zwei Bild-Wege, Gerüst-Rand, Test-Muster …) → alle behoben (`NACHBESSERUNG.md`) |
+| 2 | eigene Lauf-Animation, Gegner, Explosion, Treffer-Sound | geklappt in ca. 25 Minuten, Test 81/81 | Schwächen aus Runde 1 nicht mehr aufgetreten; 6 kleinere (Ton-Knopf verdeckt, Tests unter Last, Zeichner-Rahmenzahlen, Ersatz für alle Rahmen …) → alle behoben (`NACHBESSERUNG-2.md`) |

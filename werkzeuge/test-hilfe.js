@@ -4,6 +4,9 @@
 //   const lauf = await t.starte({ ordner: "spiele/sterne", port: 8810 });
 //   t.pruefe(bedingung, "Text");  ...  await lauf.ende();  t.ergebnis();
 //   Touch: t.ziehe(seite, x1, y1, x2, y2, { halteMs }), t.tippe(seite, x, y), t.laufeZu(seite, ziel, { position, tempo })
+//   Unter Last robust: t.beobachte(seite, lesen, { bilder }) (Werte je Bild mit dt, nur Bilder mit dt > 0 werten),
+//   t.foto(seite, datei) (Bildschirmfoto bei pausiertem Spiel), t.ZEITGRENZE (ms, für eigene waitForFunction).
+//   Tests nacheinander laufen lassen, nicht parallel (wissen/testen.md, „Tests unter Last“).
 const { chromium, devices } = require("playwright");
 const { spawn, execSync } = require("child_process");
 const fs = require("fs");
@@ -13,6 +16,10 @@ const http = require("http");
 
 const REPO = path.resolve(__dirname, "..");
 const THREE_VERSION = "0.170.0";
+// Zeitgrenze für Warten im Browser (Seite bereit, Playwright-Aktionen wie das Bildschirmfoto): großzügig, weil ein
+// belasteter Rechner (mehrere Chromium parallel) Sekunden pro Bild brauchen kann, aber begrenzt, damit ein kaputtes
+// Spiel rot meldet statt hängt. Ändern mit TEST_ZEITGRENZE=<ms>.
+const ZEITGRENZE = Number(process.env.TEST_ZEITGRENZE) || 30000;
 const CDN = /https:\/\/cdn\.jsdelivr\.net\/npm\/three@([\d.]+)\/(.*)$/;
 
 let fehlerZahl = 0;
@@ -54,7 +61,7 @@ function warteAufServer(port) {
 async function starte({ ordner, port, pfad = "index.html", geraet = "iPhone 13", warteAuf = "window.spiel && window.spiel.bereit", initSkript = null, routen = null }) {
   const wurzel = path.resolve(REPO, ordner);
   // Ein noch laufender alter Server würde sonst einen fremden Ordner ausliefern (falsches Testergebnis).
-  if (await portBelegt(port)) throw new Error(`Port ${port} ist belegt (alter Testserver?). Beenden mit: pkill -f "http.server ${port}"`);
+  if (await portBelegt(port)) throw new Error(`Port ${port} ist belegt (alter Testserver?). Beenden mit: pkill -f "^python3 -m http.server ${port}"`);
   const server = spawn("python3", ["-m", "http.server", String(port), "--bind", "127.0.0.1"], { cwd: wurzel, stdio: "ignore" });
   let browser = null;
   try {
@@ -85,11 +92,12 @@ async function oeffne({ browser, server, port, pfad, geraet, warteAuf, initSkrip
   if (initSkript) await kontext.addInitScript(initSkript);
   if (routen) await routen(kontext);   // z. B. eine Datei hängen lassen oder verbieten, bevor die Seite lädt
   const seite = await kontext.newPage();
+  seite.setDefaultTimeout(ZEITGRENZE);   // Playwright-Standard 30 s gilt sonst je Aktion, auch fürs Foto
   const fehler = [];
   seite.on("console", (m) => m.type() === "error" && fehler.push(m.text()));
   seite.on("pageerror", (e) => fehler.push(e.message));
   await seite.goto(`http://127.0.0.1:${port}/${pfad}`);
-  if (warteAuf) await seite.waitForFunction(warteAuf, null, { timeout: 15000 });
+  if (warteAuf) await seite.waitForFunction(warteAuf, null, { timeout: ZEITGRENZE });
   async function ende() {
     await browser.close();
     server.kill();
@@ -153,6 +161,38 @@ async function laufeZu(seite, ziel, { position, tempo, joystick = null, ausschla
   return { angekommen: abstand <= naehe, abstand, anlaeufe: versuche, x: p.x, y: p.y };
 }
 
+// Werte Bild für Bild mitschreiben: lesen (Funktion für seite.evaluate, ohne Bezug auf Node-Variablen) läuft in jedem
+// requestAnimationFrame, nach dem Spiel (das sein nächstes Bild früher angefordert hat). → [{ dt, wert }], dt in ms seit
+// dem letzten Bild. Unter Last kommen Bilder mit dt = 0 (gleicher oder alter Zeitstempel: das Spiel rechnet dann nichts)
+// und große Sprünge: Nur Bilder mit dt > 0 werten und „hat sich bewegt“ am Wert selbst ablesen, nicht an der Zeit.
+async function beobachte(seite, lesen, { bilder = 20, maxMs = ZEITGRENZE / 2 } = {}) {
+  return seite.evaluate(({ quelle, bilder, maxMs }) => new Promise((fertig) => {
+    const lies = (0, eval)(`(${quelle})`), werte = [], bis = performance.now() + maxMs;
+    let letzte = null;
+    requestAnimationFrame(function schau(jetzt) {
+      werte.push({ dt: letzte === null ? 0 : jetzt - letzte, wert: lies() });
+      letzte = letzte === null ? jetzt : Math.max(letzte, jetzt);
+      werte.length >= bilder || performance.now() > bis ? fertig(werte) : requestAnimationFrame(schau);
+    });
+  }), { quelle: lesen.toString(), bilder, maxMs });
+}
+
+// Bildschirmfoto bei pausiertem Spiel: Der Tab gilt kurz als versteckt (wie beim App-Wechsel), die Schleife
+// (bausteine/schleife.js) rechnet nicht weiter, zeichnet aber; danach wieder sichtbar. Unter Last dauert ein Foto
+// Sekunden bis über 30 s; ohne Pause laufen derweil Gegner und Zeit weiter und verfälschen die nächsten Prüfungen.
+// Achtung: Das Verstecken löst wie im echten Spiel den Joystick und speichert (beiVersteckt).
+async function foto(seite, datei, { pausieren = true } = {}) {
+  const tab = (v) => seite.evaluate((versteckt) => {
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => versteckt });
+    Object.defineProperty(document, "visibilityState", { configurable: true, get: () => (versteckt ? "hidden" : "visible") });
+    document.dispatchEvent(new Event("visibilitychange"));
+  }, v);
+  if (pausieren) await tab(true);
+  try { await seite.screenshot({ path: datei, timeout: ZEITGRENZE * 2 }); }
+  finally { if (pausieren) await tab(false); }
+  return datei;
+}
+
 // Misst die Bildrate im Browser über eine Zeitspanne (nur als grober Wert, Software-Grafik ist langsamer als ein iPhone).
 async function bildrate(seite, ms = 2000) {
   return seite.evaluate((dauer) => new Promise((fertig) => {
@@ -161,4 +201,4 @@ async function bildrate(seite, ms = 2000) {
   }), ms);
 }
 
-module.exports = { pruefe, ergebnis, starte, ziehe, tippe, laufeZu, bildrate, REPO };
+module.exports = { pruefe, ergebnis, starte, ziehe, tippe, laufeZu, beobachte, foto, bildrate, ZEITGRENZE, REPO };
