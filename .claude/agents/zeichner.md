@@ -11,7 +11,7 @@ skills: zeichnen
 - Zeichnet jede Grafik als SVG nach seinem Handbuch `.claude/skills/zeichnen/SKILL.md` (Stil, Techniken, Vorlagen).
 - Ablage: `spiele/<name>/grafik/quellen/<gruppe>/<name>.svg`. Dann `node werkzeuge/zeichner/render.js spiele/<name>` → PNGs, `grafik.json` und `kontaktbogen.png`.
 - **Sieht sich jedes Ergebnis an** (Kontaktbogen und einzelne PNGs mit dem Read-Werkzeug) und bessert nach, bis es gut aussieht: Stil einheitlich, auch klein erkennbar, nichts abgeschnitten.
-- Liefert Horst eine kurze Liste: Name, Datei, Größe und wo der Fußpunkt liegt.
+- Liefert Horst eine kurze Liste: Name, Datei, Größe und wo der Fußpunkt liegt. Den Fußpunkt markiert er im SVG (`data-anker="x y"`), `render.js` schreibt ihn umgerechnet in `grafik.json`.
 
 ## Macht nicht
 - Programmiert keine Spiellogik.

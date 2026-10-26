@@ -2,22 +2,29 @@
 // Prüft: Regeln ohne Browser; Start ohne Konsolenfehler mit und ohne ?test=1; Ladebildschirm → Titel; Ton-Knopf;
 //   Tippen → Spiel; Joystick bewegt, Loslassen und Abbruch stoppen; Tab-Wechsel (Pause, kein Sprung, Joystick gelöst);
 //   Runde endet → Rekord gespeichert, nach Neuladen noch da; kaputter Speicherstand und privater Modus;
-//   fehlende und hängende Assets (Ersatz); Pixel-Ratio ≤ 2; 3D: Zeichenaufrufe. Bildschirmfoto: FOTO (Standard Temp).
+//   Figur läuft per Joystick zu einem Ziel; 2D: Kopf bleibt unter der Leiste; Sound-Datei spielt;
+//   fehlende und hängende Assets (Ersatz, auch Sound); Pixel-Ratio ≤ 2; 3D: Zeichenaufrufe.
+//   Bildschirmfoto: FOTO=<datei> (Standard tests/fotos/__NAME__.png, nicht für Git: tests/fotos/.gitignore).
 // Umgebung: PORT=<zahl> (Standard __PORT__), ORDNER=<Kopie> für die Gegenprobe (kaputte Kopie muss rot werden).
 // Braucht Node, Playwright mit Chromium, python3; 3D einmal npm (test-hilfe.js holt Three.js in den Temp-Ordner).
-const os = require('os');
+const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 const t = require('./test-hilfe.js');
 
 const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT) || __PORT__;
-const FOTO = process.env.FOTO || path.join(os.tmpdir(), '__NAME__.png');
+const FOTO = process.env.FOTO || path.join(__dirname, 'fotos', '__NAME__.png');   // im Spielordner: leicht zu finden
+fs.mkdirSync(path.dirname(FOTO), { recursive: true });
+if (!process.env.FOTO) fs.writeFileSync(path.join(__dirname, 'fotos', '.gitignore'), '*\n');
 const IM_TITEL = 'window.spiel && window.spiel.zustand === "titel"';
 const lade = (datei) => import(pathToFileURL(path.join(ORDNER, datei)).href);
 const warte = (ms) => new Promise((ok) => setTimeout(ok, ms));
 const nurLadefehler = (fehler) => fehler.every((f) => /Failed to load resource/.test(f));
-const lies = (seite, ausdruck) => seite.evaluate(ausdruck);
+// Wert aus der Seite lesen; arg wird an die Funktion weitergegeben: lies(s, (k) => localStorage.getItem(k), schluessel).
+const lies = (seite, ausdruck, arg) => seite.evaluate(ausdruck, arg);
+// Zählt abgespielte Sound-Dateien (AudioBufferSourceNode.start), unabhängig vom Spielcode; Code-Klänge zählen nicht.
+const ZAEHLE_PUFFER = { content: 'window.__puffer = 0; const s = AudioBufferSourceNode.prototype.start; AudioBufferSourceNode.prototype.start = function (...a) { window.__puffer++; return s.apply(this, a); };' };
 
 // n Bilder in der Seite abwarten (requestAnimationFrame).
 const bilder = (seite, n) => seite.evaluate((anzahl) => new Promise((fertig) => {
@@ -33,7 +40,7 @@ const tab = (seite, versteckt) => seite.evaluate((v) => {
 }, versteckt);
 
 async function regeln() {
-  const { erstelleSpieler, setzeSpieler, bewegeSpieler } = await lade('js/regeln/spieler.js');
+  const { erstelleSpieler, setzeSpieler, bewegeSpieler, beruehrt } = await lade('js/regeln/spieler.js');
   const { erstelleRunde, starteRunde, aktualisiereRunde } = await lade('js/regeln/runde.js');
   const { SPIELER } = await lade('js/config/welt.js');
   const { RUNDE, SPIEL } = await lade('js/config/spiel.js');
@@ -54,6 +61,18 @@ async function regeln() {
   while (!vorbei && schritte < 10000) { vorbei = aktualisiereRunde(r, SPIEL.deltaMax, SPIELER.wegProPunkt * 3.5, SPIELER.wegProPunkt); schritte++; }
   t.pruefe(vorbei && Math.abs(schritte * SPIEL.deltaMax - RUNDE.dauer) < SPIEL.deltaMax + 1e-9, `Regel: Runde endet nach ${RUNDE.dauer} s (${schritte} Schritte)`);
   t.pruefe(r.punkte === 3 && r.zeit === 0, `Regel: Punkte = ganze Wegstücke (${r.punkte})`);
+  starteRunde(r, null);
+  vorbei = false;
+  for (let i = 0; i < 1000 && !vorbei; i++) vorbei = aktualisiereRunde(r, SPIEL.deltaMax, 0, SPIELER.wegProPunkt);
+  t.pruefe(!vorbei && r.zeit === Infinity, 'Regel: RUNDE.dauer null → keine Zeitgrenze (100 s ohne Ende)');
+  // Berührung mit festen Orten (nie mit zufällig verteilten Dingen: ein Nachbar in Reichweite verfälscht den Fall).
+  const { BERUEHRUNG } = await lade('js/config/welt.js');
+  const b = { hoehe: 30, radius: 40 }, f = erstelleSpieler();
+  setzeSpieler(f, 100, 200);
+  t.pruefe(beruehrt(f, 100, 170, b) && beruehrt(f, 140, 170, b), 'Regel: Berührung um die Körpermitte (30 über dem Fuß), Rand zählt');
+  t.pruefe(!beruehrt(f, 140.5, 170, b) && !beruehrt(f, 100, 240.5, b), 'Regel: knapp außerhalb keine Berührung (auch knapp unter dem Fuß)');
+  t.pruefe(beruehrt(f, 100, 131, b) && !beruehrt(f, 100, 129, b), 'Regel: Kreis sitzt über dem Fuß, nicht um ihn');
+  t.pruefe(BERUEHRUNG.radius > 0 && BERUEHRUNG.hoehe >= 0, `Einstellwerte BERUEHRUNG da (radius ${BERUEHRUNG.radius}, hoehe ${BERUEHRUNG.hoehe})`);
   return SPIELER;
 }
 
@@ -71,7 +90,7 @@ async function ohneTestModus() {
 async function ablauf(SPIELER) {
   // Manifest kurz verzögern, damit der Ladebildschirm sicher zu sehen ist.
   const lauf = await t.starte({
-    ordner: ORDNER, port: PORT, pfad: 'index.html?test=1&seed=42',
+    ordner: ORDNER, port: PORT, pfad: 'index.html?test=1&seed=42', initSkript: ZAEHLE_PUFFER,
     routen: (k) => k.route('**/assets/assets.json', async (route) => { await warte(400); route.continue(); }),
   });
   const s = lauf.seite;
@@ -86,6 +105,7 @@ async function ablauf(SPIELER) {
     const a = await lies(s, () => window.spiel.assets);
     t.pruefe(a.geladen.length > 0 && a.fehlend.length === 0 && a.ersetzt.length === 0, `Assets geladen: ${a.geladen.join(', ')}`);
     const art = await lies(s, () => window.spiel.darstellung);
+    if (art === '2d') t.pruefe(await lies(s, () => window.spiel.figur) === 'atlas', `2D: Figur aus dem Atlas (${await lies(s, () => window.spiel.figur)})`);
     if (art === '3d') t.pruefe(['glb', 'ersatz'].includes(await lies(s, () => window.spiel.modell)), `3D: Spieler-Modell oder Ersatz-Box (${await lies(s, () => window.spiel.modell)})`);
 
     // Ton-Knopf im Titel: schaltet, startet das Spiel nicht, wird gespeichert.
@@ -125,6 +145,19 @@ async function ablauf(SPIELER) {
     const abbruch = await lies(s, () => window.spiel.spieler.x);
     await bilder(s, 10);
     t.pruefe(await lies(s, () => window.spiel.spieler.x) === abbruch && !(await lies(s, () => window.spiel.joystickAktiv)), 'Abbruch (touchCancel) → Stillstand');
+    // Zum Ziel laufen (Muster aus wissen/testen.md): Richtung ziehen, halten, nachmessen, wiederholen.
+    const feld = await lies(s, () => window.spiel.feld);
+    const ziel = { x: feld.minX + (feld.maxX - feld.minX) * 0.3, y: feld.minY + (feld.maxY - feld.minY) * 0.4 };
+    const gelaufen = await t.laufeZu(s, ziel, { position: () => ({ x: window.spiel.spieler.x, y: window.spiel.spieler.y }), tempo: SPIELER.tempo, naehe: SPIELER.tempo * 0.1 });   // 0,1 s Weg: 2D 22 Punkte, 3D 0,5 m
+    t.pruefe(gelaufen.angekommen, `Figur läuft per Joystick zum Ziel (${gelaufen.anlaeufe} Anläufe, Abstand ${gelaufen.abstand.toFixed(2)})`);
+    if (art === '2d') {
+      // Ganz nach oben laufen: Der Kopf der Figur bleibt unter der Leiste (Grenze aus Rahmenhöhe, nicht fest).
+      await t.ziehe(s, g.b * 0.2, g.h * 0.75, g.b * 0.2, g.h * 0.75 - 60, { halteMs: (g.h / SPIELER.tempo) * 1000 + 300 });
+      const atlas = JSON.parse(fs.readFileSync(path.join(ORDNER, 'assets', 'atlas', 'spiel.json'), 'utf8'));
+      const r = atlas.rahmen[SPIELER.rahmen];
+      const oben = await lies(s, (kopf) => ({ kopf: window.spiel.spieler.y - kopf, leiste: document.getElementById('leiste').getBoundingClientRect().bottom }), r.ankerY * SPIELER.skala);
+      t.pruefe(oben.leiste > 0 && oben.kopf >= oben.leiste, `2D: Kopf der Figur (${oben.kopf.toFixed(1)}) bleibt unter der Leiste (${oben.leiste.toFixed(1)})`);
+    }
     const p = await lies(s, () => ({ punkte: window.spiel.punkte, weg: window.spiel.spieler.weg }));
     t.pruefe(p.weg > 0 && p.punkte === Math.floor(p.weg / SPIELER.wegProPunkt), `Punkte aus dem Weg (${p.punkte} für ${p.weg.toFixed(1)})`);
 
@@ -160,12 +193,14 @@ async function ablauf(SPIELER) {
     const ende = await lies(s, () => ({ rekord: window.spiel.rekord, tafel: !document.getElementById('ende').hidden, text: document.getElementById('ende-punkte').textContent }));
     t.pruefe(punkte > 0 && ende.tafel && ende.text === `Punkte: ${punkte}` && ende.rekord === punkte, `Ende-Tafel mit Punkten, Rekord ${ende.rekord}`);
     const { SPEICHER } = await lade('js/config/spiel.js');
-    const gespeichert = await s.evaluate((k) => JSON.parse(localStorage.getItem(k) || '{}'), SPEICHER.schluessel);
+    const gespeichert = await lies(s, (k) => JSON.parse(localStorage.getItem(k) || '{}'), SPEICHER.schluessel);
     t.pruefe(gespeichert.rekord === punkte && gespeichert.ton === true, `Rekord und Ton gespeichert (${JSON.stringify(gespeichert)})`);
     await t.tippe(s, g.b * 0.75, g.h * 0.5);
     await bilder(s, 2);
     const neu = await lies(s, () => ({ zustand: window.spiel.zustand, punkte: window.spiel.punkte, weg: window.spiel.spieler.weg }));
     t.pruefe(neu.zustand === 'spiel' && neu.punkte === 0 && neu.weg === 0, 'Tippen auf dem Ende → neue Runde, alles zurückgesetzt');
+    // Beim ersten Tippen wird die Sound-Datei erst dekodiert (Code-Klang als Ersatz); jetzt spielt die Datei.
+    t.pruefe(await lies(s, () => window.__puffer) >= 1, `Start-Klang aus der Sound-Datei gespielt (${await lies(s, () => window.__puffer)} Mal)`);
 
     await s.reload();
     await s.waitForFunction(IM_TITEL, null, { timeout: 15000 });
@@ -209,11 +244,52 @@ async function ersatzFaelle() {
     const a = await lies(fehlt.seite, () => window.spiel.assets);
     t.pruefe(a.fehlend.length > 0 && a.ersetzt.length > 0, `Bild fehlt → Ersatz (${a.ersetzt.join(', ')})`);
     t.pruefe(nurLadefehler(fehlt.fehler), `Bild fehlt: nur Ladefehler des Browsers ${fehlt.fehler.join(' | ')}`);
+    if (await lies(fehlt.seite, () => window.spiel.darstellung) === '2d') t.pruefe(await lies(fehlt.seite, () => window.spiel.figur) === 'ersatz', '2D: Atlas fehlt → Ersatz-Figur');
     await fehlt.seite.screenshot({ path: FOTO.replace(/\.png$/, '-ersatz.png') });
   } catch (e) { t.pruefe(false, `Bild fehlt: ${e.message}`); }
   await fehlt.ende();
-  // Manifest hängt (Server antwortet nie): nach der Zeitgrenze läuft das Spiel trotzdem.
   const { LADEN } = await lade('js/config/spiel.js');
+  // 2D: Atlas da, aber ohne den Rahmen der Figur (Bild umbenannt) → Ersatz-Figur statt unsichtbarer Figur.
+  const { SPIELER, ERSATZ } = await lade('js/config/welt.js');
+  if (ERSATZ) {
+    const umbenannt = await t.starte({
+      ordner: ORDNER, port: PORT, warteAuf: IM_TITEL,
+      routen: (k) => k.route(/\/assets\/atlas\/[^/]+\.json/, async (route) => {
+        const antwort = await route.fetch(), daten = await antwort.json();
+        if (daten.rahmen[SPIELER.rahmen]) { daten.rahmen.anders = daten.rahmen[SPIELER.rahmen]; delete daten.rahmen[SPIELER.rahmen]; }
+        route.fulfill({ response: antwort, json: daten });
+      }),
+    });
+    try {
+      const s = umbenannt.seite;
+      await t.tippe(s, 300, 300);
+      await bilder(s, 2);
+      const u = await lies(s, () => ({ figur: window.spiel.figur, zustand: window.spiel.zustand }));
+      t.pruefe(u.figur === 'ersatz' && u.zustand === 'spiel' && umbenannt.fehler.length === 0, `2D: Rahmen „${SPIELER.rahmen}“ fehlt im Atlas → Ersatz-Figur, Spiel läuft (${u.figur}) ${umbenannt.fehler.join(' | ')}`);
+    } catch (e) { t.pruefe(false, `Rahmen fehlt: ${e.message}`); }
+    await umbenannt.ende();
+  }
+  // Sound-Datei fehlt (404) oder hängt (Server antwortet nie): Titel kommt, Tippen spielt den Code-Klang als Ersatz.
+  for (const [fall, route] of [['fehlt', (r) => r.fulfill({ status: 404, body: '' })], ['hängt', () => {}]]) {
+    const beginn = Date.now();
+    const lauf = await t.starte({
+      ordner: ORDNER, port: PORT, warteAuf: null, initSkript: ZAEHLE_PUFFER,
+      routen: (k) => k.route(/\/assets\/sounds\//, route),
+    });
+    try {
+      const s = lauf.seite;
+      await s.waitForFunction(IM_TITEL, null, { timeout: LADEN.zeitgrenze + 6000 });
+      const dauer = (Date.now() - beginn) / 1000;
+      const a = await lies(s, () => window.spiel.assets);
+      t.pruefe(a.ersetzt.includes('start'), `Sound ${fall} → nach ${dauer.toFixed(1)} s Titel, „start“ ersetzt (${a.ersetzt.join(', ')})`);
+      await t.tippe(s, 300, 300);
+      await bilder(s, 3);
+      const k = await lies(s, () => ({ zustand: window.spiel.zustand, klaenge: window.spiel.ton.klaenge, puffer: window.__puffer }));
+      t.pruefe(k.zustand === 'spiel' && k.klaenge >= 1 && k.puffer === 0 && nurLadefehler(lauf.fehler), `Sound ${fall} → Spiel startet, Code-Klang statt Datei (${k.klaenge} Klang, ${k.puffer} Datei) ${lauf.fehler.join(' | ')}`);
+    } catch (e) { t.pruefe(false, `Sound ${fall}: ${e.message}`); }
+    await lauf.ende();
+  }
+  // Manifest hängt (Server antwortet nie): nach der Zeitgrenze läuft das Spiel trotzdem.
   const beginn = Date.now();
   const haengt = await t.starte({
     ordner: ORDNER, port: PORT, warteAuf: null,

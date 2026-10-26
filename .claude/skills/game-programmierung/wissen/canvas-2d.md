@@ -24,9 +24,10 @@ function folge(dt, ziel) {
 - Endloser Boden: die Kachel ab `Math.floor(kamera.x / k) * k` wiederholen.
 
 ## Bilder
-Laden mit `bausteine/bilder.js` (Liste aus `grafik/grafik.json`, Ersatz bei fehlendem Bild), Einzelheiten in `grafik-und-sound.md`.
+Laden über das Manifest als Atlas (`bausteine/assets.js`), zeichnen um den Fußpunkt mit `zeichneRahmen` (`bausteine/animation.js`), Ersatz mit `ersatzBild` (`bausteine/bilder.js`). Einzelheiten in `assets.md` und `grafik-und-sound.md`.
 
 ## Kollision
+- **Berührung um die Körpermitte, nicht um den Fuß:** Die Figur steht auf ihrem Fußpunkt, ihr Körper liegt darüber. Ein Kreis um den Fuß lässt eine Münze, die sichtbar hinter dem Körper liegt, liegen. Gerüst: `beruehrt(spieler, x, y, BERUEHRUNG)` in `js/regeln/spieler.js`, Werte `hoehe` (Mitte über dem Fuß) und `radius` in `js/config/welt.js` (Frage an Lukas: großzügig oder knapp?).
 - Kreise reichen fast immer: `dx*dx + dy*dy < (r1 + r2) ** 2` (ohne Wurzel, `beruehren` in `bausteine/gitter.js`). Treffer-Kreise eher etwas kleiner als das Bild (fair).
 - Rechtecke (Plattformen): erst x bewegen und auflösen, dann y bewegen und auflösen. Sonst bleibt man an Kanten hängen.
 - **Viele Objekte (über 50): `bausteine/gitter.js`.** Jedes Bild einmal `fuelle(xs, ys, anzahl)`, dann je Objekt `sucheNachbarn` in die 3 × 3 Zellen um sich. Zellgröße mindestens der größte Suchabstand. Die Fläche deckt auch den Streifen außerhalb ab, in dem Gegner entstehen.
@@ -42,4 +43,4 @@ Laden mit `bausteine/bilder.js` (Liste aus `grafik/grafik.json`, Ersatz bei fehl
 - Schräg nicht schneller: Richtung normalisieren (`l = Math.sqrt(x*x + y*y); if (l > 1) { x /= l; y /= l; }`). Der Joystick liefert schon Länge ≤ 1.
 - Weiche Beschleunigung statt sofortigem Start: `v += (ziel - v) * (1 - Math.exp(-traegheit * dt))`.
 - Gegner zum Spieler: Richtung = Spieler − Gegner, normalisieren, mal Tempo. Tempo leicht streuen gegen Klumpen.
-- Im Bild halten: nach jeder Bewegung und nach Größenänderung auf den Rand begrenzen (halbe Bildgröße berücksichtigen).
+- Im Bild halten: nach jeder Bewegung und nach Größenänderung auf das Feld begrenzen. Das Feld folgt aus Fußpunkt und Größe des Rahmens und aus der Leiste oben (`setzeFeld` im 2D-Gerüst), nie aus einer festen Zahl.

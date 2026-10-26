@@ -1,7 +1,10 @@
-// Baustein „bilder“: Bilder des Zeichners laden; fehlt eines, gibt es einen Ersatz und das Spiel läuft weiter.
-// Wofür: jedes Spiel mit grafik/grafik.json. Fehlt die Liste oder ein Bild, gibt es nur eine Warnung (console.warn),
-//   keinen Fehler und keinen Absturz. Achtung: Fehlt eine Datei, die in grafik.json steht, meldet der Browser selbst
-//   „Failed to load resource“ als Fehlerzeile; das lässt sich im Spielcode nicht verhindern (Lernbuch Stufe 6).
+// Baustein „bilder“: Ersatz-Zeichnungen und eingefärbte Kopien; dazu Bilder direkt aus grafik/grafik.json laden.
+// Wofür: In Spielen nur ersatzBild (Ersatz für fehlende Bilder, z. B. in ersatz() für ladeAssets) und faerbeEin.
+//   Spiele laden Bilder immer über das Manifest als Atlas (bausteine/assets.js); grafik.json ist nur die Eingabe für
+//   werkzeuge/atlas.js. ladeBilder/holeBild sind für kleine Versuche ohne Asset-Kette.
+//   Fehlt dort die Liste oder ein Bild, gibt es nur eine Warnung (console.warn), keinen Fehler und keinen Absturz.
+//   Achtung: Fehlt eine Datei, die in grafik.json steht, meldet der Browser selbst „Failed to load resource“ als
+//   Fehlerzeile; das lässt sich im Spielcode nicht verhindern (Lernbuch Stufe 6).
 //   Ersatzbilder und eingefärbte Kopien entstehen einmal beim Start, nie pro Bild.
 //   Kein Zugriff auf den Browser beim Laden.
 // Schnittstelle:

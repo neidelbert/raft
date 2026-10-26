@@ -34,7 +34,7 @@ export function erstelleAnzeige(dokument) {
     aktualisiereLeiste(runde) {
       const zeit = Math.ceil(runde.zeit);
       if (runde.punkte !== zuletzt.punkte) { zuletzt.punkte = runde.punkte; hole('leiste-punkte').textContent = `Punkte ${runde.punkte}`; }
-      if (zeit !== zuletzt.zeit) { zuletzt.zeit = zeit; hole('leiste-zeit').textContent = `Zeit ${zeit}`; }
+      if (zeit !== zuletzt.zeit) { zuletzt.zeit = zeit; hole('leiste-zeit').textContent = Number.isFinite(zeit) ? `Zeit ${zeit}` : ''; }   // ohne Zeitgrenze leer
     },
     zeigeEnde(punkte, rekord) {
       hole('ende-punkte').textContent = `Punkte: ${punkte}`;

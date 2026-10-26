@@ -26,3 +26,10 @@ export function bewegeSpieler(spieler, eingabe, dt, tempo, feld) {
   const wx = spieler.x - altX, wy = spieler.y - altY;
   spieler.weg += Math.sqrt(wx * wx + wy * wy);   // nicht Math.hypot: legt in V8 Speicher an (Lernbuch Stufe 3)
 }
+
+// Berührt die Figur etwas an (x, y)? Kreis um die Körpermitte: beruehrung = { hoehe, radius } aus config/welt.js
+// (2D: hoehe Punkte über dem Fuß, y wächst nach unten; 3D: hoehe 0). Grenze zählt als Berührung. Ohne Wurzel.
+export function beruehrt(spieler, x, y, beruehrung) {
+  const dx = x - spieler.x, dy = y - (spieler.y - beruehrung.hoehe);
+  return dx * dx + dy * dy <= beruehrung.radius * beruehrung.radius;
+}

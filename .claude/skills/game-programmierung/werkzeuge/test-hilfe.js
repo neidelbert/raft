@@ -7,6 +7,7 @@
 //   const t = require("./test-hilfe.js");
 //   const lauf = await t.starte({ ordner: path.resolve(__dirname, ".."), port: 9000 });
 //   t.pruefe(bedingung, "Text");  ...  await lauf.ende();  t.ergebnis();
+//   Touch: t.ziehe(seite, x1, y1, x2, y2, { halteMs }), t.tippe(seite, x, y), t.laufeZu(seite, ziel, { position, tempo })
 const { chromium, devices } = require("playwright");
 const { spawn, execSync } = require("child_process");
 const fs = require("fs");
@@ -119,6 +120,42 @@ async function tippe(seite, x, y) {
   await seite.touchscreen.tap(x, y);
 }
 
+// Figur per echtem Joystick-Ziehen zu einem Ziel laufen lassen: Finger aufsetzen, in Zielrichtung ausschlagen,
+// in der Seite Bild für Bild warten, bis die Figur da ist (oder vorbei), loslassen, nachmessen, wiederholen
+// (höchstens `anlaeufe` Mal). Ziehen nach rechts/unten bewegt nach +x/+y (2D und 3D gleich). Nicht nach Zeit halten:
+// Bei langsamer Test-Grafik (3D etwa 9 Bilder/s) stimmt keine vorausberechnete Haltezeit.
+//   position: Funktion für seite.evaluate → { x, y } (z. B. () => window.spiel.spieler), ohne Bezug auf Node-Variablen
+//   ziel: { x, y }; tempo: Einheiten pro Sekunde bei vollem Ausschlag (aus config): nah am Ziel nur ein Drittel Ausschlag
+//   joystick: [x, y] Aufsetzpunkt in Punkten (Standard: links unten, im Joystick-Feld); ausschlag: Ziehweg in Punkten
+//   naehe: angekommen, wenn der Abstand höchstens so groß ist; halteMax: ms höchstens je Anlauf
+// → { angekommen, abstand, anlaeufe, x, y }. Achtung: Unterwegs kann die Figur mehr berühren als das Ziel; der Test
+// prüft dann „mindestens“, nicht „genau“ (wissen/testen.md).
+async function laufeZu(seite, ziel, { position, tempo, joystick = null, ausschlag = 60, naehe = 8, anlaeufe = 12, halteMax = 4000 }) {
+  const start = joystick || await seite.evaluate(() => [innerWidth * 0.2, innerHeight * 0.75]);
+  const quelle = position.toString();
+  let p = await seite.evaluate(position), versuche = 0;
+  let abstand = Math.sqrt((ziel.x - p.x) ** 2 + (ziel.y - p.y) ** 2);
+  while (abstand > naehe && versuche < anlaeufe) {
+    versuche++;
+    const rx = (ziel.x - p.x) / abstand, ry = (ziel.y - p.y) / abstand;
+    const weg = abstand > tempo * 0.3 ? ausschlag : ausschlag / 3;
+    const cdp = await ziehe(seite, start[0], start[1], start[0] + rx * weg, start[1] + ry * weg, { schritte: 1, loslassen: false });
+    await seite.evaluate(({ quelle, ziel, rx, ry, rest, halteMax }) => new Promise((fertig) => {
+      const lies = (0, eval)(`(${quelle})`), bis = performance.now() + halteMax;
+      (function schau() {
+        const q = lies();
+        const vor = (ziel.x - q.x) * rx + (ziel.y - q.y) * ry;   // Rest des Wegs in Zielrichtung
+        vor <= rest || performance.now() > bis ? fertig() : requestAnimationFrame(schau);
+      })();
+    }), { quelle, ziel, rx, ry, rest: naehe / 2, halteMax });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await seite.waitForTimeout(50);   // Loslassen ankommen lassen
+    p = await seite.evaluate(position);
+    abstand = Math.sqrt((ziel.x - p.x) ** 2 + (ziel.y - p.y) ** 2);
+  }
+  return { angekommen: abstand <= naehe, abstand, anlaeufe: versuche, x: p.x, y: p.y };
+}
+
 // Misst die Bildrate im Browser über eine Zeitspanne (nur als grober Wert, Software-Grafik ist langsamer als ein iPhone).
 async function bildrate(seite, ms = 2000) {
   return seite.evaluate((dauer) => new Promise((fertig) => {
@@ -127,4 +164,4 @@ async function bildrate(seite, ms = 2000) {
   }), ms);
 }
 
-module.exports = { pruefe, ergebnis, starte, ziehe, tippe, bildrate };
+module.exports = { pruefe, ergebnis, starte, ziehe, tippe, laufeZu, bildrate };

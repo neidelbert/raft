@@ -4,6 +4,6 @@
  "groesseMax": 2048,
  "atlanten": [{ "name": "spiel", "gruppen": ["figuren"] }],
  "einzeln": [],
- "anker": { "figuren/figur": [48, 124] },
+ "anker": {},
  "animationen": {}
 }

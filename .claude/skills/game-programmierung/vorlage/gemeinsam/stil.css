@@ -14,8 +14,8 @@ canvas#leinwand { position: fixed; inset: 0; width: 100vw; height: 100dvh; displ
   color: #fff; font: 600 15px -apple-system, system-ui, sans-serif; pointer-events: auto; touch-action: none; transition: transform 0.08s; }
 #knopf-ton.gedrueckt { transform: scale(0.92); }
 #leiste { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: calc(16px + env(safe-area-inset-left));
-  display: flex; gap: 16px; font-size: 20px; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
-#leiste[hidden] { display: none; }
+  display: flex; gap: 16px; min-height: 28px; line-height: 28px; font-size: 20px; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+#leiste[hidden] { visibility: hidden; }   /* nicht display: none – die 2D-Darstellung misst ihren unteren Rand (Spielfeld oben) */
 .tafel { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; font-size: 22px; font-weight: 600; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
 .tafel[hidden] { display: none; }

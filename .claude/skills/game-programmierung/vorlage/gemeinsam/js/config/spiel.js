@@ -16,5 +16,7 @@ export const SPEICHER = {
 };
 
 export const RUNDE = {
-  dauer: 20,            // s pro Runde (Startwert, Platzhalter-Regel des Gerüsts)
+  dauer: 20,            // s pro Runde; null = ohne Zeitgrenze (die Runde endet dann nur durch die Spielregel, z. B.
+                        //   „alles eingesammelt“). Frage an Lukas: Endet die Runde nach Zeit, durch das Ziel oder durch
+                        //   beides (was zuerst kommt)? Bis zur Antwort bleibt die Zeit und das Ziel kommt dazu.
 };

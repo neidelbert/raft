@@ -11,7 +11,8 @@
 //     "abstand": 2, "groesseMax": 2048,
 //     "atlanten": [{ "name": "spiel", "gruppen": ["figuren", "effekte"] }],   Gruppe = Teil vor dem „/“ im Namen
 //     "einzeln": ["boden/wiese"],
-//     "anker": { "figuren/held-*": [106, 245] },            Pixel im Originalbild; Standard: Bildmitte
+//     "anker": { "figuren/held-*": [106, 245] },            Pixel im Originalbild, nur zum Überschreiben: Standard ist
+//                                                           "anker" aus grafik.json (Fußpunkt des Zeichners), sonst Bildmitte
 //     "animationen": { "held-lauf": { "bps": 10, "schleife": true } } }   Standard: 10 bps, Schleife (mit Warnung)
 // Schreibt: <spielordner>/assets/atlas/<name>.png und .json, <spielordner>/assets/bilder/<name>.png (einzeln).
 //   Danach manifest.js aufrufen (neue Version und Größen in assets/assets.json).
@@ -84,10 +85,15 @@ function kopiereMitRand(ziel, bild, quelle, zx, zy, rand) {
   }
 }
 
-function ankerFuer(name, anker, bild) {
+// Fußpunkt: 1. atlas.json "anker" (nur zum Überschreiben), 2. "anker" aus grafik.json (render.js rechnet ihn aus dem
+// data-anker des SVG um), 3. Bildmitte.
+function ankerFuer(eintrag, anker, bild) {
+  const name = eintrag.name;
   if (anker[name]) return anker[name];
   const passend = Object.keys(anker).filter((k) => k.endsWith('*') && name.startsWith(k.slice(0, -1))).sort((a, b) => b.length - a.length)[0];
-  return passend ? anker[passend] : [bild.breite / 2, bild.hoehe / 2];
+  if (passend) return anker[passend];
+  if (Array.isArray(eintrag.anker) && eintrag.anker.length === 2) return eintrag.anker;
+  return [bild.breite / 2, bild.hoehe / 2];
 }
 
 function baueAtlanten(spielordner, { still = false } = {}) {
@@ -116,7 +122,7 @@ function baueAtlanten(spielordner, { still = false } = {}) {
     const rahmen = eintraege.map((e) => {
       const bild = lesePng(fs.readFileSync(datei(e)));
       const kurz = e.name.split('/').pop();
-      const [ax, ay] = ankerFuer(e.name, anker, bild);
+      const [ax, ay] = ankerFuer(e, anker, bild);
       return { kurz, bild, teil: sichtbarerTeil(bild), ax, ay };
     });
     const doppelt = rahmen.map((r) => r.kurz).filter((k, i, alle) => alle.indexOf(k) !== i);

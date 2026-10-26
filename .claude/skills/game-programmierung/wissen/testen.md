@@ -14,7 +14,7 @@ const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.reso
   try {
     t.pruefe(await seite.evaluate(() => window.spiel.zustand) === 'titel', 'startet im Titel');
     // … Prüfungen aus „Fertig, wenn“
-    await seite.screenshot({ path: process.env.FOTO || '/tmp/<spiel>.png' });
+    await seite.screenshot({ path: process.env.FOTO || path.join(__dirname, 'fotos', '<name>.png') });   // im Spielordner, nicht im Temp
     t.pruefe(lauf.fehler.length === 0, `keine Konsolenfehler ${lauf.fehler.join(' | ')}`);
   } catch (e) { t.pruefe(false, `Ablauf abgebrochen: ${e.message}`); }
   await lauf.ende();
@@ -22,7 +22,9 @@ const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.reso
 })();
 ```
 - `test-hilfe.js` (Werkzeug des Skills, Kopie im Spiel) startet Server und Chromium in iPhone-Ansicht (390 × 664 Punkte, Pixel-Ratio 3), leitet Three.js vom CDN auf eine lokale Kopie um (das CDN ist in der Cloud gesperrt), sammelt Konsolenfehler (`lauf.fehler`) und bietet `ziehe`, `tippe` und `bildrate`. `initSkript` läuft vor dem Spiel (z. B. localStorage sperren, AudioContext zählen).
-- **Port je Spiel:** ein Zehnerblock ab 9000 (`neues-spiel.js --port`, im Test mit `PORT=…` änderbar), in der Port-Liste des Projekts eintragen. Die Bausteine nutzen 8880–8889.
+- **Port je Spiel:** ein Zehnerblock ab 9000. `neues-spiel.js` wählt ohne `--port` den ersten Block, den kein Spiel im selben Ordner nutzt, und meldet ihn. Hat das Projekt eine Port-Liste, dort eintragen; sonst reicht die Meldung. Im Test mit `PORT=…` änderbar. Die Bausteine nutzen 8880–8889.
+- **Bildschirmfoto:** Standard `<spiel>/tests/fotos/<name>.png` (mit `.gitignore`, kommt nicht ins Repo), anderer Ort mit `FOTO=…`. Nach jedem Lauf mit dem Read-Werkzeug öffnen.
+- **`lies(seite, f, arg)`:** Ein Wert für die Seite geht nur als zweites Argument von `seite.evaluate` hinein (Node-Variablen gibt es dort nicht). Die Hilfsfunktion im Gerüst reicht `arg` weiter. Fehlt das, kommt `undefined` an, daraus wird NaN, und die Meldung ist kryptisch (z. B. `Input.dispatchTouchEvent: Invalid parameters`).
 - `?seed=42` macht den Zufall gleich, damit der Test immer gleich abläuft. Feste Beispieldaten, nie echte, sich ändernde Daten.
 
 ## Was jeder Test prüft
@@ -32,6 +34,18 @@ const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.reso
 4. Zustandswechsel (Titel → Spiel → Ende), neue Runde setzt alles zurück, Speichern (neu laden, Rekord ist noch da), kaputter Speicherstand und privater Modus.
 5. Tab-Wechsel nachgestellt: `document.hidden` und `visibilityState` per `Object.defineProperty` überschreiben, `visibilitychange` auslösen; dann steht die Spielzeit, und nach der Rückkehr gibt es keinen Sprung (Weg in den ersten Bildern messen).
 6. Bildschirmfoto: Horst sieht es sich mit dem Read-Werkzeug an. Stimmt das Bild?
+
+## Muster: Figur zum Ziel laufen lassen
+```js
+const ziel = { x: muenze.x, y: muenze.y + BERUEHRUNG.hoehe };   // dort, wo die Figur steht, wenn sie berührt
+const r = await t.laufeZu(seite, ziel, { position: () => ({ x: window.spiel.spieler.x, y: window.spiel.spieler.y }), tempo: SPIELER.tempo, naehe: BERUEHRUNG.radius / 2 });
+t.pruefe(r.angekommen, `Figur am Ziel (${r.anlaeufe} Anläufe, Abstand ${r.abstand.toFixed(1)})`);
+t.pruefe(await lies(seite, () => window.spiel.muenzen) >= vorher + 1, 'mindestens eine Münze mehr');   // nicht „genau 1“
+```
+- `t.laufeZu` (Test-Hilfe) setzt den Finger auf, schlägt in Zielrichtung aus, wartet in der Seite Bild für Bild, bis die Figur da ist, lässt los, misst nach und wiederholt (höchstens `anlaeufe`). Kein Halten nach Zeit: Bei langsamer Test-Grafik (3D etwa 9 Bilder/s) stimmt keine Haltezeit.
+- **„Mindestens“ statt „genau“:** Auf dem Weg berührt die Figur oft mehr als das Ziel. Im Browser `>=` prüfen; genaue Zahlen prüft der Regel-Test ohne Browser.
+- **Feste Orte statt Zufall:** Einsammeln, Treffer und Grenzfälle (knapp außerhalb, genau am Rand, zwei auf einmal) im Regel-Test mit fest gesetzten Orten prüfen. Zufällig verteilte Dinge stören sich gegenseitig (ein Nachbar liegt in Reichweite). Die Verteilung selbst prüft ein eigener Fall mit `?seed=…` (Abstand zum Start, im Feld, keine Überlappung).
+- Für Browser-Fälle Dinge per Test-Hilfe (`window.spiel.test`, nur mit `?test=1`) an feste Orte legen, statt die Figur zu zufälligen Orten zu schicken.
 
 ## Gute Tests (Regeln aus der Ausbildung)
 - **Testwerte ableiten, nicht eintragen:** Bildschirmgröße, Tempo und Grenzen aus `window.spiel` und `config/` lesen. Der Test-Browser ist 664 Punkte hoch, nicht 844.
@@ -43,9 +57,9 @@ const ORDNER = process.env.ORDNER ? path.resolve(process.env.ORDNER) : path.reso
 - **Langsames Gerät nachstellen:** eigene `requestAnimationFrame`-Schleife, die jedes Bild 40 ms beschäftigt; prüfen, dass die Bremse wirkt (weniger Bilder). Unter 10 Bildern/s bremst die Deckelung auch ein richtiges Spiel.
 - **Mehrere Finger per CDP** (`Input.dispatchTouchEvent`): bei `touchStart`/`touchMove` alle liegenden Finger angeben, bei `touchEnd`/`touchCancel` nur die abhebenden. Gehaltene Finger (`t.ziehe(…, { loslassen: false })`) mit der zurückgegebenen Sitzung loslassen. Unklar, was das Werkzeug tut? Erst ein kleiner Versuch, der Ereignisse mit `pointerId` mitschreibt.
 - **Fehlende Bilder** auf zwei Wegen: Datei weg (nur die Browser-Zeile „Failed to load resource“ erlaubt, kein `pageerror`) und Eintrag aus `grafik.json` gestrichen (gar kein Fehler).
-- **Assets laden (Option `routen`):** verzögern (`await warte(ms); route.continue()`), fehlen lassen (`route.fulfill({ status: 404 })`), hängen lassen (`kontext.route(muster, () => {})`). Je einmal für Atlas, Sound, Modell und das Manifest selbst; die Seite muss in jedem Fall mit Ersatz laufen, nach höchstens der Zeitgrenze. Werte des Fortschritts in jedem Bild mitschreiben: nie kleiner, am Ende 1.
+- **Assets laden (Option `routen`):** verzögern (`await warte(ms); route.continue()`), fehlen lassen (`route.fulfill({ status: 404 })`), hängen lassen (`kontext.route(muster, () => {})`). Je einmal für Atlas, Sound, Modell und das Manifest selbst; die Seite muss in jedem Fall mit Ersatz laufen, nach höchstens der Zeitgrenze. Werte des Fortschritts in jedem Bild mitschreiben: nie kleiner, am Ende 1. Der Gerüst-Test macht alle Fälle vor (Sound: fehlt und hängt → Code-Klang statt Datei; 2D: Rahmen fehlt im Atlas → Ersatz-Figur).
 - **Rahmen-Animation:** Tempo als Rahmenschritte pro Sekunde Spielzeit messen (`(neu − alt) mod Rahmenzahl`, Bildabstände auf 0,1 s gedeckelt). Spiegeln prüft ein `initSkript`, das `CanvasRenderingContext2D.prototype.scale` umhüllt und Aufrufe mit negativem x zählt (unabhängig vom Spielcode).
-- **Ton:** `ton.bereit` prüfen; Sound-Dateien zählt ein `initSkript`, das `AudioBufferSourceNode.prototype.start` umhüllt; gespielte Klänge zählt ein `initSkript`, das `AudioContext` und `createOscillator` umhüllt.
+- **Ton:** `ton.bereit` prüfen; Sound-Dateien zählt ein `initSkript`, das `AudioBufferSourceNode.prototype.start` umhüllt (`ZAEHLE_PUFFER` im Gerüst-Test); gespielte Klänge zählt ein `initSkript`, das `AudioContext` und `createOscillator` umhüllt. Achtung: Beim ersten Tippen wird die Datei erst dekodiert, der Klang dieses Tippens ist der Code-Klang. Die Datei erst beim nächsten Klang prüfen.
 - **Speicher (keine neuen Objekte):** mit dem Heap-Profiler messen (`HeapProfiler.startSampling` mit `includeObjectsCollectedByMinorGC`), nach Aufwärmen, nur die eigenen Dateien. Nicht Speicherbereinigungen zählen (hängt vom Rest des Prozesses ab). Eine Gegenprobe mit absichtlich neuen Objekten zeigt, dass die Messung wirkt. Beispiel: `bausteine/tests/hilfe.js` (`angelegterSpeicher`).
 - **3D:** Zeichenaufrufe in jedem Bild mitschreiben (eigene `requestAnimationFrame`-Schleife, `renderer.info.render.calls`), das Höchste prüfen. Pixel-Ratio-Grenze direkt prüfbar, weil der iPhone 13 im Test 3 hat.
 - **Nichts still überspringen:** Fehlt eine Datei, die ein Test braucht, ist das eine rote Prüfung, kein `if (fs.existsSync(…))`. Ein übersprungener Test fällt niemandem auf (Lernbuch Stufe 10).

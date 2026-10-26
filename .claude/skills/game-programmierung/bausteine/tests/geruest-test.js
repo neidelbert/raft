@@ -1,7 +1,8 @@
 // Test für das Gerüst-Werkzeug werkzeuge/neues-spiel.js: legt in einem leeren Temp-Ordner ein 2D- und ein 3D-Gerüst
 // an und lässt deren eigenen Test laufen (Port 8888, nacheinander). Prüft dazu: alle Dateien aus dem Auftrag da,
 // Bausteine und Test-Hilfe unverändert kopiert, keine Platzhalter übrig, Werkzeug-Pfad in LIESMICH.md stimmt,
-// nichts wird überschrieben, falsche Namen werden abgelehnt. node geruest-test.js
+// nichts wird überschrieben, falsche Namen werden abgelehnt, Port ohne --port = nächster freier Zehnerblock ab 9000,
+// Beispiel-Bild als Platzhalter mit Fußpunkt markiert, Sound-Datei der Vorlage passt zum Rezept. node geruest-test.js
 // WERKZEUGE=<ordner> testet eine Kopie (Gegenprobe, siehe gegenprobe.js); GERUEST_ARTEN=2d nur eine Art.
 const fs = require('fs');
 const os = require('os');
@@ -15,7 +16,7 @@ const PORT = 8888;
 const DATEIEN = ['index.html', 'stil.css', 'js/main.js', 'js/config/spiel.js', 'js/config/steuerung.js', 'js/config/welt.js',
   'js/regeln/spieler.js', 'js/regeln/runde.js', 'js/welt/darstellung.js', 'js/oberflaeche/anzeige.js', 'js/oberflaeche/joystick-anzeige.js',
   'js/test-schnittstelle.js', 'assets/assets.json', 'assets/quellen/atlas.json', 'assets/quellen/manifest.json', 'assets/quellen/sounds.json',
-  'grafik/grafik.json', 'tests/test-hilfe.js', 'SCHULDEN.md', 'LIESMICH.md'];
+  'grafik/grafik.json', 'tests/test-hilfe.js', 'SCHULDEN.md', 'LIESMICH.md', 'assets/sounds/start.m4a', 'assets/sounds/start.mp3'];
 
 const neuesSpiel = (argumente, cwd) => spawnSync(process.execPath, [path.join(WERKZEUGE, 'neues-spiel.js'), ...argumente], { cwd, encoding: 'utf8' });
 const alleDateien = (ordner, unter = '') => fs.readdirSync(path.join(ordner, unter), { withFileTypes: true })
@@ -37,6 +38,11 @@ function pruefeDateien(ziel, name, art) {
   const manifest = JSON.parse(fs.readFileSync(path.join(ziel, 'assets', 'assets.json'), 'utf8'));
   const bild = art === '3d' ? manifest.bilder.some((b) => b.name === 'kachel') : manifest.atlanten.some((a) => a.name === 'spiel');
   h.pruefe(bild && manifest.version.length >= 8, `${art}: Manifest mit Beispiel-Bild, Version ${manifest.version}`);
+  h.pruefe(manifest.sounds.some((x) => x.name === 'start' && x.dateien.length === 2), `${art}: Manifest mit Sound-Datei „start“ (m4a, mp3)`);
+  const [platz] = JSON.parse(fs.readFileSync(path.join(ziel, 'grafik', 'grafik.json'), 'utf8'));
+  h.pruefe(platz.platzhalter === true && (art === '3d' || (Array.isArray(platz.anker) && platz.anker.length === 2)), `${art}: Beispiel-Bild in grafik.json als Platzhalter${art === '2d' ? ' mit Fußpunkt' : ''} (${JSON.stringify(platz)})`);
+  const quelle = JSON.parse(fs.readFileSync(path.join(ziel, 'assets', 'quellen', 'atlas.json'), 'utf8'));
+  h.pruefe(!Object.keys(quelle.anker || {}).length, `${art}: atlas.json ohne festen Anker (Fußpunkt kommt aus grafik.json)`);
 }
 
 function laufeGeruestTest(ziel, name, art) {
@@ -46,7 +52,7 @@ function laufeGeruestTest(ziel, name, art) {
   const zeilen = `${lauf.stdout || ''}${lauf.stderr || ''}`.split('\n');
   const ok = zeilen.filter((z) => z.startsWith('OK')).length, rot = zeilen.filter((z) => z.startsWith('FEHLER') || /Error|abgebrochen/.test(z));
   for (const z of rot.slice(0, 6)) console.log(`       ${art}: ${z}`);
-  h.pruefe(lauf.status === 0 && zeilen.includes('Alle Prüfungen bestanden.') && ok >= 30, `${art}: eigener Test des Gerüsts grün (${ok} Prüfungen)`);
+  h.pruefe(lauf.status === 0 && zeilen.includes('Alle Prüfungen bestanden.') && ok >= 44, `${art}: eigener Test des Gerüsts grün (${ok} Prüfungen)`);
 }
 
 const basis = fs.mkdtempSync(path.join(os.tmpdir(), 'geruest-test-'));
@@ -61,6 +67,15 @@ try {
   const vorher = fs.readFileSync(path.join(basis, `probe-${ARTEN[0]}`, 'js', 'main.js'), 'utf8');
   const nochmal = neuesSpiel([`probe-${ARTEN[0]}`], basis);
   h.pruefe(nochmal.status !== 0 && /nicht leer/.test(nochmal.stderr) && fs.readFileSync(path.join(basis, `probe-${ARTEN[0]}`, 'js', 'main.js'), 'utf8') === vorher, 'nicht leerer Ordner: Abbruch, nichts überschrieben');
+  // Ohne --port: erster Zehnerblock ab 9000, den kein Spiel daneben nutzt (8888 der Proben liegt darunter).
+  const portVon = (name) => Number((fs.readFileSync(path.join(basis, name, 'tests', `${name}-test.js`), 'utf8').match(/process\.env\.PORT\) \|\| (\d+)/) || [])[1]);
+  const p1 = neuesSpiel(['port-eins'], basis), p2 = neuesSpiel(['port-zwei'], basis);
+  h.pruefe(p1.status === 0 && p2.status === 0 && portVon('port-eins') === 9000 && portVon('port-zwei') === 9010 && /Port 9010/.test(p2.stdout),
+    `ohne --port: nächster freier Zehnerblock (${portVon('port-eins')}, ${portVon('port-zwei')})`);
+  // Sound-Dateien der Vorlage passen zum Rezept (Dauer), sonst klingt das Gerüst anders als sounds.json sagt.
+  const rezept = JSON.parse(fs.readFileSync(path.join(WERKZEUGE, '..', 'vorlage', 'gemeinsam', 'assets', 'quellen', 'sounds.json'), 'utf8')).sounds.start;
+  const dauern = ['m4a', 'mp3'].map((e) => Number(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path.join(WERKZEUGE, '..', 'vorlage', 'gemeinsam', 'assets', 'sounds', `start.${e}`)], { encoding: 'utf8' }).stdout));
+  h.pruefe(dauern.every((d) => Math.abs(d - rezept.dauer) < 0.06), `Vorlage: start.m4a/.mp3 passen zum Rezept (${dauern.join(', ')} s, Rezept ${rezept.dauer} s; neu: sounds.js auf ein Gerüst, dann zurückkopieren)`);
   const falsch = neuesSpiel(['Mein Spiel'], basis);
   h.pruefe(falsch.status !== 0 && /klein, ohne Umlaute/.test(falsch.stderr) && !fs.existsSync(path.join(basis, 'Mein Spiel')), 'Name mit Großbuchstaben und Leerzeichen wird abgelehnt');
 } catch (e) { h.pruefe(false, `Ablauf abgebrochen: ${e.message}`); }

@@ -4,6 +4,7 @@
 // Passt ein Suchtext nicht mehr (Baustein geändert), meldet die Gegenprobe das, statt still nichts zu prüfen.
 // Fälle mit „../werkzeuge/…“ oder „../vorlage/…“ machen ein Werkzeug oder die Gerüst-Vorlage kaputt (der ganze Skill
 // wird kopiert, Tests bekommen BAUSTEINE=… und WERKZEUGE=…). Sechstes Feld: zusätzliche Umgebung (z. B. nur 2D).
+// NUR=<Text> prüft nur die Fälle, deren Beschreibung den Text enthält (z. B. NUR=Gerüst).
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -56,6 +57,16 @@ const FAELLE = [
   ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '    ladeOptionen: { ersatz: baueErsatz },', '    ladeOptionen: {},', 'Gerüst 2D: keine Ersatz-Figur, wenn der Atlas fehlt', { GERUEST_ARTEN: '2d' }],
   ['../vorlage/3d/js/welt/darstellung.js', 'geruest', 'renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SPIEL.pixelRatioMax));', 'renderer.setPixelRatio(window.devicePixelRatio || 1);', 'Gerüst 3D: Pixel-Ratio nicht begrenzt', { GERUEST_ARTEN: '3d' }],
   ['../werkzeuge/neues-spiel.js', 'geruest', "  schreibe(path.join(ziel, 'tests', 'test-hilfe.js'), fs.readFileSync(path.join(__dirname, 'test-hilfe.js')));\n", '', 'Gerüst ohne Test-Hilfe', { GERUEST_ARTEN: '2d' }],
+  ['../werkzeuge/atlas.js', 'werkzeuge', '  if (Array.isArray(eintrag.anker) && eintrag.anker.length === 2) return eintrag.anker;\n', '', 'Fußpunkt aus grafik.json wird nicht übernommen'],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '    f.minY = oben + a.oben + luft;', '    f.minY = luft * 10;', 'Gerüst 2D: oberer Rand fest statt aus Figurgröße und Leiste', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/2d/js/welt/darstellung.js', 'geruest', '        rahmen = baueErsatz().rahmen[SPIELER.rahmen];\n', '', 'Gerüst 2D: fehlender Rahmen → unsichtbare Figur', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/tests/__NAME__-test.js', 'geruest', 'const lies = (seite, ausdruck, arg) => seite.evaluate(ausdruck, arg);', 'const lies = (seite, ausdruck) => seite.evaluate(ausdruck);', 'Gerüst-Test: lies gibt das Argument nicht weiter', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/js/main.js', 'geruest', '    for (const [name, s] of Object.entries(welt.assets.sounds)) if (s.puffer) ton.setzePuffer(name, s.puffer, s.laut);', '', 'Gerüst: Sound-Datei wird nie gespielt (nur Code-Klang)', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/js/config/steuerung.js', 'geruest', "  start: { frequenz: 440,", "  ohne: { frequenz: 440,", 'Gerüst: kein Code-Klang als Ersatz für fehlenden Sound', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/js/regeln/spieler.js', 'geruest', 'return dx * dx + dy * dy <= beruehrung.radius * beruehrung.radius;', 'return dx * dx + (y - spieler.y) ** 2 < beruehrung.radius * beruehrung.radius;', 'Gerüst: Berührung um den Fuß, Rand zählt nicht', { GERUEST_ARTEN: '2d' }],
+  ['../vorlage/gemeinsam/js/regeln/runde.js', 'geruest', 'runde.zeit = dauer == null ? Infinity : dauer;', 'runde.zeit = dauer;', 'Gerüst: RUNDE.dauer null beendet die Runde sofort', { GERUEST_ARTEN: '2d' }],
+  ['../werkzeuge/neues-spiel.js', 'geruest', '  if (port == null) port = naechsterPort(ziel);', '  if (port == null) port = 9000;', 'Gerüst: zweites Spiel bekommt denselben Port', { GERUEST_ARTEN: '2d' }],
+  ['../werkzeuge/test-hilfe.js', 'geruest', '        vor <= rest || performance.now() > bis ? fertig() : requestAnimationFrame(schau);', '        fertig();', 'laufeZu lässt sofort los (Figur kommt nie an)', { GERUEST_ARTEN: '2d' }],
   ['../werkzeuge/paket.js', 'paket', '    if (!e.isFile() || ABFALL_DATEI.test(e.name) || BILDSCHIRMFOTO.test(e.name)) continue;', '    if (!e.isFile() || ABFALL_DATEI.test(e.name)) continue;', 'Bildschirmfotos landen im Paket'],
   ['../werkzeuge/paket.js', 'paket', 'gepackt = zlib.deflateRawSync(daten, { level: 9 }), crc = crc32(daten);', 'gepackt = zlib.deflateRawSync(daten, { level: 9 }), crc = 0;', 'Zip mit falscher Prüfsumme'],
 ];
@@ -64,7 +75,8 @@ const basis = fs.mkdtempSync(path.join(os.tmpdir(), 'bausteine-gegenprobe-'));
 const kopie = path.join(basis, 'game-programmierung');   // ganzer Skill: Gerüst und Paket brauchen Vorlagen und Handbuch
 const ziel = path.join(kopie, 'bausteine'), zielWerkzeuge = path.join(kopie, 'werkzeuge');
 let schlecht = 0;
-for (const [datei, test, suche, ersatz, fehler, umgebung = {}] of FAELLE) {
+const auswahl = FAELLE.filter((f) => !process.env.NUR || f[4].includes(process.env.NUR));
+for (const [datei, test, suche, ersatz, fehler, umgebung = {}] of auswahl) {
   fs.rmSync(kopie, { recursive: true, force: true });
   fs.cpSync(path.dirname(ORIGINAL), kopie, { recursive: true });
   const pfad = path.join(ziel, datei), text = fs.readFileSync(pfad, 'utf8');
@@ -79,5 +91,5 @@ for (const [datei, test, suche, ersatz, fehler, umgebung = {}] of FAELLE) {
   console.log(`${gut ? 'ROT  ' : 'GRÜN!'} ${test}-test bei „${fehler}“ (${rot} Prüfung(en) rot)`);
 }
 fs.rmSync(basis, { recursive: true, force: true });
-console.log(schlecht ? `\n${schlecht} Gegenprobe(n) blieben grün oder sind veraltet: Diese Tests prüfen den Fehler nicht.` : `\nAlle ${FAELLE.length} Gegenproben rot: Die Tests finden die Fehler.`);
+console.log(schlecht ? `\n${schlecht} Gegenprobe(n) blieben grün oder sind veraltet: Diese Tests prüfen den Fehler nicht.` : `\nAlle ${auswahl.length} Gegenproben rot: Die Tests finden die Fehler.`);
 process.exit(schlecht ? 1 : 0);

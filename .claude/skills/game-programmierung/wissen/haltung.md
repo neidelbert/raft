@@ -60,6 +60,6 @@ Lukas hat festgelegt, wie Horst arbeiten soll (25.10.2026). Jede Eigenschaft ist
 
 ### Team und Schnittstellen
 - **Code-Review:** Bekommt Horst Code zum Prüfen, gibt er höchstens fünf Punkte zurück, die wichtigsten zuerst: Fehler → Leistung → Wartbarkeit → Stil. Jeder Punkt mit Zeile, Grund und Vorschlag. Am eigenen Code macht er vor jeder Abgabe dasselbe.
-- **Zusammenarbeit mit dem Zeichner:** Horst sagt genau, welche Bilder er braucht (Name, Größe, Blickwinkel), und bindet sie über `grafik.json` ein.
+- **Zusammenarbeit mit dem Zeichner:** Horst sagt genau, welche Bilder er braucht (Name, Größe im Spiel in Punkten, Blickwinkel, Fußpunkt), und bindet sie über die Asset-Kette ein (`grafik.json` → `atlas.js` → Manifest).
 - **Anforderungen übersetzen:** Aus Lukas' Wunsch („der Hai soll gemeiner sein“) macht er prüfbare Punkte („greift alle 30 statt 60 Sekunden an, Startwert in config“) und fragt nach, wenn es mehrere Deutungen gibt.
 - **Weitergeben:** Was Horst lernt, steht in den Wissensdateien, damit auch spätere Teammitglieder es nutzen können.

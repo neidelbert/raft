@@ -16,6 +16,7 @@ Werkzeuge: `node <skill>/werkzeuge/<werkzeug>.js spiele/<name>`, Reihenfolge atl
 
 ## Grundsätze
 - **Ein Verzeichnis, eine Liste:** Alle Assets stehen in `assets/assets.json` (Manifest). Das Spiel lädt nur, was dort steht. Kein Pfad wird im Code fest eingetragen.
+- **Ein Weg für Bilder:** `grafik/grafik.json` des Zeichners ist nur die Eingabe für `atlas.js`; das Spiel liest sie nie. `ladeBilder` aus `bausteine/bilder.js` ist für Versuche ohne Asset-Kette, nicht für Spiele.
 - **Quellen getrennt von Auslieferung:** Quellen (SVG des Zeichners, Sound-Rezepte, Modell-Code) liegen in `assets/quellen/`. Ausgeliefert werden nur die erzeugten Dateien. Erzeugt wird mit einem Werkzeug, nie von Hand.
 - **Budget:** Startpaket (alles, was vor dem ersten Bild nötig ist) unter 2 MB. Was erst später gebraucht wird (Level 2, Musik), lädt nach dem Start im Hintergrund.
 - **Werkzeuge einer Kette brechen nicht ab, wenn es nichts zu tun gibt** (`modell.js` in einem 2D-Spiel: „nichts zu tun“). Nur echte Fehler (kaputte Quelle, ffmpeg fehlt) enden mit Rückgabewert 1.
@@ -47,7 +48,8 @@ Geschrieben von `manifest.js` (nie von Hand), Vorgaben (Ersatzfarben, Lautstärk
 
 ## Bilder
 - Format: **PNG** für scharfe Kanten und Transparenz (Figuren, Symbole), **WebP** für große Bilder (Hintergründe, deutlich kleiner). Safari kann WebP ab iOS 14.
-- Doppelte Größe gegenüber der Anzeige (Pixel-Ratio 2). Größer bringt nichts und kostet Speicher.
+- Doppelte Größe gegenüber der Anzeige (Pixel-Ratio 2). Größer bringt nichts und kostet Speicher. `SPIELER.skala` 0,5 heißt: so groß, wie der Zeichner es meint (256 px → 128 Punkte, etwa 1/5 der Bildschirmhöhe). Kleiner (0,35) geht, größer als 0,5 wird unscharf. Die Größe im Spiel gehört in den Auftrag an den Zeichner; fehlt sie, ist das eine Frage an Lukas.
+- **Platzhalter:** Das Beispiel-Bild des Gerüsts steht in `grafik.json` mit `"platzhalter": true`. `render.js` löscht es, wenn es dafür keine SVG gibt. Heißt die Figur des Zeichners anders, `SPIELER.rahmen` umstellen; fehlt der Rahmen im Atlas, zeichnet das 2D-Gerüst die Ersatz-Figur und warnt (kein unsichtbarer Spieler).
 - **Speicher zählt ausgepackt:** Ein Bild belegt Breite × Höhe × 4 Byte, egal wie klein die Datei ist. 2048 × 2048 sind 16 MB. Summe aller Bilder unter etwa 60 MB halten.
 - Canvas- und Bildgrenze in Safari: höchstens 4096 × 4096 Pixel pro Bild. Atlanten 2048 × 2048 nicht überschreiten.
 
@@ -62,7 +64,9 @@ Viele kleine Bilder in einem großen Bild: eine Datei statt vieler Anfragen, bei
 - **Abstand und Randverlängerung:** Zwischen den Rahmen 2 px Abstand, und die Randpixel nach außen kopieren (Extrude). Sonst blitzen beim Skalieren Nachbarbilder an den Kanten durch.
 - **Anker** (Fußpunkt) pro Rahmen, damit eine Animation nicht wackelt, wenn die Rahmen unterschiedlich groß zugeschnitten sind.
 - Packen: Rahmen nach Höhe sortieren, zeilenweise einsetzen (Shelf-Packing). Für Spiel-Atlanten reicht das.
-- `atlas.js` schneidet durchsichtige Ränder ab (der Held des Zeichners: 213 × 256 → 122 × 233 Pixel) und verschiebt den Anker mit. Darum muss jedes Bild einer Animation denselben Ankerpunkt im Originalbild haben (Meldung des Zeichners, `anker` in `assets/quellen/atlas.json`).
+- `atlas.js` schneidet durchsichtige Ränder ab (der Held des Zeichners: 213 × 256 → 122 × 233 Pixel) und verschiebt den Anker mit. Darum muss jedes Bild einer Animation denselben Ankerpunkt im Originalbild haben.
+- **Woher der Fußpunkt kommt:** Der Zeichner markiert ihn im SVG (`<svg viewBox="0 0 200 240" data-anker="100 230">`, viewBox-Einheiten). `render.js` rechnet ihn in Pixel des PNG um und schreibt ihn in `grafik.json` (`"anker": [107, 245]`). `atlas.js` nimmt in dieser Reihenfolge: `anker` aus `assets/quellen/atlas.json` (nur zum Überschreiben, auch mit `*`), `anker` aus `grafik.json`, Bildmitte. Niemand rechnet von Hand um. Fehlt der Fußpunkt bei einer Figur, warnt `render.js`; dann beim Zeichner nachfragen.
+- **Feldgrenzen aus dem Rahmen:** Wie weit die Figur an Rand und Leiste darf, folgt aus Fußpunkt und Größe des Rahmens (`ankerX`, `ankerY`, `b`, `h` mal `skala`), nie aus einer festen Zahl: Die Figur des Zeichners ist 128 Punkte hoch, die Ersatz-Figur 64 (2D-Gerüst, `setzeFeld` in `js/welt/darstellung.js`).
 - Boden-Kacheln und große Hintergründe kommen nicht in den Atlas (`einzeln`): Man kachelt sie mit `drawImage` in einer Schleife, das geht nur mit einem eigenen Bild.
 - Rahmen-Namen sind im Atlas ohne Gruppe (`figuren/held-lauf-1` → `held-lauf-1`), sie müssen darum über alle Gruppen eines Atlas eindeutig sein.
 

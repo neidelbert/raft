@@ -6,11 +6,15 @@
 //   Nichts wird überschrieben: Der Zielordner muss neu oder leer sein.
 // Aufruf:   node <skill>/werkzeuge/neues-spiel.js <zielordner> [--3d] [--port 9000] [--titel "Mein Spiel"]
 //   Der Ordnername ist der Name des Spiels (klein, ohne Umlaute, Bindestrich erlaubt), z. B. spiele/stern-jagd.
-//   --port: Port für den eigenen Test (Standard 9000; je Spiel ein eigener Zehnerblock). --titel: Name auf dem Titel.
+//   --port: Port für den eigenen Test. Ohne --port: der erste freie Zehnerblock ab 9000, den kein Spiel daneben (gleicher
+//   Elternordner, Zahl hinter „process.env.PORT) ||“ in tests/*-test.js) schon nutzt. Hat das Projekt eine Port-Liste
+//   (z. B. TEAM.md), den Port dort eintragen. --titel: Name auf dem Titel.
 // Danach:   node <zielordner>/tests/<name>-test.js  → „Alle Prüfungen bestanden.“  Nächste Schritte: <zielordner>/LIESMICH.md
 // Vorlagen: <skill>/vorlage/gemeinsam (beide Arten), vorlage/2d, vorlage/3d. Platzhalter: __NAME__, __TITEL__, __PORT__,
 //   __ART__, __WERKZEUGE__ (Werkzeug-Ordner relativ zum Spiel). Was gleich bleibt, steht nur in „gemeinsam“.
-// Aus Code: const { legeSpielAn } = require('./neues-spiel.js'); legeSpielAn(ordner, { drei: true, port: 9010 });
+//   Das Beispiel-Bild steht in grafik/grafik.json mit "platzhalter": true und Fußpunkt ("anker"); render.js des
+//   Zeichners löscht es, sobald er eigene Bilder rendert und es keine SVG dafür gibt.
+// Aus Code: const { legeSpielAn, naechsterPort } = require('./neues-spiel.js'); legeSpielAn(ordner, { drei: true, port: 9010 });
 const fs = require('fs');
 const path = require('path');
 const { schreibePng, leeresBild } = require('./png.js');
@@ -21,6 +25,8 @@ const SKILL = path.resolve(__dirname, '..');
 const VORLAGE = path.join(SKILL, 'vorlage');
 const TEXT = new Set(['.js', '.html', '.css', '.md', '.json']);
 const NAME_MUSTER = /^[a-z][a-z0-9-]*$/;
+const PORT_START = 9000, PORT_BLOCK = 10;   // je Spiel ein Zehnerblock ab 9000
+const PORT_MUSTER = /process\.env\.PORT\)\s*\|\|\s*(\d+)/g;
 
 // Pixel mit 4 × 4 Unterabtastung: weiche Kanten ohne Malprogramm. form(x, y) → [r, g, b, a] oder null.
 function male(breite, hoehe, form) {
@@ -38,6 +44,20 @@ function male(breite, hoehe, form) {
     bild.daten[i + 3] = Math.round((summe[3] / (n * n)) * 255);
   }
   return bild;
+}
+
+// Ports, die Spiele neben ziel schon nutzen (Standard-Port in ihren Tests), → erster freier Zehnerblock ab 9000.
+function naechsterPort(ziel) {
+  const eltern = path.dirname(path.resolve(ziel)), belegt = [];
+  if (fs.existsSync(eltern)) for (const e of fs.readdirSync(eltern, { withFileTypes: true })) {
+    const tests = path.join(eltern, e.name, 'tests');
+    if (!e.isDirectory() || path.join(eltern, e.name) === path.resolve(ziel) || !fs.existsSync(tests)) continue;
+    for (const d of fs.readdirSync(tests).filter((d) => d.endsWith('-test.js')))
+      for (const [, zahl] of fs.readFileSync(path.join(tests, d), 'utf8').matchAll(PORT_MUSTER)) belegt.push(Number(zahl));
+  }
+  let port = PORT_START;
+  while (belegt.some((b) => b >= port && b < port + PORT_BLOCK)) port += PORT_BLOCK;
+  return port;
 }
 
 // 2D-Beispiel: Figur 96 × 128 px (doppelt aufgelöst: 48 × 64 Punkte), Fußpunkt unten Mitte (48, 124).
@@ -92,8 +112,11 @@ function pruefeEingaben(ziel, name, titel, port) {
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error(`Port ${port}: ganze Zahl von 1024 bis 65535`);
 }
 
-function legeSpielAn(zielordner, { drei = false, port = 9000, titel = null, still = false } = {}) {
+const FUSSPUNKT_FIGUR = [48, 124];   // Pixel im Beispiel-Bild (wie render.js ihn aus data-anker schreibt)
+
+function legeSpielAn(zielordner, { drei = false, port = null, titel = null, still = false } = {}) {
   const ziel = path.resolve(zielordner), name = path.basename(ziel);
+  if (port == null) port = naechsterPort(ziel);
   const titelText = titel || name.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
   pruefeEingaben(ziel, name, titelText, port);
   const ersetzungen = {
@@ -114,7 +137,8 @@ function legeSpielAn(zielordner, { drei = false, port = 9000, titel = null, stil
   // Beispiel-Bild wie vom Zeichner: PNG + grafik.json, dann durch die Asset-Kette.
   const [gruppeName, bild] = drei ? ['boden/kachel', maleKachel()] : ['figuren/figur', maleFigur()];
   schreibe(path.join(ziel, 'grafik', `${gruppeName}.png`), schreibePng(bild));
-  schreibe(path.join(ziel, 'grafik', 'grafik.json'), `${JSON.stringify([{ name: gruppeName, datei: `grafik/${gruppeName}.png`, breite: bild.breite, hoehe: bild.hoehe }], null, 1)}\n`);
+  const eintrag = { name: gruppeName, datei: `grafik/${gruppeName}.png`, breite: bild.breite, hoehe: bild.hoehe, ...(drei ? {} : { anker: FUSSPUNKT_FIGUR }), platzhalter: true };
+  schreibe(path.join(ziel, 'grafik', 'grafik.json'), `${JSON.stringify([eintrag], null, 1)}\n`);
   baueAtlanten(ziel, { still: true });
   const { manifest, ueber } = schreibeManifest(ziel, { still: true });
   if (ueber.length) throw new Error(`Gerüst über dem Budget: ${ueber.join(', ')}`);
@@ -125,14 +149,14 @@ function legeSpielAn(zielordner, { drei = false, port = 9000, titel = null, stil
   if (!still) {
     console.log(`Gerüst „${name}“ (${ersetzungen.__ART__}) angelegt in ${ziel}`);
     console.log(`  Assets: Version ${manifest.version}, Startpaket ${manifest.budget.startpaketBytes} Bytes`);
-    console.log(`  Test:   node ${path.relative(process.cwd(), path.join(ziel, 'tests', `${name}-test.js`)) || '.'}   (Port ${port})`);
+    console.log(`  Test:   node ${path.relative(process.cwd(), path.join(ziel, 'tests', `${name}-test.js`)) || '.'}   (Port ${port}, Block ${port}–${port + PORT_BLOCK - 1}: in die Port-Liste des Projekts eintragen, falls es eine gibt)`);
     console.log(`  Weiter: ${path.relative(process.cwd(), path.join(ziel, 'LIESMICH.md'))}`);
   }
-  return { name, ziel, manifest };
+  return { name, ziel, manifest, port };
 }
 
 function leseArgumente(argv) {
-  const werte = { drei: false, port: 9000, titel: null, ordner: null };
+  const werte = { drei: false, port: null, titel: null, ordner: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--3d') werte.drei = true;
@@ -153,4 +177,4 @@ if (require.main === module) {
   } catch (e) { console.error(`Fehler: ${e.message}`); process.exit(1); }
 }
 
-module.exports = { legeSpielAn, maleFigur, maleKachel };
+module.exports = { legeSpielAn, naechsterPort, maleFigur, maleKachel };

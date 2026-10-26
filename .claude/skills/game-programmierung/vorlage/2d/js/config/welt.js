@@ -2,12 +2,20 @@
 export const SPIELER = {
   tempo: 220,           // Punkte pro Sekunde bei vollem Daumen-Ausschlag
   wegProPunkt: 60,      // Punkte Weg für einen Spielpunkt (Platzhalter-Regel)
-  rand: 30,             // Abstand zum Bildschirmrand in Punkten (Figur bleibt ganz sichtbar)
+  rand: 6,              // Punkte Luft zwischen Figur und Rand bzw. Leiste (dazu kommt die Größe der Figur selbst)
   startY: 0.75,         // Startort: Anteil der Bildschirmhöhe von oben
   rahmen: 'figur',      // Name des Rahmens im Atlas (assets/quellen/atlas.json, Bild grafik/figuren/figur.png)
-  skala: 0.5,           // Pixel → Punkte: Bilder des Zeichners sind doppelt aufgelöst
+  skala: 0.5,           // Pixel → Punkte: Bilder des Zeichners sind doppelt aufgelöst (256 px → 128 Punkte, etwa 1/5 der
+                        //   Bildschirmhöhe). Kleiner geht (0.35), größer wird unscharf. Frage an Lukas: Wie groß soll die Figur sein?
   schattenBreite: 22,   // halbe Breite des Bodenschattens in Punkten
   schattenHoehe: 7,     // halbe Höhe des Bodenschattens in Punkten
+};
+
+// Wann berührt die Figur etwas (Einsammeln, Treffer)? Kreis um die Körpermitte, nicht um den Fuß: Sonst liegt eine
+// Münze sichtbar hinter dem Körper und zählt nicht. regeln/spieler.js → beruehrt(spieler, x, y, BERUEHRUNG).
+export const BERUEHRUNG = {
+  hoehe: 30,            // Punkte über dem Fußpunkt: Mitte des Berührungs-Kreises (für eine Figur von etwa 120 Punkten)
+  radius: 40,           // Punkte: so nah muss die Mitte des Dings an diese Mitte. Frage an Lukas: großzügig oder knapp?
 };
 
 export const FARBEN = {

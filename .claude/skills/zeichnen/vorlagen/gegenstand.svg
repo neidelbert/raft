@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-anker="60 60">
   <!-- Vorlage Gegenstand/Symbol: eine klare Form, starker Umriss, Glanzpunkt, liest sich auch in 32 px. -->
   <defs>
     <radialGradient id="gold" cx=".35" cy=".3" r=".8">

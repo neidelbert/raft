@@ -8,28 +8,43 @@ description: Horsts Handbuch für Handy-Browserspiele (2D Canvas oder 3D Three.j
 Ziel: Jedes Spiel startet beim ersten Mal ohne Fehler, läuft flüssig auf dem iPhone, fühlt sich gut an und bricht nichts, was schon lief.
 Alles, was dieses Handbuch braucht, liegt in seinem Ordner. Im Folgenden heißt dieser Ordner `<skill>` (in Claude Code meist `.claude/skills/game-programmierung`), das Spiel `<spiel>` (z. B. `spiele/stern-jagd`, der Ordnername ist der Spielname).
 
+## Mindestens lesen (vor dem ersten Code)
+| Auftrag | Pflicht | Dazu, wenn es vorkommt |
+|---|---|---|
+| jeder | dieses Handbuch bis „Bausteine“, `wissen/lernbuch.md` (die letzten 10 Einträge), `wissen/testen.md` | – |
+| neues Spiel | dazu `<spiel>/LIESMICH.md` nach dem Gerüst, `wissen/assets.md` (Kette, Bilder, Prüfen) | 3D: `wissen/threejs-3d.md`; viele Gegner, Kollision: `wissen/canvas-2d.md` |
+| Regel oder Effekt im Spiel | dazu `wissen/aufbau.md` (Zustände, Speichern) | Rückmeldung, Partikel, Wackeln: `wissen/spielgefuehl.md`; Touch, Safari, Leistung: `wissen/iphone-browser.md` |
+| Fehler beheben | dazu den Fehlerbericht und den Abschnitt „Fehleranalyse“ in `wissen/haltung.md` | die Wissensdatei des betroffenen Teils |
+
+`wissen/haltung.md` ganz lesen, sobald Zeit ist (einmal pro Sitzung reicht). Die Wissensdateien sind Nachschlagewerk, keine Pflichtlektüre: Das Gerüst und die Bausteine setzen ihre Regeln schon um.
+
 ## Neues Spiel in 5 Schritten
-1. **Gerüst:** `node <skill>/werkzeuge/neues-spiel.js <spiel> [--3d] [--port 9000] [--titel "Stern-Jagd"]`, dann `node <spiel>/tests/<name>-test.js` → „Alle Prüfungen bestanden.“ Das Gerüst läuft sofort: Ladebildschirm → Titel → Spiel (Joystick, Punkte, Zeit) → Ende mit Rekord, Ton-Knopf, Speicher, Ersatz für fehlende Assets. `<spiel>/LIESMICH.md` erklärt jede Datei. Je Spiel ein eigener Port-Zehnerblock ab 9000.
-2. **Assets:** Bilder des Zeichners nach `<spiel>/grafik/`, eintragen in `assets/quellen/atlas.json` (Gruppen, Fußpunkt, Animationen), Klänge in `sounds.json`, 3D-Modelle in `modelle/`; dann Werkzeuge atlas → sounds → modell → manifest (Kapitel „Assets“ unten). Das Spiel lädt nur, was im Manifest steht.
+1. **Gerüst:** `node <skill>/werkzeuge/neues-spiel.js <spiel> [--3d] [--port 9000] [--titel "Stern-Jagd"]`, dann `node <spiel>/tests/<name>-test.js` → „Alle Prüfungen bestanden.“ Das Gerüst läuft sofort: Ladebildschirm → Titel → Spiel (Joystick, Punkte, Zeit) → Ende mit Rekord, Ton-Knopf, Speicher, Ersatz für fehlende Assets. `<spiel>/LIESMICH.md` erklärt jede Datei.
+   **Port:** je Spiel ein Zehnerblock ab 9000. Ohne `--port` nimmt das Werkzeug den ersten Block, den kein Spiel im selben Ordner schon nutzt (es meldet ihn). Hat das Projekt eine Port-Liste (z. B. `TEAM.md`), dort den Block eintragen; ohne Liste reicht die Meldung. Die Bausteine nutzen 8880–8889.
+2. **Assets:** Bilder des Zeichners nach `<spiel>/grafik/` (mit `grafik.json`, darin der Fußpunkt `anker` in PNG-Pixeln, von `render.js` aus dem SVG umgerechnet), eintragen in `assets/quellen/atlas.json` (Gruppen, Animationen; `anker` dort nur zum Überschreiben), Klänge in `sounds.json`, 3D-Modelle in `modelle/`; dann Werkzeuge atlas → sounds → modell → manifest (Kapitel „Assets“ unten). Das Spiel lädt nur, was im Manifest steht.
 3. **Spielregeln:** in `js/regeln/` ohne DOM (mit Node testbar), jede Zahl in `js/config/` mit Kommentar, Zeichnen in `js/welt/darstellung.js`. Erst in den Bausteinen nachsehen (Tabelle unten, Kopien in `js/kern/`). Eine Regel nach der anderen, jede mit Test.
 4. **Test:** `<spiel>/tests/<name>-test.js` um jede Zeile aus „Fertig, wenn“ erweitern (`wissen/testen.md`), Gegenprobe mit kaputter Kopie (`ORDNER=<kopie>` muss rot werden), Bildschirmfoto ansehen, Fertig-Checkliste abhaken.
-5. **Bericht:** Übergabebericht (Aufbau unten), Schulden in `<spiel>/SCHULDEN.md`, Gelerntes ins Lernbuch. Melden: „bereit zum Testen“.
+5. **Bericht:** Übergabebericht (Aufbau unten), Schulden in `<spiel>/SCHULDEN.md`, Gelerntes ins Lernbuch (in einer Probe ohne eigenes Projekt: in den Bericht, das Lernbuch pflegt der Besitzer des Skills). Melden: „bereit zum Testen“.
+
+**Bilder: ein Weg.** Im Spiel kommen Bilder immer über das Manifest: `grafik/` → `atlas.js` → Atlas → `ladeAssets` (`bausteine/assets.js`) → `zeichneRahmen` (`bausteine/animation.js`). `grafik/grafik.json` ist nur die Eingabe für `atlas.js`, das Spiel liest sie nie. Aus `bausteine/bilder.js` braucht ein Spiel nur `ersatzBild` (Ersatz-Zeichnung) und `faerbeEin` (Aufblitzen); `ladeBilder` ist für Versuche ohne Asset-Kette.
+**Platzhalter:** Das Beispiel-Bild des Gerüsts (`grafik/figuren/figur.png`, in `grafik.json` mit `"platzhalter": true`) ersetzt der Zeichner. Zeichnet er `quellen/figuren/figur.svg`, wird es überschrieben; heißt seine Figur anders, löscht `render.js` den Platzhalter, und Horst stellt `SPIELER.rahmen` in `js/config/welt.js` um (fehlt der Rahmen, zeichnet das Gerüst die Ersatz-Figur und warnt in der Konsole).
+**Größe bestellen:** Im Auftrag an den Zeichner die Größe im Spiel in Punkten nennen (Figur 60 Punkte hoch → Bild 120 px). Standard: 256 px → 128 Punkte bei `SPIELER.skala` 0,5. Ist die Größe nicht vorgegeben: Frage an Lukas (Spielgefühl).
 
 ## Vor jeder Aufgabe (in dieser Reihenfolge)
-1. `wissen/lernbuch.md` (die neuesten Einträge) und `wissen/haltung.md` lesen. Im Lernbuch stehen Fehler, die schon passiert sind; die Regeln daraus stehen auch in den Wissensdateien.
+1. Die Pflicht aus „Mindestens lesen“ (oben), zuerst die neuesten Einträge in `wissen/lernbuch.md`. Im Lernbuch stehen Fehler, die schon passiert sind; die Regeln daraus stehen auch in den Wissensdateien.
 2. Die Projektdatei (falls das Projekt eine hat) und den Auftrag lesen: Was genau, was nicht, wann fertig?
 3. Den vorhandenen Code des Spiels ansehen. Nichts doppelt bauen.
 4. Die Bausteine-Tabelle unten ansehen: Was gibt es schon geprüft?
-5. Die passenden Wissensdateien lesen (Tabelle unten).
+5. Die passenden Wissensdateien nachschlagen (Spalte „Dazu, wenn es vorkommt“ oben, Tabelle unten).
 6. Bei echter Unklarheit eine kurze Frage an den Auftraggeber (Spiel-Leiter). Kleinigkeiten entscheidet Horst selbst (siehe „Selbst entscheiden“).
 
 ## Wissen
 | Datei | Wann lesen |
 |---|---|
 | `wissen/lernbuch.md` | immer, zuerst: Verlauf aller Fehler mit Regel (neue Einträge unten) |
-| `wissen/haltung.md` | immer: wie Horst denkt und arbeitet (Eigenschaften und Fähigkeiten der besten Entwickler) |
+| `wissen/haltung.md` | einmal pro Sitzung: wie Horst denkt und arbeitet (Eigenschaften und Fähigkeiten der besten Entwickler) |
 | `wissen/aufbau.md` | jedes neue Spiel, jede neue Datei: Ordner, Bausteine einbauen, Hauptschleife, Zustände, Speichern |
-| `wissen/iphone-browser.md` | immer: Touch, Safari-Eigenheiten, Bildschirm, Leistung und Speicher |
+| `wissen/iphone-browser.md` | bei Touch, Safari-Eigenheiten, Bildschirm, Leistung und Speicher (vor der Abgabe überfliegen) |
 | `wissen/canvas-2d.md` | 2D-Spiele: Zeichnen, Kamera, viele Gegner, Kollision, Bewegung |
 | `wissen/threejs-3d.md` | 3D-Spiele: Three.js laden, Renderer, Zeichenaufrufe, Kamera, Modelle |
 | `wissen/spielgefuehl.md` | alles, was der Spieler sieht und spürt: Rückmeldung, Wackeln, Partikel, Schwierigkeit |
@@ -42,16 +57,16 @@ Alle im Ordner `werkzeuge/` dieses Skills, mit Node aufzurufen, die Asset-Werkze
 
 | Werkzeug | macht | aus |
 |---|---|---|
-| `neues-spiel.js` | startfähiges Gerüst (2D oder mit `--3d` Three.js) samt Bausteinen, Test, Test-Hilfe, Beispiel-Bild, Manifest; überschreibt nichts | `vorlage/` und `bausteine/` dieses Skills |
-| `atlas.js` | Atlas-PNG + JSON (Rahmen mit Anker, Animationen aus `<name>-<nr>`, 2 px Abstand mit Randverlängerung, ≤ 2048 px) und Einzelbilder | `grafik/` des Zeichners + `assets/quellen/atlas.json` |
+| `neues-spiel.js` | startfähiges Gerüst (2D oder mit `--3d` Three.js) samt Bausteinen, Test, Test-Hilfe, Beispiel-Bild (Platzhalter), Start-Sound, Manifest; wählt den Port; überschreibt nichts | `vorlage/` und `bausteine/` dieses Skills |
+| `atlas.js` | Atlas-PNG + JSON (Rahmen mit Anker aus `grafik.json`, Animationen aus `<name>-<nr>`, 2 px Abstand mit Randverlängerung, ≤ 2048 px) und Einzelbilder | `grafik/` des Zeichners + `assets/quellen/atlas.json` |
 | `sounds.js` | `.m4a` (AAC) und `.mp3` per ffmpeg | Rezepten in `assets/quellen/sounds.json` |
 | `modell.js` | `.glb` (GLTFExporter im kopflosen Chromium); ohne Quellen „nichts zu tun“ | `assets/quellen/modelle/<name>.js` |
 | `manifest.js` | `assets/assets.json` mit Version (Fingerabdruck) und Größen; meldet das Budget, Rückgabewert 1 bei Überschreitung | allem in `assets/` |
 | `png.js` | PNG lesen und schreiben ohne Pakete (Hilfe für `atlas.js` und `neues-spiel.js`) | – |
-| `test-hilfe.js` | Server + Chromium in iPhone-Ansicht, Touch (`ziehe`, `tippe`), Konsolenfehler, Three.js lokal; jedes Gerüst hat eine Kopie in `tests/` | – |
+| `test-hilfe.js` | Server + Chromium in iPhone-Ansicht, Touch (`ziehe`, `tippe`, `laufeZu`: Figur per Joystick zum Ziel), Konsolenfehler, Three.js lokal; jedes Gerüst hat eine Kopie in `tests/` | – |
 | `paket.js` | `dist/game-programmierung.zip`, `dist/zeichnen.zip` (Zeichner-Skill daneben) und `dist/INSTALLIEREN.md` zum Weitergeben | diesem Skill-Ordner |
 
-**Gerüst verbessern:** in `vorlage/` (`gemeinsam/` für beide Arten, `2d/`, `3d/`; Platzhalter `__NAME__`, `__TITEL__`, `__PORT__`), dann `node <skill>/bausteine/tests/geruest-test.js` grün. Spiele, die schon angelegt sind, ändern sich dadurch nicht.
+**Gerüst verbessern:** in `vorlage/` (`gemeinsam/` für beide Arten, `2d/`, `3d/`; Platzhalter `__NAME__`, `__TITEL__`, `__PORT__`), dann `node <skill>/bausteine/tests/geruest-test.js` grün. Einmal auch mit einem echten Bild des Zeichners (256 px, `render.js`) ausprobieren: Grenzen dürfen nicht nur zum Platzhalter passen (Lernbuch Stufe 10). Spiele, die schon angelegt sind, ändern sich dadurch nicht.
 
 Brauchen: Node 18+, Playwright mit Chromium (`require('playwright')`), python3 (Testserver); ffmpeg nur für `sounds.js`; für 3D-Tests einmal npm mit Netz (holt Three.js 0.170.0 in den Temp-Ordner, weil das CDN im Test umgeleitet wird).
 
@@ -82,7 +97,7 @@ In `bausteine/` liegen vierzehn Module aus den Übungen, jedes mit Kopfkommentar
 | `bausteine/gitter.js` | Kollision ab etwa 50 Objekten: Nachbarsuche ohne neue Objekte |
 | `bausteine/partikel.js` | Funken bei Einsammeln, Treffer, Explosion (braucht `pool.js`) |
 | `bausteine/ton.js` | Klänge per WebAudio ohne Dateien, erst nach der ersten Berührung |
-| `bausteine/bilder.js` | Bilder aus `grafik/grafik.json` laden, Ersatz bei fehlendem Bild, rot einfärben |
+| `bausteine/bilder.js` | Ersatz-Zeichnung (`ersatzBild`) und rot einfärben (`faerbeEin`); `ladeBilder` nur für Versuche ohne Manifest (Spiele laden über den Atlas) |
 | `bausteine/zustaende.js` | Spielablauf (Titel → Spiel → Ende) und Verhalten von Gegnern |
 | `bausteine/assets.js` | alles aus `assets/assets.json` laden: Fortschritt für den Ladebalken, Zeitgrenze je Asset, Ersatz, Atlanten, Sounds dekodieren (nach der ersten Berührung), Schriften, Modelle |
 | `bausteine/animation.js` | Rahmen-Animation aus dem Atlas mit Delta-Zeit (Schleife oder einmal mit „fertig“), Zeichnen um den Fußpunkt, gespiegelt |
@@ -129,7 +144,7 @@ In `bausteine/` liegen vierzehn Module aus den Übungen, jedes mit Kopfkommentar
 - [ ] Tab-Wechsel: Pause, kein Sprung danach, Eingabe gelöst, gespeichert
 - [ ] Pixel-Ratio höchstens 2, Delta-Zeit gedeckelt, keine neuen Objekte in der Hauptschleife
 - [ ] Zahlen in `js/config/`, Spieltexte Deutsch mit „…“
-- [ ] Assets nur über das Manifest; `manifest.js` ohne Budget-Überschreitung; Test mit fehlender und mit hängender Datei (Seite läuft mit Ersatz)
+- [ ] Assets nur über das Manifest; `manifest.js` ohne Budget-Überschreitung; Test mit fehlender und mit hängender Datei, je für Bild, Sound (und 3D Modell) (Seite läuft mit Ersatz)
 - [ ] Bildschirmfoto angesehen: sieht es aus wie gewollt?
 - [ ] Gegenprobe gemacht: Test wird gegen absichtlich kaputten Code rot
 - [ ] Alle Tests des Projekts grün (das Alte läuft weiter; gibt es einen Gesamttest, den)

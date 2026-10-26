@@ -10,6 +10,13 @@ export const SPIELER = {
   schattenDeckkraft: 0.3, // 0 … 1
 };
 
+// Wann berührt die Figur etwas (Einsammeln, Treffer)? Kreis in der Ebene um den Standort (3D: y der Regeln ist z,
+// eine Höhe über dem Fuß gibt es hier nicht). regeln/spieler.js → beruehrt(spieler, x, y, BERUEHRUNG).
+export const BERUEHRUNG = {
+  hoehe: 0,             // Meter Versatz der Kreismitte in y der Regeln (in 3D 0: y ist dort die Tiefe, nicht oben)
+  radius: 1,            // Meter: so nah muss die Mitte des Dings sein. Frage an Lukas: großzügig oder knapp?
+};
+
 export const FELD = {
   breite: 30,           // Meter (x)
   tiefe: 30,            // Meter (z)

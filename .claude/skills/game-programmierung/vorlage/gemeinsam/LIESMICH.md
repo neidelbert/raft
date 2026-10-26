@@ -8,6 +8,7 @@ Ladebildschirm → Titel („Tippen zum Starten“) → Spiel (Daumen links läs
 python3 -m http.server 8000      # in diesem Ordner, dann im Browser: http://localhost:8000/
 node tests/__NAME__-test.js      # eigener Test (Playwright), muss „Alle Prüfungen bestanden.“ melden
 ```
+Test-Port: __PORT__ (Zehnerblock __PORT__ und folgende; hat das Projekt eine Port-Liste, dort eintragen). Bildschirmfoto des Tests: `tests/fotos/__NAME__.png` (nicht im Repo).
 Am iPhone: Ordner auf GitHub Pages legen (kein Build-Schritt nötig) und die Adresse in Safari öffnen.
 
 ## Was wo liegt
@@ -21,15 +22,15 @@ Am iPhone: Ordner auf GitHub Pages legen (kein Build-Schritt nötig) und die Adr
 | `js/oberflaeche/` | HTML-Anzeige (Tafeln, Leiste, Ladebalken) und Joystick-Anzeige |
 | `js/kern/` | unveränderte Kopien der geprüften Bausteine des Skills (nicht hier ändern, sondern im Skill samt Test) |
 | `js/test-schnittstelle.js` | `window.spiel` nur zum Lesen für Tests, mit `?test=1` dazu `spiel.test` |
-| `grafik/` | Bilder des Zeichners (PNG + `grafik.json`); das Beispiel-Bild ist ein Platzhalter |
+| `grafik/` | Bilder des Zeichners (PNG + `grafik.json`, nur Eingabe für `atlas.js`; das Spiel lädt Bilder über den Atlas). Das Beispiel-Bild ist ein Platzhalter (`"platzhalter": true`), `render.js` des Zeichners löscht es, wenn es keine SVG dafür gibt |
 | `assets/quellen/` | Quellen der Assets: `atlas.json`, `sounds.json`, `manifest.json`, 3D: `modelle/` |
 | `assets/` | erzeugte Dateien (nie von Hand ändern) und das Manifest `assets.json` |
 | `tests/` | `__NAME__-test.js` und `test-hilfe.js` (Kopie aus dem Skill) |
 | `SCHULDEN.md` | technische Schulden (was, warum, Aufwand) |
 
 ## Nächste Schritte
-1. **Spielidee festhalten:** Was ist das Ziel, was macht der Daumen, wann ist die Runde vorbei? Nur bauen, was im Auftrag steht.
-2. **Assets:** Bilder des Zeichners nach `grafik/` (er liefert `grafik.json` mit), in `assets/quellen/atlas.json` eintragen (Gruppen, Anker = Fußpunkt, Animationen), dann die Werkzeuge in dieser Reihenfolge:
+1. **Spielidee festhalten:** Was ist das Ziel, was macht der Daumen, wann ist die Runde vorbei? Nur bauen, was im Auftrag steht. Steht etwas nicht im Auftrag, hat das Gerüst einen Einstellwert mit „Frage an Lukas“: `RUNDE.dauer` (Zeit, Ziel oder beides; `null` = ohne Zeit) in `js/config/spiel.js`, `BERUEHRUNG` (Wann berührt die Figur etwas? `beruehrt()` in `js/regeln/spieler.js`) und in 2D `SPIELER.skala` (Größe der Figur) in `js/config/welt.js`. Wert lassen, Frage in den Bericht und in `SCHULDEN.md`.
+2. **Assets:** Bilder des Zeichners nach `grafik/` (er liefert `grafik.json` mit, darin der Fußpunkt `anker` in Pixeln). Neue Gruppen und Animationen in `assets/quellen/atlas.json` eintragen (`anker` dort nur, um den Fußpunkt des Zeichners zu überschreiben). Heißt die Figur nicht `figur`, `SPIELER.rahmen` in `js/config/welt.js` umstellen. Dann die Werkzeuge in dieser Reihenfolge:
    ```bash
    W=__WERKZEUGE__        # Werkzeug-Ordner des Skills, von hier aus gesehen
    node $W/atlas.js .     # Atlas und Einzelbilder aus grafik/
@@ -39,7 +40,7 @@ Am iPhone: Ordner auf GitHub Pages legen (kein Build-Schritt nötig) und die Adr
    ```
    `sounds.js` braucht ffmpeg und macht aus `assets/quellen/sounds.json` die Datei `assets/sounds/start.m4a` (und `.mp3`); dann spielt das Spiel sie statt des Code-Klangs `KLAENGE.start`. 3D: `modell.js` macht aus `assets/quellen/modelle/spieler.js` die Datei `spieler.glb`; dann steht das Modell statt der Ersatz-Box da. `manifest.js` meldet das Budget (Startpaket unter 2 MB).
 3. **Spielregeln:** neue Regeln in `js/regeln/` (ohne Browser, mit Node testbar), Zahlen in `js/config/`, Zeichnen in `js/welt/`. `js/regeln/runde.js` ersetzen.
-4. **Test:** `tests/__NAME__-test.js` für jede neue Regel erweitern, dann eine Gegenprobe (absichtlich kaputte Kopie, `ORDNER=<kopie> node tests/__NAME__-test.js` muss rot werden). Bildschirmfoto ansehen.
+4. **Test:** `tests/__NAME__-test.js` für jede neue Regel erweitern (Einsammeln mit festen Orten im Regel-Teil; im Browser mit `t.laufeZu` zum Ziel laufen und „mindestens“ prüfen, siehe `wissen/testen.md` im Skill), dann eine Gegenprobe (absichtlich kaputte Kopie, `ORDNER=<kopie> node tests/__NAME__-test.js` muss rot werden). Bildschirmfoto ansehen.
 5. **Bericht:** Was gebaut wurde, Testergebnis, Startwerte zum Ausprobieren, was am echten iPhone zu prüfen ist, offene Fragen. Schulden in `SCHULDEN.md`.
 
 Mehr im Handbuch des Skills (`SKILL.md`, Wissen in `wissen/`): Aufbau, iPhone, Assets, Testen.

@@ -98,6 +98,18 @@ function atlasTests(ordner) {
   h.pruefe(warnungen.some((w) => w.includes('boom')), 'atlas: Warnung für Animation ohne Eintrag');
   h.pruefe(fs.existsSync(path.join(ordner, 'assets', 'bilder', 'kachel.png')), 'atlas: Einzelbild nach assets/bilder kopiert');
 
+  // Fußpunkt aus grafik.json (render.js des Zeichners schreibt ihn), atlas.json überschreibt nur.
+  const dritter = `${ordner}-anker`;
+  legeSpielAn(dritter, { 'figuren/a': bildMitFlaeche(40, 60, { x: 10, y: 15, b: 20, h: 40 }, ROT), 'figuren/b': bildMitFlaeche(40, 60, { x: 10, y: 15, b: 20, h: 40 }, ROT) },
+    { atlanten: [{ name: 's', gruppen: ['figuren'] }], anker: { 'figuren/b': [20, 50] } });
+  const listeA = JSON.parse(fs.readFileSync(path.join(dritter, 'grafik', 'grafik.json'), 'utf8')).map((e) => ({ ...e, anker: [20, 55] }));
+  fs.writeFileSync(path.join(dritter, 'grafik', 'grafik.json'), JSON.stringify(listeA));
+  baueAtlanten(dritter, { still: true });
+  const ra = JSON.parse(fs.readFileSync(path.join(dritter, 'assets', 'atlas', 's.json'), 'utf8')).rahmen;
+  h.pruefe(ra.a.ankerX === 10 && ra.a.ankerY === 40, `atlas: Fußpunkt aus grafik.json übernommen (a: ${ra.a.ankerX}, ${ra.a.ankerY})`);
+  h.pruefe(ra.b.ankerX === 10 && ra.b.ankerY === 35, `atlas: Eintrag in atlas.json überschreibt grafik.json (b: ${ra.b.ankerX}, ${ra.b.ankerY})`);
+  fs.rmSync(dritter, { recursive: true, force: true });
+
   // Zu groß für eine Seite → mehrere Atlanten, keiner über groesseMax
   const viele = {};
   for (let i = 1; i <= 7; i++) viele[`figuren/kiste-${i}`] = bildMitFlaeche(60, 60, { x: 0, y: 0, b: 60, h: 60 }, GELB);
